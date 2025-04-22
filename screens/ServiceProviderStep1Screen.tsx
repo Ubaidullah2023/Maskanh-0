@@ -53,7 +53,7 @@ export default function ServiceProviderStep1Screen() {
         {/* Step Illustration */}
         <View style={[styles.illustrationContainer, { backgroundColor: '#F5F5F5' }]}>
           <Image
-            source={require('../assets/images/construction.jpg')}
+            source={require('../assets/images/construction.png')}
             style={styles.illustration}
             resizeMode="contain"
           />
@@ -96,9 +96,9 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingVertical: 50,
     borderBottomWidth: 0,
-    borderBottomColor: '#EEEEEE',
+    borderBottomColor: '#000000',
   },
   saveButton: {
     alignSelf: 'flex-end',
