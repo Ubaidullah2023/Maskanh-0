@@ -29,6 +29,7 @@
     },
     "web": {
       "favicon": "./assets/logo.png"
-    }
+    },
+    "newArchEnabled": true
   }
 }
