@@ -1,151 +1,201 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  SafeAreaView,
-  TouchableOpacity,
+import React from 'react';
+import { 
+  View, 
+  Text, 
+  StyleSheet, 
+  SafeAreaView, 
+  TouchableOpacity, 
+  ScrollView, 
   Switch,
-  StatusBar,
   Platform,
-  ScrollView,
+  StatusBar
 } from 'react-native';
+import { useTheme } from '../context/ThemeContext';
+import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/AppNavigator';
+
+type NotificationSettingsScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'NotificationSettings'>;
 
 export default function NotificationSettingsScreen() {
-  const navigation = useNavigation();
-  const [settings, setSettings] = useState({
-    pushNotifications: true,
-    emailNotifications: false,
-    serviceUpdates: true,
-    orderUpdates: true,
-    messages: true,
-    promotions: false,
-  });
+  const { isDarkMode } = useTheme();
+  const navigation = useNavigation<NotificationSettingsScreenNavigationProp>();
+  const [emailNotifications, setEmailNotifications] = React.useState(true);
+  const [pushNotifications, setPushNotifications] = React.useState(true);
+  const [messageNotifications, setMessageNotifications] = React.useState(true);
+  const [orderNotifications, setOrderNotifications] = React.useState(true);
+  const [marketingNotifications, setMarketingNotifications] = React.useState(false);
+  const [updateNotifications, setUpdateNotifications] = React.useState(true);
 
-  const toggleSetting = (key: keyof typeof settings) => {
-    setSettings(prev => ({
-      ...prev,
-      [key]: !prev[key],
-    }));
-  };
+  const notificationSettings = [
+    {
+      title: 'Email Notifications',
+      icon: 'mail-outline',
+      settings: [
+        {
+          label: 'Receive email notifications',
+          value: emailNotifications,
+          onValueChange: setEmailNotifications,
+          description: 'Get notified about important updates via email'
+        }
+      ]
+    },
+    {
+      title: 'Push Notifications',
+      icon: 'notifications-outline',
+      settings: [
+        {
+          label: 'Enable push notifications',
+          value: pushNotifications,
+          onValueChange: setPushNotifications,
+          description: 'Receive notifications on your device'
+        }
+      ]
+    },
+    {
+      title: 'Messages',
+      icon: 'chatbubble-outline',
+      settings: [
+        {
+          label: 'Message notifications',
+          value: messageNotifications,
+          onValueChange: setMessageNotifications,
+          description: 'Get notified about new messages'
+        }
+      ]
+    },
+    {
+      title: 'Orders',
+      icon: 'cart-outline',
+      settings: [
+        {
+          label: 'Order status updates',
+          value: orderNotifications,
+          onValueChange: setOrderNotifications,
+          description: 'Receive updates about your orders'
+        }
+      ]
+    },
+    {
+      title: 'Marketing',
+      icon: 'megaphone-outline',
+      settings: [
+        {
+          label: 'Marketing communications',
+          value: marketingNotifications,
+          onValueChange: setMarketingNotifications,
+          description: 'Receive promotional offers and updates'
+        }
+      ]
+    },
+    {
+      title: 'App Updates',
+      icon: 'refresh-outline',
+      settings: [
+        {
+          label: 'App updates and news',
+          value: updateNotifications,
+          onValueChange: setUpdateNotifications,
+          description: 'Stay informed about new features and improvements'
+        }
+      ]
+    }
+  ];
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[
+      styles.container,
+      { backgroundColor: isDarkMode ? '#1a1a1a' : '#FFFFFF' }
+    ]}>
       <StatusBar
-        barStyle="dark-content"
-        backgroundColor="#fff"
-        translucent={true}
+        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+        backgroundColor={isDarkMode ? '#1a1a1a' : '#FFFFFF'}
       />
-      {/* Header */}
-      <View style={[styles.header, { paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0 }]}>
+      
+      <View style={[
+        styles.header,
+        { borderBottomColor: isDarkMode ? '#333333' : '#E5E5E5' }
+      ]}>
         <TouchableOpacity 
+          style={styles.backButton}
           onPress={() => navigation.goBack()}
-          style={styles.backButtonContainer}
         >
-          <Icon name="arrow-back" size={24} color="#333" />
+          <Ionicons 
+            name="chevron-back" 
+            size={24} 
+            color={isDarkMode ? '#FFFFFF' : '#000000'} 
+          />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Notification Settings</Text>
-        <View style={styles.placeholder} />
+        <Text style={[
+          styles.headerTitle,
+          { color: isDarkMode ? '#FFFFFF' : '#000000' }
+        ]}>
+          Notification Settings
+        </Text>
       </View>
 
-      {/* Settings List */}
       <ScrollView 
         style={styles.content}
         showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.contentContainer}
       >
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>General</Text>
-          
-          <View style={styles.settingItem}>
-            <View style={styles.settingTextContainer}>
-              <Text style={styles.settingTitle}>Push Notifications</Text>
-              <Text style={styles.settingDescription}>Receive push notifications on your device</Text>
+        {notificationSettings.map((section, index) => (
+          <View 
+            key={section.title}
+            style={[
+              styles.section,
+              { 
+                borderBottomColor: isDarkMode ? '#333333' : '#E5E5E5',
+                marginBottom: index === notificationSettings.length - 1 ? 0 : 16
+              }
+            ]}
+          >
+            <View style={styles.sectionHeader}>
+              <View style={[
+                styles.iconContainer,
+                { backgroundColor: isDarkMode ? '#333333' : '#f5f5f5' }
+              ]}>
+                <Ionicons 
+                  name={section.icon as any} 
+                  size={20} 
+                  color="#00A86B" 
+                />
+              </View>
+              <Text style={[
+                styles.sectionTitle,
+                { color: isDarkMode ? '#FFFFFF' : '#000000' }
+              ]}>
+                {section.title}
+              </Text>
             </View>
-            <Switch
-              value={settings.pushNotifications}
-              onValueChange={() => toggleSetting('pushNotifications')}
-              trackColor={{ false: '#eee', true: '#00A86B' }}
-              thumbColor="#fff"
-              ios_backgroundColor="#eee"
-            />
-          </View>
 
-          <View style={styles.settingItem}>
-            <View style={styles.settingTextContainer}>
-              <Text style={styles.settingTitle}>Email Notifications</Text>
-              <Text style={styles.settingDescription}>Receive notifications via email</Text>
-            </View>
-            <Switch
-              value={settings.emailNotifications}
-              onValueChange={() => toggleSetting('emailNotifications')}
-              trackColor={{ false: '#eee', true: '#00A86B' }}
-              thumbColor="#fff"
-              ios_backgroundColor="#eee"
-            />
+            {section.settings.map((setting) => (
+              <View key={setting.label} style={styles.settingItem}>
+                <View style={styles.settingContent}>
+                  <Text style={[
+                    styles.settingLabel,
+                    { color: isDarkMode ? '#FFFFFF' : '#000000' }
+                  ]}>
+                    {setting.label}
+                  </Text>
+                  <Text style={[
+                    styles.settingDescription,
+                    { color: isDarkMode ? '#CCCCCC' : '#666666' }
+                  ]}>
+                    {setting.description}
+                  </Text>
+                </View>
+                <Switch
+                  value={setting.value}
+                  onValueChange={setting.onValueChange}
+                  trackColor={{ false: '#767577', true: '#666666' }}
+                  thumbColor={setting.value ? '#00A86B' : '#f4f3f4'}
+                />
+              </View>
+            ))}
           </View>
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Notification Types</Text>
-          
-          <View style={styles.settingItem}>
-            <View style={styles.settingTextContainer}>
-              <Text style={styles.settingTitle}>Service Updates</Text>
-              <Text style={styles.settingDescription}>Updates about your service requests</Text>
-            </View>
-            <Switch
-              value={settings.serviceUpdates}
-              onValueChange={() => toggleSetting('serviceUpdates')}
-              trackColor={{ false: '#eee', true: '#00A86B' }}
-              thumbColor="#fff"
-              ios_backgroundColor="#eee"
-            />
-          </View>
-
-          <View style={styles.settingItem}>
-            <View style={styles.settingTextContainer}>
-              <Text style={styles.settingTitle}>Order Updates</Text>
-              <Text style={styles.settingDescription}>Status updates for your orders</Text>
-            </View>
-            <Switch
-              value={settings.orderUpdates}
-              onValueChange={() => toggleSetting('orderUpdates')}
-              trackColor={{ false: '#eee', true: '#00A86B' }}
-              thumbColor="#fff"
-              ios_backgroundColor="#eee"
-            />
-          </View>
-
-          <View style={styles.settingItem}>
-            <View style={styles.settingTextContainer}>
-              <Text style={styles.settingTitle}>Messages</Text>
-              <Text style={styles.settingDescription}>New messages from service providers</Text>
-            </View>
-            <Switch
-              value={settings.messages}
-              onValueChange={() => toggleSetting('messages')}
-              trackColor={{ false: '#eee', true: '#00A86B' }}
-              thumbColor="#fff"
-              ios_backgroundColor="#eee"
-            />
-          </View>
-
-          <View style={styles.settingItem}>
-            <View style={styles.settingTextContainer}>
-              <Text style={styles.settingTitle}>Promotions</Text>
-              <Text style={styles.settingDescription}>Special offers and promotions</Text>
-            </View>
-            <Switch
-              value={settings.promotions}
-              onValueChange={() => toggleSetting('promotions')}
-              trackColor={{ false: '#eee', true: '#00A86B' }}
-              thumbColor="#fff"
-              ios_backgroundColor="#eee"
-            />
-          </View>
-        </View>
+        ))}
       </ScrollView>
     </SafeAreaView>
   );
@@ -154,69 +204,71 @@ export default function NotificationSettingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-    backgroundColor: '#fff',
-  },
-  backButtonContainer: {
-    padding: 8,
-    marginLeft: -8,
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 16,
   },
   backButton: {
-    fontSize: 24,
-    color: '#333',
+    padding: 8,
+    marginRight: 8,
+    borderRadius: 20,
   },
   headerTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: '600',
     flex: 1,
     textAlign: 'center',
-  },
-  placeholder: {
-    width: 40,
   },
   content: {
     flex: 1,
   },
+  contentContainer: {
+    padding: 16,
+  },
   section: {
+    backgroundColor: 'transparent',
+    borderRadius: 12,
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  iconContainer: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
   },
   sectionTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '600',
-    color: '#333',
-    marginBottom: 16,
   },
   settingItem: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
+    alignItems: 'center',
     paddingVertical: 12,
-    paddingHorizontal: 4,
   },
-  settingTextContainer: {
+  settingContent: {
     flex: 1,
     marginRight: 16,
   },
-  settingTitle: {
+  settingLabel: {
     fontSize: 16,
-    color: '#333',
-    marginBottom: 4,
     fontWeight: '500',
+    marginBottom: 4,
   },
   settingDescription: {
     fontSize: 14,
-    color: '#666',
     lineHeight: 20,
   },
 }); 

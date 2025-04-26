@@ -11,110 +11,147 @@ import {
   ScrollView,
   Alert,
   Image,
+  StatusBar,
 } from 'react-native';
 import { colors, spacing, typography } from '../theme';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { FontAwesome } from '@expo/vector-icons';
+import { useTheme } from '../context/ThemeContext';
+import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ForgotPassword'>;
 
+type ForgotPasswordScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'ForgotPassword'>;
+
 const ForgotPasswordScreen = ({ navigation }: Props) => {
+  const { isDarkMode } = useTheme();
+  const navigationNative = useNavigation<ForgotPasswordScreenNavigationProp>();
   const [email, setEmail] = useState('');
 
   const handleResetPassword = () => {
-    // Basic validation
-    if (!email.trim()) {
-      Alert.alert('Error', 'Please enter your email');
+    if (!email) {
+      Alert.alert('Error', 'Please enter your email address');
       return;
     }
 
-    // Basic email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      Alert.alert('Error', 'Please enter a valid email address');
-      return;
-    }
-
-    // Here you would typically make an API call to send reset password email
-    console.log('Reset password for email:', email);
-
-    // Show success message
+    // Add password reset logic here
     Alert.alert(
-      'Success',
-      'If an account exists with this email, you will receive password reset instructions.',
+      'Reset Link Sent',
+      'We have sent a password reset link to your email address. Please check your inbox.',
       [
         {
           text: 'OK',
-          onPress: () => navigation.navigate('Login')
+          onPress: () => navigationNative.goBack()
         }
       ]
     );
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboardAvoidingView}
-      >
-        <ScrollView 
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
+    <SafeAreaView style={[
+      styles.container,
+      { backgroundColor: isDarkMode ? '#1a1a1a' : '#FFFFFF' }
+    ]}>
+      <StatusBar
+        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+        backgroundColor={isDarkMode ? '#1a1a1a' : '#FFFFFF'}
+      />
+      
+      <View style={[
+        styles.header,
+        { borderBottomColor: isDarkMode ? '#333333' : '#E5E5E5' }
+      ]}>
+        <TouchableOpacity 
+          style={styles.backButton}
+          onPress={() => navigationNative.goBack()}
         >
-          <TouchableOpacity 
-            style={styles.backButton}
-            onPress={() => navigation.goBack()}
-          >
-            <FontAwesome name="arrow-left" size={24} color="#000" />
-          </TouchableOpacity>
+          <Ionicons 
+            name="chevron-back" 
+            size={24} 
+            color={isDarkMode ? '#FFFFFF' : '#000000'} 
+          />
+        </TouchableOpacity>
+        <Text style={[
+          styles.headerTitle,
+          { color: isDarkMode ? '#FFFFFF' : '#000000' }
+        ]}>
+          Forgot Password
+        </Text>
+      </View>
 
-          <View style={styles.contentContainer}>
-            <View style={styles.header}>
-              <Image 
-                source={require('../assets/logo.png')}
-                style={styles.logo}
-                resizeMode="contain"
-              />
-              <Text style={styles.title}>Welcome Back</Text>
-              <Text style={styles.subtitle}>
-                Enter your email address and we'll send you instructions to reset your password.
-              </Text>
-            </View>
+      <View style={styles.content}>
+        <View style={styles.iconContainer}>
+          <Ionicons 
+            name="lock-closed-outline" 
+            size={64} 
+            color="#00A86B" 
+          />
+        </View>
 
-            <View style={styles.form}>
-              <View style={styles.inputContainer}>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Email"
-                  value={email}
-                  onChangeText={setEmail}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                />
-              </View>
+        <Text style={[
+          styles.title,
+          { color: isDarkMode ? '#FFFFFF' : '#000000' }
+        ]}>
+          Reset Your Password
+        </Text>
 
-              <TouchableOpacity 
-                style={styles.resetButton} 
-                onPress={handleResetPassword}
-              >
-                <Text style={styles.resetButtonText}>Send Reset Link</Text>
-              </TouchableOpacity>
-              <View style={styles.divider}>
-                <View style={styles.dividerLine} />
-                <Text style={styles.dividerText}>OR</Text>
-                <View style={styles.dividerLine} />
-              </View>
-              <View style={styles.loginContainer}>
-                <Text style={styles.loginText}>Remember your password? </Text>
-                <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-                  <Text style={styles.loginLink}>Sign In</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
+        <Text style={[
+          styles.description,
+          { color: isDarkMode ? '#CCCCCC' : '#666666' }
+        ]}>
+          Enter your email address and we'll send you a link to reset your password.
+        </Text>
+
+        <View style={styles.inputContainer}>
+          <Text style={[
+            styles.label,
+            { color: isDarkMode ? '#FFFFFF' : '#000000' }
+          ]}>
+            Email Address
+          </Text>
+          <TextInput
+            style={[
+              styles.input,
+              { 
+                backgroundColor: isDarkMode ? '#2a2a2a' : '#FFFFFF',
+                color: isDarkMode ? '#FFFFFF' : '#000000',
+                borderColor: isDarkMode ? '#333333' : '#E5E5E5'
+              }
+            ]}
+            value={email}
+            onChangeText={setEmail}
+            placeholder="Enter your email"
+            placeholderTextColor={isDarkMode ? '#666666' : '#999999'}
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+        </View>
+
+        <TouchableOpacity 
+          style={[
+            styles.resetButton,
+            { 
+              opacity: !email ? 0.5 : 1,
+              backgroundColor: isDarkMode ? '#00A86B' : '#00A86B'
+            }
+          ]}
+          onPress={handleResetPassword}
+          disabled={!email}
+        >
+          <Text style={styles.resetButtonText}>Send Reset Link</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={styles.backToLogin}
+          onPress={() => navigationNative.goBack()}
+        >
+          <Text style={styles.backToLoginText}>Back to Login</Text>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 };
@@ -122,131 +159,86 @@ const ForgotPasswordScreen = ({ navigation }: Props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
-  },
-  keyboardAvoidingView: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-  },
-  backButton: {
-    position: 'absolute',
-    top: 16,
-    left: 16,
-    zIndex: 1,
-    padding: 8,
-  },
-  contentContainer: {
-    flex: 1,
-    padding: spacing.xl,
-    justifyContent: 'center',
-    alignItems: 'center',
-    maxWidth: 500,
-    width: '100%',
-    alignSelf: 'center',
   },
   header: {
-    marginBottom: spacing.xl,
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    borderBottomWidth: 1,
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 16,
+  },
+  backButton: {
+    padding: 8,
+    marginRight: 8,
+    borderRadius: 20,
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    flex: 1,
+    textAlign: 'center',
+  },
+  content: {
+    flex: 1,
+    padding: 24,
     alignItems: 'center',
   },
-  logo: {
+  iconContainer: {
     width: 120,
     height: 120,
-    marginBottom: spacing.lg,
+    borderRadius: 60,
+    backgroundColor: 'rgba(0, 168, 107, 0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 24,
   },
   title: {
-    ...typography.h1,
-    color: colors.text.primary,
-    marginBottom: spacing.xs,
+    fontSize: 24,
+    fontWeight: '600',
+    marginBottom: 12,
     textAlign: 'center',
   },
-  subtitle: {
-    ...typography.body,
-    color: colors.text.secondary,
+  description: {
+    fontSize: 16,
+    lineHeight: 24,
     textAlign: 'center',
-  },
-  form: {
-    width: '100%',
+    marginBottom: 32,
   },
   inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.white,
-    borderRadius: 8,
-    marginBottom: spacing.md,
-    paddingHorizontal: spacing.md,
-    borderWidth: 1,
-    borderColor: colors.border,
+    width: '100%',
+    marginBottom: 24,
   },
-  inputIcon: {
-    fontSize: 20,
-    marginRight: spacing.sm,
+  label: {
+    fontSize: 16,
+    fontWeight: '500',
+    marginBottom: 8,
   },
   input: {
-    flex: 1,
     height: 50,
-    ...typography.body,
-    color: colors.text.primary,
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    fontSize: 16,
   },
   resetButton: {
-    backgroundColor: '#4CAF50', // Green color
+    width: '100%',
+    padding: 16,
     borderRadius: 8,
-    height: 50,
-    justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: spacing.xl,
-  },
-  disabledButton: {
-    opacity: 0.7,
+    marginBottom: 16,
   },
   resetButtonText: {
-    ...typography.body,
-    color: colors.white,
+    color: '#FFFFFF',
+    fontSize: 16,
     fontWeight: '600',
   },
-  loginContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: spacing.md,
+  backToLogin: {
+    padding: 8,
   },
-  loginText: {
-    ...typography.body,
-    color: colors.text.secondary,
-  },
-  loginLink: {
-    ...typography.body,
-    color: '#4CAF50',
-    fontWeight: '600',
-  },
-  divider: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: spacing.xl,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 1,
-    backgroundColor: colors.border,
-  },
-  dividerText: {
-    ...typography.body,
-    color: colors.text.secondary,
-    marginHorizontal: spacing.md,
-  },
-  providerButton: {
-    backgroundColor: colors.primary,
-    borderRadius: 8,
-    height: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: spacing.xl,
-  },
-  providerButtonText: {
-    ...typography.body,
-    color: colors.white,
-    fontWeight: '600',
+  backToLoginText: {
+    color: '#00A86B',
+    fontSize: 16,
+    fontWeight: '500',
   },
 });
 

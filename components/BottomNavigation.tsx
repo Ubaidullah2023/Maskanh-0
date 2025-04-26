@@ -1,23 +1,24 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, NavigationProp, useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
+import { RootStackParamList } from '../navigation/AppNavigator';
 
 export default function BottomNavigation() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const { isDarkMode } = useTheme();
+  const route = useRoute();
 
-  const handleNavigation = (screen: string) => {
+  const handleNavigation = (screen: keyof RootStackParamList) => {
     switch (screen) {
-      case 'Home':
+      case 'FindService':
         navigation.navigate('FindService');
         break;
-      case 'Services':
-        navigation.navigate('AllServices', { type: 'featured' });
+      case 'Blog':
+        navigation.navigate('Blog');
         break;
       case 'Search':
-        // Navigate to search screen when implemented
         navigation.navigate('Search');
         break;
       case 'Messages':
@@ -26,7 +27,14 @@ export default function BottomNavigation() {
       case 'Profile':
         navigation.navigate('Profile');
         break;
+      case 'PersonalInfo':
+        navigation.navigate('PersonalInfo');
+        break;
     }
+  };
+
+  const getTabColor = (screenName: string) => {
+    return route.name === screenName ? '#00A86B' : '#666666';
   };
 
   return (
@@ -36,32 +44,32 @@ export default function BottomNavigation() {
     ]}>
       <TouchableOpacity
         style={styles.tabItem}
-        onPress={() => handleNavigation('Home')}
+        onPress={() => handleNavigation('FindService')}
       >
         <Ionicons
           name="home"
           size={24}
-          color="#00A86B"
+          color={getTabColor('FindService')}
         />
         <Text style={[
           styles.tabText,
-          { color: isDarkMode ? '#FFFFFF' : '#000000' }
+          { color: getTabColor('FindService') }
         ]}>Home</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.tabItem}
-        onPress={() => handleNavigation('Services')}
+        onPress={() => handleNavigation('Blog')}
       >
         <Ionicons
-          name="compass"
+          name="newspaper-outline"
           size={24}
-          color="#666666"
+          color={getTabColor('Blog')}
         />
         <Text style={[
           styles.tabText,
-          { color: isDarkMode ? '#FFFFFF' : '#666666' }
-        ]}>Services</Text>
+          { color: getTabColor('Blog') }
+        ]}>Blog</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -71,11 +79,11 @@ export default function BottomNavigation() {
         <Ionicons
           name="search"
           size={24}
-          color="#666666"
+          color={getTabColor('Search')}
         />
         <Text style={[
           styles.tabText,
-          { color: isDarkMode ? '#FFFFFF' : '#666666' }
+          { color: getTabColor('Search') }
         ]}>Search</Text>
       </TouchableOpacity>
 
@@ -86,11 +94,11 @@ export default function BottomNavigation() {
         <Ionicons
           name="chatbubble-ellipses"
           size={24}
-          color="#666666"
+          color={getTabColor('Messages')}
         />
         <Text style={[
           styles.tabText,
-          { color: isDarkMode ? '#FFFFFF' : '#666666' }
+          { color: getTabColor('Messages') }
         ]}>Messages</Text>
       </TouchableOpacity>
 
@@ -101,11 +109,11 @@ export default function BottomNavigation() {
         <Ionicons
           name="person"
           size={24}
-          color="#666666"
+          color={getTabColor('Profile')}
         />
         <Text style={[
           styles.tabText,
-          { color: isDarkMode ? '#FFFFFF' : '#666666' }
+          { color: getTabColor('Profile') }
         ]}>Profile</Text>
       </TouchableOpacity>
     </View>
@@ -144,6 +152,5 @@ const styles = StyleSheet.create({
   tabText: {
     fontSize: 12,
     marginTop: 4,
-    color: '#666666',
   },
 }); 

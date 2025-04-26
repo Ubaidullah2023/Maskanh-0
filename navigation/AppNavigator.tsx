@@ -16,6 +16,7 @@ import PersonalInfoScreen from '../screens/PersonalInfoScreen';
 import LegalNameScreen from '../screens/LegalNameScreen';
 import TermsOfServiceScreen from '../screens/TermsOfServiceScreen';
 import PrivacyPolicyScreen from '../screens/PrivacyPolicyScreen';
+import TermsPrivacyScreen from '../screens/TermsPrivacyScreen';
 import HelpCenterScreen from '../screens/HelpCenterScreen';
 import LanguageScreen from '../screens/LanguageScreen';
 import MyAdsScreen from '../screens/MyAdsScreen';
@@ -30,6 +31,7 @@ import MaskanhProScreen from '../screens/MaskanhProScreen';
 import MessagesScreen from '../screens/MessagesScreen';
 import SearchScreen from '../screens/SearchScreen';
 import ProfileScreen from '../screens/ProfileScreen';
+import EditProfileScreen from '../screens/EditProfileScreen';
 import ServiceProviderStep1Screen from '../screens/ServiceProviderStep1Screen';
 import ServiceProviderStep2Screen from '../screens/ServiceProviderStep2Screen';
 import ServiceProviderStep3Screen from '../screens/ServiceProviderStep3Screen';
@@ -38,6 +40,11 @@ import ServiceMapScreen from '../screens/ServiceMapScreen';
 import RegistrationScreen from '../screens/RegistrationScreen';
 import ServiceDetailsScreen from '../screens/ServiceDetailsScreen';
 import HomeScreen from '../screens/HomeScreen';
+import SecurityScreen from '../screens/SecurityScreen';
+import UpdatePasswordScreen from '../screens/UpdatePasswordScreen';
+import NotificationSettingsScreen from '../screens/NotificationSettingsScreen';
+import FeedbackScreen from '../screens/FeedbackScreen';
+import BlogScreen from '../screens/BlogScreen';
 
 export type RootStackParamList = {
   Login: undefined;
@@ -45,6 +52,8 @@ export type RootStackParamList = {
   ForgotPassword: undefined;
   Selection: undefined;
   Home: undefined;
+  Security: undefined;
+  UpdatePassword: undefined;
   Checkout: {
     title: string;
     price: number;
@@ -60,6 +69,7 @@ export type RootStackParamList = {
   LegalName: undefined;
   TermsOfService: undefined;
   PrivacyPolicy: undefined;
+  TermsPrivacy: undefined;
   HelpCenter: undefined;
   Language: undefined;
   MyAds: undefined;
@@ -67,6 +77,7 @@ export type RootStackParamList = {
   PostAd: undefined;
   TopUp: undefined;
   FindService: undefined;
+  Blog: undefined;
   AllServices: {
     type: 'featured' | 'recommended';
   };
@@ -87,6 +98,7 @@ export type RootStackParamList = {
   Messages: undefined;
   Search: undefined;
   Profile: undefined;
+  EditProfile: undefined;
   ServiceProviderStep1: undefined;
   ServiceProviderStep2: undefined;
   ServiceProviderStep3: undefined;
@@ -102,6 +114,8 @@ export type RootStackParamList = {
     views: number;
     postedTime: string;
   };
+  NotificationSettings: undefined;
+  Feedback: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -119,6 +133,8 @@ export default function AppNavigator() {
       <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
       <Stack.Screen name="Selection" component={SelectionScreen} />
       <Stack.Screen name="Home" component={HomeScreen} />
+      <Stack.Screen name="Security" component={SecurityScreen} />
+      <Stack.Screen name="UpdatePassword" component={UpdatePasswordScreen} />
       <Stack.Screen name="Checkout" component={CheckoutScreen} />
       <Stack.Screen name="Notification" component={NotificationScreen} />
       <Stack.Screen name="LoginSecurity" component={LoginSecurityScreen} />
@@ -131,6 +147,7 @@ export default function AppNavigator() {
       <Stack.Screen name="LegalName" component={LegalNameScreen} />
       <Stack.Screen name="TermsOfService" component={TermsOfServiceScreen} />
       <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicyScreen} />
+      <Stack.Screen name="TermsPrivacy" component={TermsPrivacyScreen} />
       <Stack.Screen name="HelpCenter" component={HelpCenterScreen} />
       <Stack.Screen name="Language" component={LanguageScreen} />
       <Stack.Screen name="MyAds" component={MyAdsScreen} />
@@ -138,6 +155,7 @@ export default function AppNavigator() {
       <Stack.Screen name="PostAd" component={PostAdScreen} />
       <Stack.Screen name="TopUp" component={TopUpScreen} />
       <Stack.Screen name="FindService" component={FindServiceScreen} />
+      <Stack.Screen name="Blog" component={BlogScreen} />
       <Stack.Screen name="AdPreview" component={AdPreviewScreen} />
       <Stack.Screen name="AllServices" component={AllServicesScreen} />
       <Stack.Screen name="ProviderVerification" component={ProviderVerificationScreen} />
@@ -153,6 +171,7 @@ export default function AppNavigator() {
       <Stack.Screen name="Messages" component={MessagesScreen} />
       <Stack.Screen name="Search" component={SearchScreen} />
       <Stack.Screen name="Profile" component={ProfileScreen} />
+      <Stack.Screen name="EditProfile" component={EditProfileScreen} />
       <Stack.Screen name="ServiceProviderStep1" component={ServiceProviderStep1Screen} />
       <Stack.Screen name="ServiceProviderStep2" component={ServiceProviderStep2Screen} />
       <Stack.Screen name="ServiceProviderStep3" component={ServiceProviderStep3Screen} />
@@ -173,6 +192,15 @@ export default function AppNavigator() {
       <Stack.Screen 
         name="ServiceDetails" 
         component={ServiceDetailsScreen}
+        options={{
+          headerShown: false,
+          animation: 'slide_from_right',
+        }}
+      />
+      <Stack.Screen name="NotificationSettings" component={NotificationSettingsScreen} />
+      <Stack.Screen 
+        name="Feedback" 
+        component={FeedbackScreen}
         options={{
           headerShown: false,
           animation: 'slide_from_right',

@@ -10,11 +10,16 @@ import {
   Platform,
   Dimensions,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useTheme } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/AppNavigator';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
+type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
+
 export default function NotificationScreen() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp>();
+  const { colors } = useTheme();
   const [selectedFilter, setSelectedFilter] = useState('all');
   const windowWidth = Dimensions.get('window').width;
 
@@ -62,6 +67,10 @@ export default function NotificationScreen() {
     return notification.title.includes(selectedFilter);
   });
 
+  const handleNotificationSettingsPress = () => {
+    navigation.navigate('NotificationSettings');
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar
@@ -78,11 +87,12 @@ export default function NotificationScreen() {
           <Icon name="arrow-back" size={24} color="#333" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Notifications</Text>
-        <TouchableOpacity 
-          style={styles.settingsButton}
-          onPress={() => navigation.navigate('NotificationSettings' as never)}
+        <TouchableOpacity
+          style={[styles.settingsButton, { backgroundColor: colors.card }]}
+          onPress={handleNotificationSettingsPress}
         >
-          <Icon name="settings" size={24} color="#333" />
+          <Text style={[styles.settingsText, { color: colors.text }]}>Notification Settings</Text>
+          <Icon name="chevron-right" size={24} color={colors.text} />
         </TouchableOpacity>
       </View>
 
@@ -180,6 +190,11 @@ const styles = StyleSheet.create({
   settingsButton: {
     padding: 8,
     marginRight: -8,
+  },
+  settingsText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#333',
   },
   iconText: {
     fontSize: 20,
