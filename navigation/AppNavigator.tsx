@@ -45,6 +45,18 @@ import UpdatePasswordScreen from '../screens/UpdatePasswordScreen';
 import NotificationSettingsScreen from '../screens/NotificationSettingsScreen';
 import FeedbackScreen from '../screens/FeedbackScreen';
 import BlogScreen from '../screens/BlogScreen';
+import PlaceTypeScreen from '../screens/PlaceTypeScreen';
+import LocationScreen from '../screens/LocationScreen';
+import AddressSearchScreen from '../screens/AddressSearchScreen';
+import ConfirmAddressScreen from '../screens/ConfirmAddressScreen';
+import BasicInfoScreen from '../screens/BasicInfoScreen';
+import AmenitiesScreen from '../screens/AmenitiesScreen';
+import AddPhotosScreen from '../screens/AddPhotosScreen';
+import TitleScreen from '../screens/TitleScreen';
+import DescriptionScreen from '../screens/DescriptionScreen';
+import CreateDescriptionScreen from '../screens/CreateDescriptionScreen';
+import BookingSettingsScreen from '../screens/BookingSettingsScreen';
+import PriceSettingScreen from '../screens/PriceSettingScreen';
 
 export type RootStackParamList = {
   Login: undefined;
@@ -54,6 +66,8 @@ export type RootStackParamList = {
   Home: undefined;
   Security: undefined;
   UpdatePassword: undefined;
+  MainTabs: { screen: string };
+  PlaceType: undefined;
   Checkout: {
     title: string;
     price: number;
@@ -93,15 +107,53 @@ export type RootStackParamList = {
       thumbnail?: string;
     }>;
   };
-  ProviderVerification: undefined;
+  Location: {
+    placeType: 'entire' | 'room' | 'shared';
+    address?: string;
+  };
+  AddressSearch: undefined;
+  ProviderVerification: {
+    placeType: 'entire' | 'room' | 'shared';
+    address?: string;
+    coordinates?: {
+      latitude: number;
+      longitude: number;
+    };
+    guestCount?: number;
+    bedroomCount?: number;
+    bedCount?: number;
+    hasLock?: boolean;
+  };
   MaskanhPro: undefined;
   Messages: undefined;
   Search: undefined;
   Profile: undefined;
   EditProfile: undefined;
   ServiceProviderStep1: undefined;
-  ServiceProviderStep2: undefined;
-  ServiceProviderStep3: undefined;
+  ServiceProviderStep2: {
+    placeType: 'entire' | 'room' | 'shared';
+    guestCount: number;
+    bedroomCount: number;
+    bedCount: number;
+    hasLock: boolean;
+    amenities: string[];
+    photos: Array<{
+      uri: string;
+      type: 'image';
+    }>;
+    title: string;
+    highlights: string[];
+    description: string;
+    guestType: 'any_guest' | 'experienced_guest';
+    basePrice: number;
+  };
+  ServiceProviderStep3: {
+    placeType: 'entire' | 'room' | 'shared';
+    guestCount: number;
+    bedroomCount: number;
+    bedCount: number;
+    hasLock: boolean;
+  };
   PropertyType: undefined;
   ServiceMap: undefined;
   Registration: undefined;
@@ -116,6 +168,96 @@ export type RootStackParamList = {
   };
   NotificationSettings: undefined;
   Feedback: undefined;
+  ConfirmAddress: {
+    placeType: 'entire' | 'room' | 'shared';
+    street?: string;
+    city?: string;
+    province?: string;
+  };
+  BasicInfo: {
+    placeType: 'entire' | 'room' | 'shared';
+  };
+  Amenities: {
+    placeType: 'entire' | 'room' | 'shared';
+  };
+  AddPhotos: {
+    placeType: 'entire' | 'room' | 'shared';
+    guestCount: number;
+    bedroomCount: number;
+    bedCount: number;
+    hasLock: boolean;
+    amenities: string[];
+  };
+  Title: {
+    placeType: 'entire' | 'room' | 'shared';
+    guestCount: number;
+    bedroomCount: number;
+    bedCount: number;
+    hasLock: boolean;
+    amenities: string[];
+    photos: Array<{
+      uri: string;
+      type: 'image';
+    }>;
+  };
+  Description: {
+    placeType: 'entire' | 'room' | 'shared';
+    guestCount: number;
+    bedroomCount: number;
+    bedCount: number;
+    hasLock: boolean;
+    amenities: string[];
+    photos: Array<{
+      uri: string;
+      type: 'image';
+    }>;
+    title: string;
+  };
+  CreateDescription: {
+    placeType: 'entire' | 'room' | 'shared';
+    guestCount: number;
+    bedroomCount: number;
+    bedCount: number;
+    hasLock: boolean;
+    amenities: string[];
+    photos: Array<{
+      uri: string;
+      type: 'image';
+    }>;
+    title: string;
+    highlights: string[];
+  };
+  BookingSettings: {
+    placeType: 'entire' | 'room' | 'shared';
+    guestCount: number;
+    bedroomCount: number;
+    bedCount: number;
+    hasLock: boolean;
+    amenities: string[];
+    photos: Array<{
+      uri: string;
+      type: 'image';
+    }>;
+    title: string;
+    highlights: string[];
+    description: string;
+  };
+  PriceSetting: {
+    placeType: 'entire' | 'room' | 'shared';
+    guestCount: number;
+    bedroomCount: number;
+    bedCount: number;
+    hasLock: boolean;
+    amenities: string[];
+    photos: Array<{
+      uri: string;
+      type: 'image';
+    }>;
+    title: string;
+    highlights: string[];
+    description: string;
+    guestType: 'any_guest' | 'experienced_guest';
+  };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -206,6 +348,18 @@ export default function AppNavigator() {
           animation: 'slide_from_right',
         }}
       />
+      <Stack.Screen name="PlaceType" component={PlaceTypeScreen} />
+      <Stack.Screen name="Location" component={LocationScreen} />
+      <Stack.Screen name="AddressSearch" component={AddressSearchScreen} />
+      <Stack.Screen name="ConfirmAddress" component={ConfirmAddressScreen} />
+      <Stack.Screen name="BasicInfo" component={BasicInfoScreen} />
+      <Stack.Screen name="Amenities" component={AmenitiesScreen} />
+      <Stack.Screen name="AddPhotos" component={AddPhotosScreen} />
+      <Stack.Screen name="Title" component={TitleScreen} />
+      <Stack.Screen name="Description" component={DescriptionScreen} />
+      <Stack.Screen name="CreateDescription" component={CreateDescriptionScreen} />
+      <Stack.Screen name="BookingSettings" component={BookingSettingsScreen} />
+      <Stack.Screen name="PriceSetting" component={PriceSettingScreen} />
     </Stack.Navigator>
   );
 } 

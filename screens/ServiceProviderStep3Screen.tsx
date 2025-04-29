@@ -18,7 +18,7 @@ export default function ServiceProviderStep3Screen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const handleFinish = () => {
-    navigation.navigate('ProviderVerification');
+    navigation.navigate('PlaceType');
   };
 
   const handleBack = () => {
@@ -124,6 +124,10 @@ const styles = StyleSheet.create({
     marginBottom: 32,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  illustration: {
+    width: '80%',
+    height: '80%',
   },
   placeholderText: {
     fontSize: 16,
