@@ -18,15 +18,11 @@ export default function ServiceProviderStep1Screen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const handleNext = () => {
-    navigation.navigate('PropertyType');
+    navigation.navigate('ServiceProviderStep2');
   };
 
   const handleBack = () => {
     navigation.goBack();
-  };
-
-  const handleSaveAndExit = () => {
-    navigation.navigate('MainTabs', { screen: 'Home' });
   };
 
   return (
@@ -36,22 +32,12 @@ export default function ServiceProviderStep1Screen() {
         backgroundColor="#FFFFFF"
       />
       
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.saveButton}
-          onPress={handleSaveAndExit}
-        >
-          <Text style={styles.saveButtonText}>Save & exit</Text>
-        </TouchableOpacity>
-      </View>
-
       <ScrollView 
         style={styles.content}
         showsVerticalScrollIndicator={false}
       >
         {/* Step Illustration */}
-        <View style={[styles.illustrationContainer, { backgroundColor: '#F5F5F5' }]}>
+        <View style={[styles.illustrationContainer, { backgroundColor: '#ffffff' }]}>
           <Image
             source={require('../assets/images/construction.png')}
             style={styles.illustration}
@@ -96,7 +82,7 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: 16,
-    paddingVertical: 50,
+    paddingVertical: 0,
     borderBottomWidth: 0,
     borderBottomColor: '#000000',
   },
@@ -140,14 +126,14 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   title: {
-    fontSize: 28,
+    fontSize: 30,
     fontWeight: '600',
     color: '#222222',
     marginBottom: 12,
     lineHeight: 28,
   },
   description: {
-    fontSize: 18,
+    fontSize: 16,
     color: '#666666',
     lineHeight: 20,
     marginBottom: 32,
