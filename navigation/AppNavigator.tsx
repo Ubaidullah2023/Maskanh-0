@@ -57,6 +57,11 @@ import DescriptionScreen from '../screens/DescriptionScreen';
 import CreateDescriptionScreen from '../screens/CreateDescriptionScreen';
 import BookingSettingsScreen from '../screens/BookingSettingsScreen';
 import PriceSettingScreen from '../screens/PriceSettingScreen';
+import DiscountsScreen from '../screens/DiscountsScreen';
+import SafetyDetailsScreen from '../screens/SafetyDetailsScreen';
+import ListingScreen from '../screens/ListingScreen';
+import TodayScreen from '../screens/TodayScreen';
+import CalendarScreen from '../screens/CalendarScreen';
 
 export type RootStackParamList = {
   Login: undefined;
@@ -66,7 +71,32 @@ export type RootStackParamList = {
   Home: undefined;
   Security: undefined;
   UpdatePassword: undefined;
-  MainTabs: { screen: string };
+  MainTabs: { 
+    screen: string;
+    params?: {
+      placeType: 'entire' | 'room' | 'shared';
+      guestCount: number;
+      bedroomCount: number;
+      bedCount: number;
+      hasLock: boolean;
+      amenities: string[];
+      photos: { uri: string; type: 'image' }[];
+      title: string;
+      highlights: string[];
+      description: string;
+      guestType: 'any_guest' | 'experienced_guest';
+      basePrice: number;
+      newListingDiscount?: number;
+      weeklyDiscount?: number;
+      monthlyDiscount?: number;
+      safetyDetails?: {
+        hasSecurityCamera: boolean;
+        cameraDescription?: string;
+        hasNoiseMonitor: boolean;
+        hasWeapons: boolean;
+      };
+    };
+  };
   PlaceType: undefined;
   Checkout: {
     title: string;
@@ -249,15 +279,69 @@ export type RootStackParamList = {
     bedCount: number;
     hasLock: boolean;
     amenities: string[];
-    photos: Array<{
-      uri: string;
-      type: 'image';
-    }>;
+    photos: { uri: string; type: 'image' }[];
     title: string;
     highlights: string[];
     description: string;
     guestType: 'any_guest' | 'experienced_guest';
   };
+  Discounts: {
+    placeType: 'entire' | 'room' | 'shared';
+    guestCount: number;
+    bedroomCount: number;
+    bedCount: number;
+    hasLock: boolean;
+    amenities: string[];
+    photos: { uri: string; type: 'image' }[];
+    title: string;
+    highlights: string[];
+    description: string;
+    guestType: 'any_guest' | 'experienced_guest';
+    basePrice: number;
+  };
+  SafetyDetails: {
+    placeType: 'entire' | 'room' | 'shared';
+    guestCount: number;
+    bedroomCount: number;
+    bedCount: number;
+    hasLock: boolean;
+    amenities: string[];
+    photos: { uri: string; type: 'image' }[];
+    title: string;
+    highlights: string[];
+    description: string;
+    guestType: 'any_guest' | 'experienced_guest';
+    basePrice: number;
+    newListingDiscount?: number;
+    weeklyDiscount?: number;
+    monthlyDiscount?: number;
+  };
+  Listing: {
+    placeType: 'entire' | 'room' | 'shared';
+    guestCount: number;
+    bedroomCount: number;
+    bedCount: number;
+    hasLock: boolean;
+    amenities: string[];
+    photos: { uri: string; type: 'image' }[];
+    title: string;
+    highlights: string[];
+    description: string;
+    guestType: 'any_guest' | 'experienced_guest';
+    basePrice: number;
+    newListingDiscount?: number;
+    weeklyDiscount?: number;
+    monthlyDiscount?: number;
+    safetyDetails?: {
+      hasSecurityCamera: boolean;
+      cameraDescription?: string;
+      hasNoiseMonitor: boolean;
+      hasWeapons: boolean;
+    };
+  };
+  Today: undefined;
+  Calendar: undefined;
+  Menu: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -265,7 +349,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export default function AppNavigator() {
   return (
     <Stack.Navigator
-      initialRouteName="Login"
+      initialRouteName="Today"
       screenOptions={{
         headerShown: false,
       }}
@@ -360,6 +444,10 @@ export default function AppNavigator() {
       <Stack.Screen name="CreateDescription" component={CreateDescriptionScreen} />
       <Stack.Screen name="BookingSettings" component={BookingSettingsScreen} />
       <Stack.Screen name="PriceSetting" component={PriceSettingScreen} />
+      <Stack.Screen name="Discounts" component={DiscountsScreen} />
+      <Stack.Screen name="SafetyDetails" component={SafetyDetailsScreen} /> 
+      <Stack.Screen name="Listing" component={ListingScreen} />
+
     </Stack.Navigator>
   );
 } 

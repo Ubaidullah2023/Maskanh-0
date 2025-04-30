@@ -8,6 +8,8 @@ import {
   TextInput,
   Modal,
   Keyboard,
+  Alert,
+  ScrollView,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -58,7 +60,12 @@ export default function PriceSettingScreen() {
   };
 
   const handleNext = () => {
-    navigation.navigate('ServiceProviderStep2', {
+    if (!basePrice) {
+      Alert.alert('Please set a base price');
+      return;
+    }
+
+    navigation.navigate('Discounts', {
       ...route.params,
       basePrice: Number(basePrice),
     });
