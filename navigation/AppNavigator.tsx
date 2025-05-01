@@ -139,6 +139,7 @@ export type RootStackParamList = {
   };
   Location: {
     placeType: 'entire' | 'room' | 'shared';
+    serviceTypes?: string[];
     address?: string;
   };
   AddressSearch: undefined;

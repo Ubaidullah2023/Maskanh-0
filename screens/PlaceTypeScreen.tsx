@@ -13,81 +13,140 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/AppNavigator';
 import { Ionicons } from '@expo/vector-icons';
 
-type PlaceType = 'entire' | 'room' | 'shared';
+type ServiceType = 'architectural' | 'contractor' | 'painting' | 'structural' | 'labor' | 'carpentry' | 'drilling' | 'electrical';
 
 export default function PlaceTypeScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const [selectedType, setSelectedType] = useState<PlaceType | null>(null);
+  const [selectedTypes, setSelectedTypes] = useState<ServiceType[]>([]);
 
-  const handleSaveAndExit = () => {
-    navigation.navigate('MainTabs', { screen: 'Home' });
-  };
 
   const handleBack = () => {
     navigation.goBack();
   };
 
   const handleNext = () => {
-    if (selectedType) {
-      // Navigate to the location screen with the selected type
-      navigation.navigate('Location', { placeType: selectedType });
+    if (selectedTypes.length > 0) {
+      navigation.navigate('Location', { placeType: 'entire', serviceTypes: selectedTypes });
     }
+  };
+
+  const toggleServiceType = (type: ServiceType) => {
+    setSelectedTypes(prev => 
+      prev.includes(type) 
+        ? prev.filter(t => t !== type)
+        : [...prev, type]
+    );
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-      
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.saveButton} onPress={handleSaveAndExit}>
-          <Text style={styles.saveButtonText}>Save & exit</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.questionButton}>
-          <Text style={styles.saveButtonText}>Questions?</Text>
-        </TouchableOpacity>
-      </View>
-
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        <Text style={styles.title}>What type of place will guests have?</Text>
+        <Text style={styles.title}>At Maskanh, we connect you with skilled and verified professionals to turn your construction ideas into reality. Check out the services we offer:
+        </Text>
 
-        {/* Place Type Options */}
+        {/* Service Options */}
         <TouchableOpacity 
-          style={[styles.optionCard, selectedType === 'entire' && styles.selectedCard]}
-          onPress={() => setSelectedType('entire')}
+          style={[styles.optionCard, selectedTypes.includes('architectural') && styles.selectedCard]}
+          onPress={() => toggleServiceType('architectural')}
         >
           <View style={styles.optionContent}>
             <View>
-              <Text style={styles.optionTitle}>An entire place</Text>
-              <Text style={styles.optionDescription}>Guests have the whole place to themselves.</Text>
+              <Text style={styles.optionTitle}>Architectural Design</Text>
+              <Text style={styles.optionDescription}>Creative and practical designs tailored to meet your unique space needs.</Text>
             </View>
-            <Ionicons name="home-outline" size={24} color="#666666" />
+            <Ionicons name="color-palette-outline" size={24} color="#666666" />
           </View>
         </TouchableOpacity>
 
         <TouchableOpacity 
-          style={[styles.optionCard, selectedType === 'room' && styles.selectedCard]}
-          onPress={() => setSelectedType('room')}
+          style={[styles.optionCard, selectedTypes.includes('contractor') && styles.selectedCard]}
+          onPress={() => toggleServiceType('contractor')}
         >
           <View style={styles.optionContent}>
             <View>
-              <Text style={styles.optionTitle}>A room</Text>
-              <Text style={styles.optionDescription}>Guests have their own room in a home, plus access to shared spaces.</Text>
+              <Text style={styles.optionTitle}>Contractor Services</Text>
+              <Text style={styles.optionDescription}>Full-service project management to ensure your construction runs smoothly, on time, and within budget.</Text>
             </View>
-            <Ionicons name="bed-outline" size={24} color="#666666" />
+            <Ionicons name="construct-outline" size={24} color="#666666" />
           </View>
         </TouchableOpacity>
 
         <TouchableOpacity 
-          style={[styles.optionCard, selectedType === 'shared' && styles.selectedCard]}
-          onPress={() => setSelectedType('shared')}
+          style={[styles.optionCard, selectedTypes.includes('painting') && styles.selectedCard]}
+          onPress={() => toggleServiceType('painting')}
         >
           <View style={styles.optionContent}>
             <View>
-              <Text style={styles.optionTitle}>A shared room in a hostel</Text>
-              <Text style={styles.optionDescription}>Guests sleep in a shared room in a professionally managed hostel with staff onsite 24/7.</Text>
+              <Text style={styles.optionTitle}>Painting Expertise</Text>
+              <Text style={styles.optionDescription}>Quality painting services for a flawless finish that lasts, for both interior and exterior projects.</Text>
+            </View>
+            <Ionicons name="brush-outline" size={24} color="#666666" />
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={[styles.optionCard, selectedTypes.includes('structural') && styles.selectedCard]}
+          onPress={() => toggleServiceType('structural')}
+        >
+          <View style={styles.optionContent}>
+            <View>
+              <Text style={styles.optionTitle}>Structural Work</Text>
+              <Text style={styles.optionDescription}>Reliable structural solutions, ensuring a solid foundation and durable construction.</Text>
+            </View>
+            <Ionicons name="cube-outline" size={24} color="#666666" />
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={[styles.optionCard, selectedTypes.includes('labor') && styles.selectedCard]}
+          onPress={() => toggleServiceType('labor')}
+        >
+          <View style={styles.optionContent}>
+            <View>
+              <Text style={styles.optionTitle}>Labor Services</Text>
+              <Text style={styles.optionDescription}>Skilled labor for all types of construction work, ensuring efficiency and precision.</Text>
             </View>
             <Ionicons name="people-outline" size={24} color="#666666" />
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={[styles.optionCard, selectedTypes.includes('carpentry') && styles.selectedCard]}
+          onPress={() => toggleServiceType('carpentry')}
+        >
+          <View style={styles.optionContent}>
+            <View>
+              <Text style={styles.optionTitle}>Carpentry</Text>
+              <Text style={styles.optionDescription}>Custom woodwork, from furniture design to detailed fittings and installations.</Text>
+            </View>
+            <Ionicons name="hammer-outline" size={24} color="#666666" />
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={[styles.optionCard, selectedTypes.includes('drilling') && styles.selectedCard]}
+          onPress={() => toggleServiceType('drilling')}
+        >
+          <View style={styles.optionContent}>
+            <View>
+              <Text style={styles.optionTitle}>Drilling Operations</Text>
+              <Text style={styles.optionDescription}>Safe, precise drilling for all your construction and installation needs.</Text>
+            </View>
+            <Ionicons name="hardware-chip-outline" size={24} color="#666666" />
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={[styles.optionCard, selectedTypes.includes('electrical') && styles.selectedCard]}
+          onPress={() => toggleServiceType('electrical')}
+        >
+          <View style={styles.optionContent}>
+            <View>
+              <Text style={styles.optionTitle}>Electrical Services</Text>
+              <Text style={styles.optionDescription}>Certified electrical work for installations, repairs, and maintenance that you can rely on.</Text>
+            </View>
+            <Ionicons name="flash-outline" size={24} color="#666666" />
           </View>
         </TouchableOpacity>
       </ScrollView>
@@ -99,9 +158,9 @@ export default function PlaceTypeScreen() {
         </TouchableOpacity>
 
         <TouchableOpacity 
-          style={[styles.nextButton, !selectedType && styles.nextButtonDisabled]}
+          style={[styles.nextButton, selectedTypes.length === 0 && styles.nextButtonDisabled]}
           onPress={handleNext}
-          disabled={!selectedType}
+          disabled={selectedTypes.length === 0}
         >
           <Text style={styles.nextButtonText}>Next</Text>
         </TouchableOpacity>
@@ -123,37 +182,18 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#EEEEEE',
   },
-  saveButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 20,
-    borderRadius: 24,
-    borderWidth: 1,
-    borderColor: '#E5E5E5',
-    backgroundColor: '#FFFFFF',
-  },
-  questionButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 20,
-    borderRadius: 24,
-    borderWidth: 1,
-    borderColor: '#E5E5E5',
-    backgroundColor: '#FFFFFF',
-  },
-  saveButtonText: {
-    fontSize: 16,
-    color: '#222222',
-    fontWeight: '500',
-  },
+
+
   content: {
     flex: 1,
     padding: 24,
   },
   title: {
-    fontSize: 32,
+    fontSize: 20,
     fontWeight: '600',
     color: '#222222',
-    marginBottom: 32,
-    lineHeight: 40,
+    marginBottom: 8,
+    lineHeight: 30,
   },
   optionCard: {
     borderWidth: 1,
