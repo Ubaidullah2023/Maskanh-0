@@ -47,25 +47,9 @@ export default function BookingSettingsScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-      
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.headerButton} onPress={handleSaveAndExit}>
-          <Text style={styles.headerButtonText}>Save & exit</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.headerButton} onPress={handleQuestions}>
-          <Text style={styles.headerButtonText}>Questions?</Text>
-        </TouchableOpacity>
-      </View>
 
       <View style={styles.content}>
-        <Text style={styles.title}>Choose who to welcome{'\n'}for your first reservation</Text>
-        <View style={styles.subtitleContainer}>
-          <Text style={styles.subtitle}>After your first guest, anyone can book your place. </Text>
-          <TouchableOpacity onPress={handleLearnMore}>
-            <Text style={styles.learnMore}>Learn more</Text>
-          </TouchableOpacity>
-        </View>
+        <Text style={styles.title}>Choose who to welcome for your first reservation</Text>
 
         <View style={styles.optionsContainer}>
           <TouchableOpacity
@@ -76,9 +60,9 @@ export default function BookingSettingsScreen() {
             onPress={() => setGuestType('any_guest')}
           >
             <View style={styles.optionContent}>
-              <Text style={styles.optionTitle}>Any Airbnb guest</Text>
+              <Text style={styles.optionTitle}>Any Maskanh client</Text>
               <Text style={styles.optionDescription}>
-                Get reservations faster when you welcome anyone from the Airbnb community.
+              Faster reservations when you welcome any client from the Maskanh community.
               </Text>
             </View>
             <View style={[
@@ -97,9 +81,9 @@ export default function BookingSettingsScreen() {
             onPress={() => setGuestType('experienced_guest')}
           >
             <View style={styles.optionContent}>
-              <Text style={styles.optionTitle}>An experienced guest</Text>
+              <Text style={styles.optionTitle}>An Experienced client</Text>
               <Text style={styles.optionDescription}>
-                For your first guest, welcome someone with a good track record on Airbnb who can offer tips for how to be a great Host.
+              For your first client, choose someone with a good track record on Maskanh who can offer tips on being a great host.
               </Text>
             </View>
             <View style={[
@@ -226,7 +210,7 @@ const styles = StyleSheet.create({
     width: 12,
     height: 12,
     borderRadius: 6,
-    backgroundColor: '#222222',
+    backgroundColor: '#00A86B',
   },
   navigationButtons: {
     flexDirection: 'row',
@@ -246,7 +230,7 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
   nextButton: {
-    backgroundColor: '#222222',
+    backgroundColor: '#00A86B',
     paddingHorizontal: 32,
     paddingVertical: 16,
     borderRadius: 8,

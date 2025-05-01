@@ -127,7 +127,7 @@ export default function ConfirmAddressScreen() {
           <View style={styles.toggleText}>
             <Text style={styles.toggleTitle}>Show your specific location</Text>
             <Text style={styles.toggleDescription}>
-              Make it clear to guests where your place is located. We'll only share your address after they've made a reservation.{' '}
+              Make it clear to clients where your place is located. We'll only share your address after they've made a reservation.{' '}
               <Text style={styles.learnMore}>Learn more</Text>
             </Text>
           </View>
@@ -159,8 +159,8 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingHorizontal: 10,
+    paddingVertical: 30,
     borderBottomWidth: 1,
     borderBottomColor: '#EEEEEE',
   },
@@ -175,8 +175,8 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingHorizontal: 16,
-    paddingTop: 16,
+    paddingHorizontal: 10,
+    paddingTop: 10,
   },
   countryContainer: {
     flexDirection: 'row',
@@ -185,22 +185,22 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#E5E5E5',
     borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
+    padding: 0,
+    marginBottom: 1,
     backgroundColor: '#FFFFFF',
   },
   countryText: {
     fontSize: 16,
     fontWeight: '500',
     color: '#222222',
-    marginTop: 4,
+    marginTop: 2,
   },
   formContainer: {
     borderWidth: 1,
     borderColor: '#E5E5E5',
     borderRadius: 12,
     overflow: 'hidden',
-    marginBottom: 24,
+    marginBottom: 8,
     backgroundColor: '#FFFFFF',
   },
   inputField: {
@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'flex-start',
     marginBottom: 24,
-    paddingHorizontal: 4,
+    paddingHorizontal: 1,
   },
   toggleText: {
     flex: 1,
@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     paddingHorizontal: 16,
     paddingBottom: 16,
-    paddingTop: 8,
+    paddingTop: 1,
     borderTopWidth: 1,
     borderTopColor: '#EEEEEE',
     backgroundColor: '#FFFFFF',

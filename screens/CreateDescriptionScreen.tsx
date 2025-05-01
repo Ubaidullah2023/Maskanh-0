@@ -20,7 +20,7 @@ const MAX_CHARACTERS = 500;
 export default function CreateDescriptionScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<CreateDescriptionScreenRouteProp>();
-  const [description, setDescription] = useState('This special place is close to everything, making it easy to plan your visit.');
+  const [description, setDescription] = useState('Provide a brief description of your service, highlighting key features and what makes it unique. Focus on the benefits to attract the right clients.');
 
   const handleSaveAndExit = () => {
     navigation.navigate('MainTabs', { screen: 'Home' });
@@ -53,20 +53,10 @@ export default function CreateDescriptionScreen() {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
       
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.headerButton} onPress={handleSaveAndExit}>
-          <Text style={styles.headerButtonText}>Save & exit</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.headerButton} onPress={handleQuestions}>
-          <Text style={styles.headerButtonText}>Questions?</Text>
-        </TouchableOpacity>
-      </View>
-
       <View style={styles.content}>
         <Text style={styles.title}>Create your description</Text>
         <Text style={styles.subtitle}>
-          Share what makes your place special.
+          Share what makes your special Service.
         </Text>
 
         <View style={styles.inputContainer}>

@@ -43,15 +43,6 @@ export default function LocationScreen() {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
       
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.saveButton} onPress={handleSaveAndExit}>
-          <Text style={styles.saveButtonText}>Save & exit</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.questionButton}>
-          <Text style={styles.saveButtonText}>Questions?</Text>
-        </TouchableOpacity>
-      </View>
 
       <View style={styles.content}>
         <Text style={styles.title}>Where's your place located?</Text>
@@ -115,22 +106,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#EEEEEE',
   },
-  saveButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 20,
-    borderRadius: 24,
-    borderWidth: 1,
-    borderColor: '#E5E5E5',
-    backgroundColor: '#FFFFFF',
-  },
-  questionButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 20,
-    borderRadius: 24,
-    borderWidth: 1,
-    borderColor: '#E5E5E5',
-    backgroundColor: '#FFFFFF',
-  },
+
   saveButtonText: {
     fontSize: 16,
     color: '#222222',
@@ -138,7 +114,7 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: 24,
+    padding: 40,
   },
   title: {
     fontSize: 32,

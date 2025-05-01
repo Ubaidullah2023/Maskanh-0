@@ -77,18 +77,9 @@ export default function PriceSettingScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.headerButton} onPress={handleSaveAndExit}>
-          <Text style={styles.headerButtonText}>Save & exit</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.headerButton} onPress={handleQuestions}>
-          <Text style={styles.headerButtonText}>Questions?</Text>
-        </TouchableOpacity>
-      </View>
-
       <View style={styles.content}>
         <Text style={styles.title}>Now, set your price</Text>
-        <Text style={styles.subtitle}>You can change it anytime.</Text>
+        <Text style={styles.subtitle}>You can adjust your pricing anytime to match demand. Below are the displayed values, and you can tailor them as needed</Text>
 
         <View style={styles.priceContainer}>
           <Text style={styles.priceSymbol}>Rs</Text>
@@ -123,11 +114,11 @@ export default function PriceSettingScreen() {
             <Text style={styles.breakdownValue}>Rs{basePrice}</Text>
           </View>
           <View style={styles.breakdownItem}>
-            <Text style={styles.breakdownLabel}>Guest service fee</Text>
+            <Text style={styles.breakdownLabel}>Client service fee</Text>
             <Text style={styles.breakdownValue}>Rs{serviceFee}</Text>
           </View>
           <View style={[styles.breakdownItem, styles.totalItem]}>
-            <Text style={styles.breakdownLabel}>Guest price before taxes</Text>
+            <Text style={styles.breakdownLabel}>Client price before taxes</Text>
             <Text style={styles.breakdownValue}>Rs{totalBeforeTax}</Text>
           </View>
         </View>
@@ -139,7 +130,7 @@ export default function PriceSettingScreen() {
 
         <View style={styles.similarListings}>
           <Text style={styles.similarListingsText}>
-            Similar listings Rs46 – Rs69
+             Similar listings range: Rs46 – Rs69
           </Text>
         </View>
 
@@ -306,7 +297,7 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
   nextButton: {
-    backgroundColor: '#222222',
+    backgroundColor: '#00A86B',
     paddingHorizontal: 24,
     paddingVertical: 14,
     borderRadius: 8,

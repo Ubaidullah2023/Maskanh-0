@@ -22,12 +22,12 @@ type Highlight = {
 };
 
 const highlights: Highlight[] = [
-  { id: 'peaceful', label: 'Peaceful', icon: 'footsteps' },
-  { id: 'unique', label: 'Unique', icon: 'sparkles' },
-  { id: 'family-friendly', label: 'Family-friendly', icon: 'people' },
-  { id: 'stylish', label: 'Stylish', icon: 'home' },
-  { id: 'central', label: 'Central', icon: 'location' },
-  { id: 'spacious', label: 'Spacious', icon: 'expand' },
+  { id: 'Expertly Crafted', label: 'Expertly Crafted', icon: 'construct' },
+  { id: 'Top-Quality Construction', label: 'Top-Quality Construction', icon: 'hammer' },
+  { id: 'Fully Equipped', label: 'Fully Equipped', icon: 'build' },
+  { id: 'Premium Finishes', label: 'Premium Finishes', icon: 'brush' },
+  { id: 'Spacious Layout', label: 'Spacious Layout', icon: 'resize' },
+  { id: 'Dependable Service', label: 'Dependable Service', icon: 'shield-checkmark' },
 ];
 
 export default function DescriptionScreen() {
@@ -71,21 +71,11 @@ export default function DescriptionScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-      
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.headerButton} onPress={handleSaveAndExit}>
-          <Text style={styles.headerButtonText}>Save & exit</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.headerButton} onPress={handleQuestions}>
-          <Text style={styles.headerButtonText}>Questions?</Text>
-        </TouchableOpacity>
-      </View>
 
       <View style={styles.content}>
-        <Text style={styles.title}>Next, let's describe your apartment</Text>
+        <Text style={styles.title}>Let's showcase your service</Text>
         <Text style={styles.subtitle}>
-          Choose up to 2 highlights. We'll use these to get your description started.
+        Choosing up to 2 key highlights that best represent your offering:
         </Text>
 
         <View style={styles.highlightsGrid}>

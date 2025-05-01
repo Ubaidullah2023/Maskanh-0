@@ -138,20 +138,10 @@ export default function AddPhotosScreen() {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
       
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.headerButton} onPress={handleSaveAndExit}>
-          <Text style={styles.headerButtonText}>Save & exit</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.headerButton} onPress={handleQuestions}>
-          <Text style={styles.headerButtonText}>Questions?</Text>
-        </TouchableOpacity>
-      </View>
-
       <ScrollView style={styles.content}>
-        <Text style={styles.title}>Add some photos of your apartment</Text>
+        <Text style={styles.title}>Add some photos of your services</Text>
         <Text style={styles.subtitle}>
-          You'll need 5 photos to get started. You can add more or make changes later.
+        To get started with your services listing, please upload 5 high-quality photos of your space. You can always add more or make changes later.
         </Text>
 
         {/* Photo Grid */}

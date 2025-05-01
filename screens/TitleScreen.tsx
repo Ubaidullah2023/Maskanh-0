@@ -52,21 +52,11 @@ export default function TitleScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-      
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.headerButton} onPress={handleSaveAndExit}>
-          <Text style={styles.headerButtonText}>Save & exit</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.headerButton} onPress={handleQuestions}>
-          <Text style={styles.headerButtonText}>Questions?</Text>
-        </TouchableOpacity>
-      </View>
 
       <View style={styles.content}>
-        <Text style={styles.title}>Now, let's give your apartment a title</Text>
+        <Text style={styles.title}>Now, let's give your services a title</Text>
         <Text style={styles.subtitle}>
-          Short titles work best. Have fun with it—you can always change it later.
+        Complete your verification and get ready to offer your services. Your listing will be reviewed, and we’ll notify you once it’s live.
         </Text>
 
         <View style={styles.inputContainer}>

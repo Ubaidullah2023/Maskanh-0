@@ -84,22 +84,14 @@ export default function SafetyDetailsScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.headerButton} onPress={handleExit}>
-          <Text style={styles.headerButtonText}>Exit</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.headerButton} onPress={handleQuestions}>
-          <Text style={styles.headerButtonText}>Questions?</Text>
-        </TouchableOpacity>
-      </View>
-
       <View style={styles.content}>
         <Text style={styles.title}>Share safety details</Text>
-        <Text style={styles.subtitle}>Does your place have any of these?</Text>
+        <Text style={styles.subtitle}>Let clients know about the safety precautions and equipment used at your construction site.
+        </Text>
 
         <View style={styles.safetyList}>
           <View style={styles.safetyItem}>
-            <Text style={styles.safetyItemText}>Exterior security camera present</Text>
+            <Text style={styles.safetyItemText}>Protective gear used (helmets, gloves, safety glasses, boots)            </Text>
             <Switch
               value={hasSecurityCamera}
               onValueChange={handleSecurityCameraToggle}
@@ -109,7 +101,7 @@ export default function SafetyDetailsScreen() {
           </View>
 
           <View style={styles.safetyItem}>
-            <Text style={styles.safetyItemText}>Noise decibel monitor present</Text>
+            <Text style={styles.safetyItemText}>Warning signs and safety barriers in place.</Text>
             <Switch
               value={hasNoiseMonitor}
               onValueChange={setHasNoiseMonitor}
@@ -119,7 +111,7 @@ export default function SafetyDetailsScreen() {
           </View>
 
           <View style={styles.safetyItem}>
-            <Text style={styles.safetyItemText}>Weapon(s) on the property</Text>
+            <Text style={styles.safetyItemText}>Hazardous tools or materials handled with care.</Text>
             <Switch
               value={hasWeapons}
               onValueChange={setHasWeapons}
@@ -130,10 +122,9 @@ export default function SafetyDetailsScreen() {
         </View>
 
         <View style={styles.infoSection}>
-          <Text style={styles.infoTitle}>Important things to know</Text>
+          <Text style={styles.infoTitle}>Important Note:</Text>
           <Text style={styles.infoText}>
-            Security cameras that monitor indoor spaces are not allowed even if they're
-            turned off. All exterior security cameras must be disclosed.
+          Ensure all safety measures follow local construction regulations and align with Maskanh’s safety and service standards.
           </Text>
           <Text style={styles.infoText}>
             Be sure to comply with your{' '}
@@ -155,7 +146,7 @@ export default function SafetyDetailsScreen() {
               style={styles.link}
               onPress={() => Linking.openURL('https://example.com/fees')}
             >
-              guest and Host fees
+              client and services provider fees
             </Text>
             .
           </Text>
@@ -188,10 +179,10 @@ export default function SafetyDetailsScreen() {
               </TouchableOpacity>
               
               <Text style={styles.modalTitle}>
-                Tell guests about your exterior security cameras
+                Tell client about your services.
               </Text>
               <Text style={styles.modalSubtitle}>
-                Describe the area that each camera monitors, such as the backyard or pool.{' '}
+                Describe the area that each Services Provider covers.{' '}
                 <Text style={styles.link} onPress={() => Linking.openURL('https://example.com/learn-more')}>
                   Learn more
                 </Text>
@@ -313,7 +304,7 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
   createButton: {
-    backgroundColor: '#222222',
+    backgroundColor: '#00A86B',
     paddingHorizontal: 24,
     paddingVertical: 14,
     borderRadius: 8,
@@ -373,7 +364,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   continueButton: {
-    backgroundColor: '#222222',
+    backgroundColor: '#00A86B',
     paddingVertical: 16,
     borderRadius: 8,
     alignItems: 'center',

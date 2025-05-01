@@ -45,19 +45,10 @@ export default function DiscountsScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.headerButton} onPress={handleSaveAndExit}>
-          <Text style={styles.headerButtonText}>Save & exit</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.headerButton} onPress={handleQuestions}>
-          <Text style={styles.headerButtonText}>Questions?</Text>
-        </TouchableOpacity>
-      </View>
-
       <View style={styles.content}>
         <Text style={styles.title}>Add discounts</Text>
         <Text style={styles.subtitle}>
-          Help your place stand out to get booked faster and earn your first reviews.
+        Make your service more appealing to attract early clients and earn your first reviews.
         </Text>
 
         <View style={styles.discountsList}>
@@ -67,7 +58,7 @@ export default function DiscountsScreen() {
               <View>
                 <Text style={styles.discountTitle}>New listing promotion</Text>
                 <Text style={styles.discountDescription}>
-                  Offer 20% off your first 3 bookings
+                Offer 20% off on your first 3 services
                 </Text>
               </View>
             </View>
@@ -87,7 +78,7 @@ export default function DiscountsScreen() {
               <View>
                 <Text style={styles.discountTitle}>Weekly discount</Text>
                 <Text style={styles.discountDescription}>
-                  For stays of 7 nights or more
+                For services booked for 7 days or more.
                 </Text>
               </View>
             </View>
@@ -107,7 +98,7 @@ export default function DiscountsScreen() {
               <View>
                 <Text style={styles.discountTitle}>Monthly discount</Text>
                 <Text style={styles.discountDescription}>
-                  For stays of 28 nights or more
+                For services booked for 28 days or more.
                 </Text>
               </View>
             </View>
@@ -184,7 +175,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
     backgroundColor: '#F7F7F7',
-    borderRadius: 12,
+    borderRadius: 20,
   },
   discountInfo: {
     flexDirection: 'row',
@@ -194,10 +185,8 @@ const styles = StyleSheet.create({
   },
   percentageBox: {
     borderWidth: 1,
-    borderColor: '#DDDDDD',
     borderRadius: 8,
     padding: 8,
-    backgroundColor: '#FFFFFF',
   },
   discountPercentage: {
     fontSize: 24,
@@ -239,7 +228,7 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
   nextButton: {
-    backgroundColor: '#222222',
+    backgroundColor: '#00A86B',
     paddingHorizontal: 24,
     paddingVertical: 14,
     borderRadius: 8,

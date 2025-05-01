@@ -24,9 +24,23 @@ type BasicInfoScreenRouteProp = RouteProp<RootStackParamList, 'BasicInfo'>;
 export default function BasicInfoScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<BasicInfoScreenRouteProp>();
-  const [guests, setGuests] = useState(2);
-  const [bedrooms, setBedrooms] = useState(1);
-  const [beds, setBeds] = useState(1);
+  const [Architectural, setArchitectural] = useState(0);
+  const [Contractor, setContractor] = useState(0);
+  const [Painting, setPainting] = useState(0);
+  const [Structural, setStructural] = useState(0);
+  const [Labor, setLabor] = useState(0);
+  const [Carpentry, setCarpentry] = useState(0);
+  const [Drilling, setDrilling] = useState(0);
+  const [Electrical, setElectrical] = useState(0);
+  const [Plumbing, setPlumbing] = useState(0);
+  const [Masonry, setMasonry] = useState(0);
+  const [Tile, setTile] = useState(0);
+  const [FalseCeiling, setFalseCeiling] = useState(0);
+  const [Interior, setInterior] = useState(0);
+  const [AC, setAC] = useState(0);
+  const [Steel, setSteel] = useState(0);
+  const [Water, setWater] = useState(0);
+  const [Roof, setRoof] = useState(0);
   const [hasLock, setHasLock] = useState<boolean | null>(null);
 
   const handleSaveAndExit = () => {
@@ -47,8 +61,13 @@ export default function BasicInfoScreen() {
 
   const handleNext = () => {
     if (validateForm()) {
-      navigation.navigate('Amenities', {
+      navigation.navigate('AddPhotos', {
         placeType: route.params?.placeType || 'entire',
+        guestCount: Architectural,
+        bedroomCount: Contractor,
+        bedCount: Painting,
+        hasLock: hasLock || false,
+        amenities: []
       });
     }
   };
@@ -90,34 +109,38 @@ export default function BasicInfoScreen() {
         barStyle="dark-content" 
         backgroundColor="#FFFFFF"
       />
-      
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.headerButton} onPress={handleSaveAndExit}>
-          <Text style={styles.headerButtonText}>Save & exit</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.headerButton} onPress={handleQuestions}>
-          <Text style={styles.headerButtonText}>Questions?</Text>
-        </TouchableOpacity>
-      </View>
 
       <ScrollView 
         style={styles.content}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        <Text style={styles.title}>Let's start with the basics</Text>
+        <Text style={styles.title}>Let's start with the Services Offered by Maskanh</Text>
 
         <View style={styles.formSection}>
           {/* Counters */}
-          {renderCounter('Guests', guests, setGuests)}
-          {renderCounter('Bedrooms', bedrooms, setBedrooms)}
-          {renderCounter('Beds', beds, setBeds)}
+          {renderCounter('Architectural Design', Architectural, setArchitectural)}
+          {renderCounter('Contractor Services', Contractor, setContractor)}
+          {renderCounter('Painting Expertise', Painting, setPainting)}
+          {renderCounter('Structural Work', Structural, setStructural)}
+          {renderCounter('Labor Services', Labor, setLabor)}
+          {renderCounter('Carpentry', Carpentry, setCarpentry)}
+          {renderCounter('Drilling Operations', Drilling, setDrilling)}
+          {renderCounter('Electrical Services', Electrical, setElectrical)}
+          {renderCounter('Plumbing Services', Plumbing, setPlumbing)}
+          {renderCounter('Masonry Work', Masonry, setMasonry)}
+          {renderCounter('Tile & Marble Fixing', Tile, setTile)}
+          {renderCounter('False Ceiling Installation', FalseCeiling, setFalseCeiling)}
+          {renderCounter('Interior Design', Interior, setInterior)}
+          {renderCounter('AC Installation & Repair', AC, setAC)}
+          {renderCounter('Steel & Welding Work', Steel, setSteel)}
+          {renderCounter('Water Tank Cleaning', Water, setWater)}
+          {renderCounter('Roof Waterproofing', Roof, setRoof)}
         </View>
 
         {/* Lock Question */}
         <View style={styles.lockQuestion}>
-          <Text style={styles.lockQuestionText}>Does every bedroom have a lock?</Text>
+          <Text style={styles.lockQuestionText}>Which of these services are you interested in for your project?</Text>
           <View style={styles.lockOptions}>
             <TouchableOpacity
               style={[styles.lockOption, hasLock === true && styles.selectedOption]}
@@ -187,22 +210,22 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   headerButtonText: {
-    fontSize: 16,
+    fontSize: 8,
     color: '#222222',
   },
   content: {
     flex: 1,
   },
   scrollContent: {
-    padding: 20,
+    padding: 40,
     paddingBottom: 40,
   },
   title: {
-    fontSize: isSmallScreen ? 28 : 32,
-    fontWeight: '600',
+    fontSize: isSmallScreen ? 30 : 28,
+    fontWeight: '500',
     color: '#222222',
     marginBottom: isSmallScreen ? 24 : 32,
-    paddingRight: 40,
+    paddingRight: 20,
   },
   formSection: {
     marginBottom: 32,
@@ -253,13 +276,13 @@ const styles = StyleSheet.create({
     marginBottom: isSmallScreen ? 16 : 24,
   },
   lockOptions: {
-    gap: 12,
+    gap: 8,
   },
   lockOption: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 16,
+    padding: 10,
     borderWidth: 1,
     borderColor: '#DDDDDD',
     borderRadius: 12,
