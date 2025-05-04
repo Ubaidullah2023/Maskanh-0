@@ -62,6 +62,9 @@ import SafetyDetailsScreen from '../screens/SafetyDetailsScreen';
 import ListingScreen from '../screens/ListingScreen';
 import TodayScreen from '../screens/TodayScreen';
 import CalendarScreen from '../screens/CalendarScreen';
+import AnalyticsScreen from '../screens/AnalyticsScreen';
+import ArticlesScreen from '../screens/ArticlesScreen';
+import NotificationsScreen from '../screens/NotificationsScreen';
 
 export type RootStackParamList = {
   Login: undefined;
@@ -343,6 +346,9 @@ export type RootStackParamList = {
   Today: undefined;
   Calendar: undefined;
   Menu: undefined;
+  Analytics: undefined;
+  Articles: undefined;
+  Notifications: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -410,10 +416,12 @@ export default function AppNavigator() {
       <Stack.Screen
         name="ServiceMap"
         component={ServiceMapScreen}
-        options={{
-          headerShown: false,
-          animation: 'slide_from_right',
-        }}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Analytics"
+        component={AnalyticsScreen}
+        options={{ headerShown: false }}
       />
       <Stack.Screen name="Registration" component={RegistrationScreen} />
       <Stack.Screen 
@@ -448,7 +456,16 @@ export default function AppNavigator() {
       <Stack.Screen name="Discounts" component={DiscountsScreen} />
       <Stack.Screen name="SafetyDetails" component={SafetyDetailsScreen} /> 
       <Stack.Screen name="Listing" component={ListingScreen} />
-
+      <Stack.Screen
+        name="Articles"
+        component={ArticlesScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Notifications"
+        component={NotificationsScreen}
+        options={{ headerShown: false }}
+      />
     </Stack.Navigator>
   );
 } 

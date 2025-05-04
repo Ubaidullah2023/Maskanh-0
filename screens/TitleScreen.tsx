@@ -54,9 +54,9 @@ export default function TitleScreen() {
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
 
       <View style={styles.content}>
-        <Text style={styles.title}>Now, let's give your services a title</Text>
+        <Text style={styles.title}>Now, let,s with Service Offered</Text>
         <Text style={styles.subtitle}>
-        Complete your verification and get ready to offer your services. Your listing will be reviewed, and we’ll notify you once it’s live.
+        Now let give your service a title.
         </Text>
 
         <View style={styles.inputContainer}>
@@ -68,6 +68,7 @@ export default function TitleScreen() {
             placeholderTextColor="#999999"
             maxLength={MAX_CHARACTERS}
             multiline
+            numberOfLines={2}
           />
           <Text style={styles.characterCount}>
             {MAX_CHARACTERS - title.length} characters available
@@ -141,7 +142,8 @@ const styles = StyleSheet.create({
     padding: 16,
     fontSize: 16,
     color: '#222222',
-    minHeight: 120,
+    minHeight: 60,
+    maxHeight: 60,
     textAlignVertical: 'top',
   },
   characterCount: {

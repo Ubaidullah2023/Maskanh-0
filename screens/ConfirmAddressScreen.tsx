@@ -35,9 +35,14 @@ export default function ConfirmAddressScreen() {
   };
 
   const handleConfirm = () => {
-    // Navigate to the BasicInfo screen with the confirmed address and place type
-    navigation.navigate('BasicInfo', {
+    // Navigate directly to AddPhotos screen with the necessary params
+    navigation.navigate('AddPhotos', {
       placeType: route.params?.placeType || 'entire',
+      guestCount: 4, // Default values since we're skipping BasicInfo
+      bedroomCount: 2,
+      bedCount: 2,
+      hasLock: true,
+      amenities: []
     });
   };
 

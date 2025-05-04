@@ -34,9 +34,14 @@ export default function BookingSettingsScreen() {
   };
 
   const handleNext = () => {
-    navigation.navigate('PriceSetting', {
+    // Navigate directly to SafetyDetails screen with all necessary params
+    navigation.navigate('SafetyDetails', {
       ...route.params,
       guestType,
+      basePrice: 0, // Default value since we're skipping PriceSetting
+      newListingDiscount: 0,
+      weeklyDiscount: 0,
+      monthlyDiscount: 0
     });
   };
 
@@ -83,7 +88,7 @@ export default function BookingSettingsScreen() {
             <View style={styles.optionContent}>
               <Text style={styles.optionTitle}>An Experienced client</Text>
               <Text style={styles.optionDescription}>
-              For your first client, choose someone with a good track record on Maskanh who can offer tips on being a great host.
+              For your first client, choose someone with a good track record on Maskanh who can offer tips on being a great host.
               </Text>
             </View>
             <View style={[
@@ -141,7 +146,7 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   title: {
-    fontSize: 32,
+    fontSize: 28,
     fontWeight: '600',
     color: '#222222',
     marginBottom: 16,

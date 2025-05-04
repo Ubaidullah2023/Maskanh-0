@@ -33,7 +33,6 @@ export default function PrivacyPolicyScreen() {
       bulletPoints: [
         'Personal information (name, email address, phone number)',
         'Profile information (profile picture, bio)',
-        'Payment information',
         'Communication preferences'
       ],
       icon: 'document-text-outline'

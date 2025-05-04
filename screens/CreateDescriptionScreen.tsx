@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   title: {
-    fontSize: 32,
+    fontSize: 30,
     fontWeight: '600',
     color: '#222222',
     marginBottom: 16,
@@ -143,7 +143,8 @@ const styles = StyleSheet.create({
     padding: 16,
     fontSize: 16,
     color: '#222222',
-    minHeight: 200,
+    minHeight: 120,
+    maxHeight: 120,
   },
   characterCount: {
     marginTop: 8,

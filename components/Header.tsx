@@ -20,7 +20,7 @@ interface HeaderProps {
 
 export default function Header({ title, showBack = true }: HeaderProps) {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  const { isDarkMode, toggleTheme } = useTheme();
+  const { isDarkMode } = useTheme();
   const [isMenuVisible, setIsMenuVisible] = useState(false);
 
   const handleMenuPress = () => {
@@ -30,6 +30,10 @@ export default function Header({ title, showBack = true }: HeaderProps) {
   const handleMenuItemPress = (screen: keyof RootStackParamList) => {
     setIsMenuVisible(false);
     navigation.navigate(screen);
+  };
+
+  const handleLanguagePress = () => {
+    navigation.navigate('Language' as keyof RootStackParamList, undefined);
   };
 
   return (
@@ -59,9 +63,9 @@ export default function Header({ title, showBack = true }: HeaderProps) {
         </Text>
 
         <View style={styles.headerRight}>
-          <TouchableOpacity style={styles.iconButton} onPress={toggleTheme}>
+          <TouchableOpacity style={styles.iconButton} onPress={handleLanguagePress}>
             <Ionicons 
-              name={isDarkMode ? "sunny" : "moon"} 
+              name="language" 
               size={24} 
               color={isDarkMode ? '#FFFFFF' : '#000000'} 
             />
@@ -107,12 +111,6 @@ export default function Header({ title, showBack = true }: HeaderProps) {
               icon="shield-outline"
               title="Security"
               onPress={() => handleMenuItemPress('Security')}
-              isDarkMode={isDarkMode}
-            />
-            <MenuItem
-              icon="language-outline"
-              title="Language"
-              onPress={() => handleMenuItemPress('Language')}
               isDarkMode={isDarkMode}
             />
             <MenuItem

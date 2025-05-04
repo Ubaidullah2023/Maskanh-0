@@ -27,7 +27,7 @@ export default function ListingScreen() {
   };
 
   const handleNotifications = () => {
-    // TODO: Implement notifications functionality
+    navigation.navigate('Notifications');
   };
 
   const handleAdd = () => {
@@ -97,18 +97,18 @@ export default function ListingScreen() {
       <View style={styles.tabBar}>
         <TouchableOpacity 
           style={styles.tabItem} 
-          onPress={() => navigation.navigate('Today')}
+          onPress={() => navigation.navigate('Analytics')}
         >
-          <Ionicons name="checkmark" size={24} color="#666666" />
-          <Text style={styles.tabText}>Today</Text>
+          <Ionicons name="stats-chart" size={24} color="#666666" />
+          <Text style={styles.tabText}>Analytics</Text>
         </TouchableOpacity>
         
         <TouchableOpacity 
           style={styles.tabItem}
-          onPress={() => handleTabPress('Calendar')}
+          onPress={() => navigation.navigate('Articles')}
         >
-          <Ionicons name="calendar-outline" size={24} color="#666666" />
-          <Text style={styles.tabText}>Calendar</Text>
+          <Ionicons name="newspaper-outline" size={24} color="#666666" />
+          <Text style={styles.tabText}>Articles</Text>
         </TouchableOpacity>
 
         <TouchableOpacity 
@@ -121,7 +121,7 @@ export default function ListingScreen() {
 
         <TouchableOpacity 
           style={styles.tabItem}
-          onPress={() => handleTabPress('Messages')}
+          onPress={() => navigation.navigate('Messages')}
         >
           <View style={styles.messageBadge}>
             <Text style={styles.messageBadgeText}>1</Text>
