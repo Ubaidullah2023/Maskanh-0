@@ -35,14 +35,19 @@ export default function ConfirmAddressScreen() {
   };
 
   const handleConfirm = () => {
-    // Navigate directly to AddPhotos screen with the necessary params
-    navigation.navigate('AddPhotos', {
+    navigation.navigate('ServiceProviderStep2', {
       placeType: route.params?.placeType || 'entire',
-      guestCount: 4, // Default values since we're skipping BasicInfo
-      bedroomCount: 2,
-      bedCount: 2,
+      guestCount: 2,
+      bedroomCount: 1,
+      bedCount: 1,
       hasLock: true,
-      amenities: []
+      amenities: [],
+      photos: [],
+      title: '',
+      highlights: [],
+      description: '',
+      guestType: 'any_guest',
+      basePrice: 0
     });
   };
 

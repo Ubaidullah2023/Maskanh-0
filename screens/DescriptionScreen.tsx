@@ -26,7 +26,7 @@ const highlights: Highlight[] = [
   { id: 'Top-Quality Construction', label: 'Top-Quality Construction', icon: 'hammer' },
   { id: 'Fully Equipped', label: 'Fully Equipped', icon: 'build' },
   { id: 'Premium Finishes', label: 'Premium Finishes', icon: 'brush' },
-  { id: 'Spacious Layout', label: 'Spacious Layout', icon: 'resize' },
+  { id: 'Man Power Equit', label: 'Man Power Equit', icon: 'build' },
   { id: 'Dependable Service', label: 'Dependable Service', icon: 'shield-checkmark' },
 ];
 

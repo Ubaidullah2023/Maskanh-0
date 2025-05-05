@@ -18,7 +18,14 @@ export default function ServiceProviderStep2Screen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const handleNext = () => {
-    navigation.navigate('ServiceProviderStep3');
+    navigation.navigate('AddPhotos', {
+      placeType: 'entire' as const,
+      guestCount: 2,
+      bedroomCount: 1,
+      bedCount: 1,
+      hasLock: true,
+      amenities: []
+    });
   };
 
   const handleBack = () => {
@@ -50,7 +57,7 @@ export default function ServiceProviderStep2Screen() {
           <Text style={styles.title}>Make it stand out</Text>
           
           <Text style={styles.description}>
-          Add high-quality photos, a catchy title, and a short description that highlights your service.
+          Add high-quality photos, a catchy title, and a short description that highlights your service.
           </Text>
         </View>
 

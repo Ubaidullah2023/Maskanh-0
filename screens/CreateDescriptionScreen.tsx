@@ -56,7 +56,7 @@ export default function CreateDescriptionScreen() {
       <View style={styles.content}>
         <Text style={styles.title}>Create your description</Text>
         <Text style={styles.subtitle}>
-          Share what makes your special Service.
+          Share what makes your Service special.
         </Text>
 
         <View style={styles.inputContainer}>

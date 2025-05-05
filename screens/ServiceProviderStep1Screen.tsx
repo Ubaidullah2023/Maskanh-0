@@ -18,7 +18,7 @@ export default function ServiceProviderStep1Screen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const handleNext = () => {
-    navigation.navigate('ServiceProviderStep2');
+    navigation.navigate('PlaceType');
   };
 
   const handleBack = () => {

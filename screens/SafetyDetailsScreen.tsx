@@ -139,16 +139,9 @@ export default function SafetyDetailsScreen() {
               style={styles.link}
               onPress={() => Linking.openURL('https://example.com/anti-discrimination')}
             >
-              anti-discrimination policy
+              anti-discrimination policy.
             </Text>{' '}
-            and{' '}
-            <Text 
-              style={styles.link}
-              onPress={() => Linking.openURL('https://example.com/fees')}
-            >
-              client and services provider fees
-            </Text>
-            .
+
           </Text>
         </View>
       </View>
