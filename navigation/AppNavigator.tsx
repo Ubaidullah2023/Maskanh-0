@@ -55,6 +55,7 @@ import TodayScreen from '../screens/TodayScreen';
 import ArticlesScreen from '../screens/ArticlesScreen';
 import NotificationsScreen from '../screens/NotificationsScreen';
 import ProfileCompleteScreen from '../screens/ProfileCompleteScreen';
+import AnalyticsScreen from '../screens/AnalyticsScreen';
 
 export type RootStackParamList = {
   Login: undefined;
@@ -328,6 +329,7 @@ export default function AppNavigator() {
       <Stack.Screen name="Articles" component={ArticlesScreen} />
       <Stack.Screen name="Notifications" component={NotificationsScreen} />
       <Stack.Screen name="ProfileComplete" component={ProfileCompleteScreen} />
+      <Stack.Screen name="Analytics" component={AnalyticsScreen} />
     </Stack.Navigator>
   );
 } 

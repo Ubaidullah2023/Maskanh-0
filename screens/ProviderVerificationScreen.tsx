@@ -15,6 +15,7 @@ import {
   Dimensions,
   Image,
   useWindowDimensions,
+  Linking,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -23,6 +24,7 @@ import { RootStackParamList } from '../navigation/AppNavigator';
 import { supabase } from '../lib/supabase';
 import * as LocationService from '../utils/LocationService';
 import * as ImagePicker from 'expo-image-picker';
+import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
 
 type ProviderVerificationScreenProps = NativeStackNavigationProp<
   RootStackParamList,
@@ -260,6 +262,56 @@ const CityPickerModal: React.FC<CityPickerModalProps> = ({ visible, onClose, onS
   );
 };
 
+interface UploadOptionsModalProps {
+  visible: boolean;
+  onClose: () => void;
+  onCapture: () => void;
+  onPick: () => void;
+  type: 'front' | 'back';
+}
+
+const UploadOptionsModal: React.FC<UploadOptionsModalProps> = ({ 
+  visible, 
+  onClose, 
+  onCapture, 
+  onPick,
+  type 
+}) => (
+  <Modal
+    visible={visible}
+    transparent={true}
+    animationType="slide"
+    onRequestClose={onClose}
+  >
+    <View style={styles.modalOverlay}>
+      <View style={styles.modalContent}>
+        <View style={styles.modalHeader}>
+          <Text style={styles.modalTitle}>Upload CNIC {type === 'front' ? 'Front' : 'Back'}</Text>
+          <TouchableOpacity onPress={onClose}>
+            <Text style={styles.modalCloseButton}>✕</Text>
+          </TouchableOpacity>
+        </View>
+        <View style={styles.uploadOptionsContainer}>
+          <TouchableOpacity
+            style={styles.uploadOption}
+            onPress={onCapture}
+          >
+            <Ionicons name="camera" size={32} color="#00A86B" />
+            <Text style={styles.uploadOptionText}>Take Photo</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.uploadOption}
+            onPress={onPick}
+          >
+            <Ionicons name="images" size={32} color="#00A86B" />
+            <Text style={styles.uploadOptionText}>Choose from Gallery</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
+  </Modal>
+);
+
 export default function ProviderVerificationScreen() {
   const navigation = useNavigation<ProviderVerificationScreenProps>();
   const [currentStep, setCurrentStep] = useState(1);
@@ -288,6 +340,9 @@ export default function ProviderVerificationScreen() {
 
   const { width } = useWindowDimensions();
   const isSmallScreen = width < 360;
+
+  const [showUploadOptions, setShowUploadOptions] = useState(false);
+  const [currentUploadType, setCurrentUploadType] = useState<'front' | 'back'>('front');
 
   const updateFormData = (key: keyof FormData, value: string) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
@@ -364,33 +419,143 @@ export default function ProviderVerificationScreen() {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       
       if (status !== 'granted') {
-        Alert.alert('Permission Denied', 'We need camera roll permissions to upload your CNIC images.');
+        Alert.alert(
+          'Permission Required',
+          'Please grant permission to access your photos to upload CNIC images.',
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Settings', onPress: () => Linking.openSettings() }
+          ]
+        );
         return;
       }
       
-      // Launch image picker
+      // Launch image picker with camera option
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
         aspect: [4, 3],
         quality: 0.8,
+        base64: true,
       });
       
       if (!result.canceled && result.assets && result.assets.length > 0) {
-        const selectedImage = result.assets[0].uri;
+        const selectedImage = result.assets[0];
+        
+        // Show loading indicator
+        Alert.alert(
+          'Processing Image',
+          'Please wait while we process your image...',
+          [{ text: 'OK' }]
+        );
+        
+        // Compress and resize the image
+        const manipulatedImage = await manipulateAsync(
+          selectedImage.uri,
+          [{ resize: { width: 800 } }],
+          { compress: 0.7, format: SaveFormat.JPEG }
+        );
         
         if (type === 'front') {
-          setCnicFrontImage(selectedImage);
-          updateFormData('cnicFront', selectedImage);
+          setCnicFrontImage(manipulatedImage.uri);
+          updateFormData('cnicFront', manipulatedImage.uri);
+          Alert.alert(
+            'Success',
+            'CNIC Front image uploaded successfully!',
+            [{ text: 'OK' }]
+          );
         } else {
-          setCnicBackImage(selectedImage);
-          updateFormData('cnicBack', selectedImage);
+          setCnicBackImage(manipulatedImage.uri);
+          updateFormData('cnicBack', manipulatedImage.uri);
+          Alert.alert(
+            'Success',
+            'CNIC Back image uploaded successfully!',
+            [{ text: 'OK' }]
+          );
         }
       }
     } catch (error) {
       console.error('Error picking image:', error);
-      Alert.alert('Error', 'There was a problem selecting your image. Please try again.');
+      Alert.alert(
+        'Error',
+        'There was a problem selecting your image. Please try again.',
+        [{ text: 'OK' }]
+      );
     }
+  };
+
+  // Add camera capture function
+  const captureImage = async (type: 'front' | 'back') => {
+    try {
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      
+      if (status !== 'granted') {
+        Alert.alert(
+          'Permission Required',
+          'Please grant permission to access your camera to take CNIC photos.',
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Settings', onPress: () => Linking.openSettings() }
+          ]
+        );
+        return;
+      }
+      
+      const result = await ImagePicker.launchCameraAsync({
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 0.8,
+        base64: true,
+      });
+      
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        const capturedImage = result.assets[0];
+        
+        // Show loading indicator
+        Alert.alert(
+          'Processing Image',
+          'Please wait while we process your image...',
+          [{ text: 'OK' }]
+        );
+        
+        // Compress and resize the image
+        const manipulatedImage = await manipulateAsync(
+          capturedImage.uri,
+          [{ resize: { width: 800 } }],
+          { compress: 0.7, format: SaveFormat.JPEG }
+        );
+        
+        if (type === 'front') {
+          setCnicFrontImage(manipulatedImage.uri);
+          updateFormData('cnicFront', manipulatedImage.uri);
+          Alert.alert(
+            'Success',
+            'CNIC Front image captured successfully!',
+            [{ text: 'OK' }]
+          );
+        } else {
+          setCnicBackImage(manipulatedImage.uri);
+          updateFormData('cnicBack', manipulatedImage.uri);
+          Alert.alert(
+            'Success',
+            'CNIC Back image captured successfully!',
+            [{ text: 'OK' }]
+          );
+        }
+      }
+    } catch (error) {
+      console.error('Error capturing image:', error);
+      Alert.alert(
+        'Error',
+        'There was a problem capturing your image. Please try again.',
+        [{ text: 'OK' }]
+      );
+    }
+  };
+
+  const handleUploadPress = (type: 'front' | 'back') => {
+    setCurrentUploadType(type);
+    setShowUploadOptions(true);
   };
 
   const handleNext = async () => {
@@ -407,27 +572,32 @@ export default function ProviderVerificationScreen() {
       setCurrentStep(currentStep + 1);
     } else {
       try {
-        // For now, only log the data that would be saved
+        // Show loading state
+        Alert.alert(
+          'Processing',
+          'Please wait while we process your verification...',
+          [{ text: 'OK' }]
+        );
+
+        // Here you would normally upload the images to storage and save the URLs
+        // For now, we'll just simulate a successful upload
         console.log('Service provider data to save:', formData);
-        
-        // Here we'd normally upload the images to storage and save the URLs
-        // But as requested, we're just logging for now
         console.log('CNIC Front Image:', cnicFrontImage);
         console.log('CNIC Back Image:', cnicBackImage);
 
-        // Success, show message and navigate to MaskanhPro
-      Alert.alert(
-        'Verification Complete',
-        'Your provider account has been successfully verified. You can now start offering your services.',
-        [
-          {
-            text: 'Get Started',
-            onPress: () => {
-              navigation.navigate('MaskanhPro');
+        // Success message and navigation
+        Alert.alert(
+          'Verification Complete',
+          'Your provider account has been successfully verified. You can now start offering your services.',
+          [
+            {
+              text: 'Get Started',
+              onPress: () => {
+                navigation.navigate('MaskanhPro');
+              },
             },
-          },
-        ]
-      );
+          ]
+        );
       } catch (error) {
         console.error('Error saving provider data:', error);
         Alert.alert(
@@ -621,7 +791,7 @@ export default function ProviderVerificationScreen() {
                   isSmallScreen && styles.uploadButtonFull,
                   cnicFrontImage ? styles.uploadButtonWithImage : null
                 ]}
-                onPress={() => pickImage('front')}
+                onPress={() => handleUploadPress('front')}
               >
                 {cnicFrontImage ? (
                   <>
@@ -633,8 +803,8 @@ export default function ProviderVerificationScreen() {
                   </>
                 ) : (
                   <View style={styles.buttonContentWrapper}>
-                <Ionicons name="cloud-upload" size={24} color="#00A86B" />
-                <Text style={styles.uploadText}>Upload CNIC Front</Text>
+                    <Ionicons name="cloud-upload" size={24} color="#00A86B" />
+                    <Text style={styles.uploadText}>Upload CNIC Front</Text>
                   </View>
                 )}
               </TouchableOpacity>
@@ -645,7 +815,7 @@ export default function ProviderVerificationScreen() {
                   isSmallScreen && styles.uploadButtonFull,
                   cnicBackImage ? styles.uploadButtonWithImage : null
                 ]}
-                onPress={() => pickImage('back')}
+                onPress={() => handleUploadPress('back')}
               >
                 {cnicBackImage ? (
                   <>
@@ -657,8 +827,8 @@ export default function ProviderVerificationScreen() {
                   </>
                 ) : (
                   <View style={styles.buttonContentWrapper}>
-                <Ionicons name="cloud-upload" size={24} color="#00A86B" />
-                <Text style={styles.uploadText}>Upload CNIC Back</Text>
+                    <Ionicons name="cloud-upload" size={24} color="#00A86B" />
+                    <Text style={styles.uploadText}>Upload CNIC Back</Text>
                   </View>
                 )}
               </TouchableOpacity>
@@ -735,6 +905,20 @@ export default function ProviderVerificationScreen() {
         }}
         selectedCity={formData.city}
         province={formData.province}
+      />
+
+      <UploadOptionsModal
+        visible={showUploadOptions}
+        onClose={() => setShowUploadOptions(false)}
+        onCapture={() => {
+          setShowUploadOptions(false);
+          captureImage(currentUploadType);
+        }}
+        onPick={() => {
+          setShowUploadOptions(false);
+          pickImage(currentUploadType);
+        }}
+        type={currentUploadType}
       />
     </SafeAreaView>
   );
@@ -1048,5 +1232,20 @@ const styles = StyleSheet.create({
   showPasswordButtonText: {
     color: '#00A86B',
     fontSize: 14,
+  },
+  uploadOptionsContainer: {
+    padding: 16,
+  },
+  uploadOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E5E5',
+  },
+  uploadOptionText: {
+    fontSize: 16,
+    color: '#222',
+    marginLeft: 16,
   },
 }); 
