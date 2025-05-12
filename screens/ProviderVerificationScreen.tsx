@@ -14,11 +14,15 @@ import {
   FlatList,
   Dimensions,
   Image,
+  useWindowDimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
+import { supabase } from '../lib/supabase';
+import * as LocationService from '../utils/LocationService';
+import * as ImagePicker from 'expo-image-picker';
 
 type ProviderVerificationScreenProps = NativeStackNavigationProp<
   RootStackParamList,
@@ -45,13 +49,19 @@ interface FormData {
   firstName: string;
   lastName: string;
   age: string;
+  email: string;
+  password: string;
   phoneNumber: string;
   province: string;
   city: string;
-  profession: string;
   cnicNumber: string;
   cnicFront: string;
   cnicBack: string;
+  coordinates?: {
+    latitude: number;
+    longitude: number;
+  };
+  address?: string;
 }
 
 const categories: Category[] = [
@@ -205,7 +215,9 @@ interface CityPickerModalProps {
 }
 
 const CityPickerModal: React.FC<CityPickerModalProps> = ({ visible, onClose, onSelect, selectedCity, province }) => {
-  const cities = province ? citiesByProvince[province] : [];
+  const cities = province && province in citiesByProvince 
+    ? citiesByProvince[province] 
+    : [];
   
   return (
     <Modal
@@ -255,10 +267,11 @@ export default function ProviderVerificationScreen() {
     firstName: '',
     lastName: '',
     age: '',
+    email: '',
+    password: '',
     phoneNumber: '',
     province: '',
     city: '',
-    profession: '',
     cnicNumber: '',
     cnicFront: '',
     cnicBack: '',
@@ -267,6 +280,14 @@ export default function ProviderVerificationScreen() {
   const [isAgePickerVisible, setIsAgePickerVisible] = useState(false);
   const [isProvincePickerVisible, setIsProvincePickerVisible] = useState(false);
   const [isCityPickerVisible, setIsCityPickerVisible] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  
+  // Add state for images
+  const [cnicFrontImage, setCnicFrontImage] = useState<string | null>(null);
+  const [cnicBackImage, setCnicBackImage] = useState<string | null>(null);
+
+  const { width } = useWindowDimensions();
+  const isSmallScreen = width < 360;
 
   const updateFormData = (key: keyof FormData, value: string) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
@@ -293,6 +314,18 @@ export default function ProviderVerificationScreen() {
         }
         break;
       case 3:
+        if (!formData.email.trim()) {
+          newErrors.email = 'Email address is required';
+        } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+          newErrors.email = 'Please enter a valid email address';
+        }
+        if (!formData.password.trim()) {
+          newErrors.password = 'Password is required';
+        } else if (formData.password.length < 8) {
+          newErrors.password = 'Password must be at least 8 characters';
+        }
+        break;
+      case 4:
         if (!formData.phoneNumber.trim()) {
           newErrors.phoneNumber = 'Phone number is required';
         } else if (!/^\d{11}$/.test(formData.phoneNumber)) {
@@ -305,21 +338,16 @@ export default function ProviderVerificationScreen() {
           newErrors.city = 'City is required';
         }
         break;
-      case 4:
-        if (!formData.profession) {
-          newErrors.profession = 'Please select your profession';
-        }
-        break;
       case 5:
         if (!formData.cnicNumber.trim()) {
           newErrors.cnicNumber = 'CNIC number is required';
         } else if (!/^\d{13}$/.test(formData.cnicNumber)) {
           newErrors.cnicNumber = 'Enter a valid 13-digit CNIC number';
         }
-        if (!formData.cnicFront) {
+        if (!cnicFrontImage) {
           newErrors.cnicFront = 'CNIC front image is required';
         }
-        if (!formData.cnicBack) {
+        if (!cnicBackImage) {
           newErrors.cnicBack = 'CNIC back image is required';
         }
         break;
@@ -329,7 +357,43 @@ export default function ProviderVerificationScreen() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleNext = () => {
+  // Add image picker functions
+  const pickImage = async (type: 'front' | 'back') => {
+    try {
+      // Request permissions first
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      
+      if (status !== 'granted') {
+        Alert.alert('Permission Denied', 'We need camera roll permissions to upload your CNIC images.');
+        return;
+      }
+      
+      // Launch image picker
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 0.8,
+      });
+      
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        const selectedImage = result.assets[0].uri;
+        
+        if (type === 'front') {
+          setCnicFrontImage(selectedImage);
+          updateFormData('cnicFront', selectedImage);
+        } else {
+          setCnicBackImage(selectedImage);
+          updateFormData('cnicBack', selectedImage);
+        }
+      }
+    } catch (error) {
+      console.error('Error picking image:', error);
+      Alert.alert('Error', 'There was a problem selecting your image. Please try again.');
+    }
+  };
+
+  const handleNext = async () => {
     if (!validateStep()) {
       Alert.alert(
         'Required Fields',
@@ -342,7 +406,16 @@ export default function ProviderVerificationScreen() {
     if (currentStep < 5) {
       setCurrentStep(currentStep + 1);
     } else {
-      // All steps completed, show success message and navigate to MaskanhPro
+      try {
+        // For now, only log the data that would be saved
+        console.log('Service provider data to save:', formData);
+        
+        // Here we'd normally upload the images to storage and save the URLs
+        // But as requested, we're just logging for now
+        console.log('CNIC Front Image:', cnicFrontImage);
+        console.log('CNIC Back Image:', cnicBackImage);
+
+        // Success, show message and navigate to MaskanhPro
       Alert.alert(
         'Verification Complete',
         'Your provider account has been successfully verified. You can now start offering your services.',
@@ -355,13 +428,23 @@ export default function ProviderVerificationScreen() {
           },
         ]
       );
+      } catch (error) {
+        console.error('Error saving provider data:', error);
+        Alert.alert(
+          'Error',
+          'There was an error saving your information. Please try again.',
+          [{ text: 'OK' }]
+        );
+      }
     }
   };
 
   const renderError = (key: keyof FormData) => {
-    return errors[key] ? (
-      <Text style={styles.errorText}>{errors[key]}</Text>
-    ) : null;
+    if (!errors[key]) return null;
+    
+    return (
+      <Text style={styles.errorText}>{errors[key] as string}</Text>
+    );
   };
 
   const renderStep = () => {
@@ -401,8 +484,8 @@ export default function ProviderVerificationScreen() {
             <TouchableOpacity
               style={[
                 styles.input,
-                errors.age ? styles.inputError : undefined,
-                styles.selectInput
+                styles.selectInput,
+                errors.age ? styles.inputError : undefined
               ]}
               onPress={() => setIsAgePickerVisible(true)}
             >
@@ -412,11 +495,46 @@ export default function ProviderVerificationScreen() {
               ]}>
                 {formData.age || 'Select your age'}
               </Text>
+              <Ionicons name="chevron-down" size={20} color="#666" />
             </TouchableOpacity>
             {errors.age && <Text style={styles.errorText}>{errors.age}</Text>}
           </View>
         );
       case 3:
+        return (
+          <View style={styles.stepContainer}>
+            <View style={styles.iconContainer}>
+              <Ionicons name="mail" size={32} color="#00A86B" />
+            </View>
+            <Text style={styles.stepTitle}>Email & Password</Text>
+            <Text style={styles.stepSubtitle}>For account security</Text>
+            <TextInput
+              style={[styles.input, errors.email ? styles.inputError : null]}
+              placeholder="Email"
+              keyboardType="email-address"
+              value={formData.email}
+              onChangeText={(text) => updateFormData('email', text)}
+            />
+            {renderError('email')}
+            <TextInput
+              style={[styles.input, errors.password ? styles.inputError : null]}
+              placeholder="Password"
+              secureTextEntry={!showPassword}
+              value={formData.password}
+              onChangeText={(text) => updateFormData('password', text)}
+            />
+            <TouchableOpacity
+              style={styles.showPasswordButton}
+              onPress={() => setShowPassword(!showPassword)}
+            >
+              <Text style={styles.showPasswordButtonText}>
+                {showPassword ? 'Hide' : 'Show'} Password
+              </Text>
+            </TouchableOpacity>
+            {renderError('password')}
+          </View>
+        );
+      case 4:
         return (
           <View style={styles.stepContainer}>
             <View style={styles.iconContainer}>
@@ -436,8 +554,8 @@ export default function ProviderVerificationScreen() {
             <TouchableOpacity
               style={[
                 styles.input,
-                errors.province ? styles.inputError : undefined,
-                styles.selectInput
+                styles.selectInput,
+                errors.province ? styles.inputError : undefined
               ]}
               onPress={() => setIsProvincePickerVisible(true)}
             >
@@ -447,13 +565,14 @@ export default function ProviderVerificationScreen() {
               ]}>
                 {formData.province || 'Select your province'}
               </Text>
+              <Ionicons name="chevron-down" size={20} color="#666" />
             </TouchableOpacity>
             {renderError('province')}
             <TouchableOpacity
               style={[
                 styles.input,
-                errors.city ? styles.inputError : undefined,
-                styles.selectInput
+                styles.selectInput,
+                errors.city ? styles.inputError : undefined
               ]}
               onPress={() => {
                 if (!formData.province) {
@@ -469,38 +588,9 @@ export default function ProviderVerificationScreen() {
               ]}>
                 {formData.city || 'Select your city'}
               </Text>
+              <Ionicons name="chevron-down" size={20} color="#666" />
             </TouchableOpacity>
             {renderError('city')}
-          </View>
-        );
-      case 4:
-        return (
-          <View style={styles.stepContainer}>
-            <View style={styles.iconContainer}>
-              <Ionicons name="briefcase" size={32} color="#00A86B" />
-            </View>
-            <Text style={styles.stepTitle}>Your Profession</Text>
-            <Text style={styles.stepSubtitle}>Tell us about your skills</Text>
-            <View style={styles.professionGrid}>
-              {categories.map((category) => (
-                <TouchableOpacity
-                  key={category.id}
-                  style={[
-                    styles.professionItem,
-                    formData.profession === category.id && styles.professionSelected,
-                  ]}
-                  onPress={() => updateFormData('profession', category.id)}
-                >
-                  <Image 
-                    source={category.icon}
-                    style={styles.professionIcon}
-                    resizeMode="contain"
-                  />
-                  <Text style={styles.professionLabel}>{category.name}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-            {renderError('profession')}
           </View>
         );
       case 5:
@@ -520,25 +610,56 @@ export default function ProviderVerificationScreen() {
               maxLength={13}
             />
             {renderError('cnicNumber')}
-            <View style={styles.uploadContainer}>
+            <View style={[
+              styles.uploadContainer, 
+              isSmallScreen && styles.uploadContainerColumn
+            ]}>
               <TouchableOpacity
-                style={[styles.uploadButton, errors.cnicFront ? styles.uploadButtonError : null]}
-                onPress={() => updateFormData('cnicFront', 'uploaded')}
+                style={[
+                  styles.uploadButton, 
+                  errors.cnicFront ? styles.uploadButtonError : null,
+                  isSmallScreen && styles.uploadButtonFull,
+                  cnicFrontImage ? styles.uploadButtonWithImage : null
+                ]}
+                onPress={() => pickImage('front')}
               >
+                {cnicFrontImage ? (
+                  <>
+                    <Image source={{ uri: cnicFrontImage }} style={styles.previewImage} />
+                    <View style={styles.uploadOverlay}>
+                      <Text style={styles.uploadOverlayText}>CNIC Front</Text>
+                      <Ionicons name="checkmark-circle" size={22} color="#FFF" />
+                    </View>
+                  </>
+                ) : (
+                  <View style={styles.buttonContentWrapper}>
                 <Ionicons name="cloud-upload" size={24} color="#00A86B" />
                 <Text style={styles.uploadText}>Upload CNIC Front</Text>
-                {formData.cnicFront && (
-                  <Ionicons name="checkmark-circle" size={20} color="#00A86B" />
+                  </View>
                 )}
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.uploadButton, errors.cnicBack ? styles.uploadButtonError : null]}
-                onPress={() => updateFormData('cnicBack', 'uploaded')}
+                style={[
+                  styles.uploadButton, 
+                  errors.cnicBack ? styles.uploadButtonError : null,
+                  isSmallScreen && styles.uploadButtonFull,
+                  cnicBackImage ? styles.uploadButtonWithImage : null
+                ]}
+                onPress={() => pickImage('back')}
               >
+                {cnicBackImage ? (
+                  <>
+                    <Image source={{ uri: cnicBackImage }} style={styles.previewImage} />
+                    <View style={styles.uploadOverlay}>
+                      <Text style={styles.uploadOverlayText}>CNIC Back</Text>
+                      <Ionicons name="checkmark-circle" size={22} color="#FFF" />
+                    </View>
+                  </>
+                ) : (
+                  <View style={styles.buttonContentWrapper}>
                 <Ionicons name="cloud-upload" size={24} color="#00A86B" />
                 <Text style={styles.uploadText}>Upload CNIC Back</Text>
-                {formData.cnicBack && (
-                  <Ionicons name="checkmark-circle" size={20} color="#00A86B" />
+                  </View>
                 )}
               </TouchableOpacity>
             </View>
@@ -626,6 +747,7 @@ const styles = StyleSheet.create({
   },
   header: {
     padding: 16,
+    paddingTop: Platform.OS === 'android' ? (StatusBar.currentHeight || 0) + 16 : 16,
     borderBottomWidth: 1,
     borderBottomColor: '#E5E5E5',
   },
@@ -654,13 +776,13 @@ const styles = StyleSheet.create({
   },
   stepContainer: {
     padding: 24,
-    alignItems: 'center',
+    paddingTop: 32,
   },
   iconContainer: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: '#E8F7F1',
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: 'rgba(0, 168, 107, 0.1)',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 24,
@@ -668,97 +790,58 @@ const styles = StyleSheet.create({
   stepTitle: {
     fontSize: 24,
     fontWeight: '600',
+    color: '#222',
     marginBottom: 8,
-    textAlign: 'center',
   },
   stepSubtitle: {
     fontSize: 16,
     color: '#666',
     marginBottom: 32,
-    textAlign: 'center',
   },
   input: {
-    width: '100%',
-    height: 48,
     borderWidth: 1,
     borderColor: '#E5E5E5',
     borderRadius: 8,
     paddingHorizontal: 16,
-    marginBottom: 8,
+    paddingVertical: 16,
     fontSize: 16,
-    justifyContent: 'center',
+    marginBottom: 16,
+    height: 64,
   },
   inputError: {
     borderColor: '#FF3B30',
   },
   errorText: {
     color: '#FF3B30',
-    fontSize: 12,
-    marginBottom: 8,
-    alignSelf: 'flex-start',
-  },
-  professionGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    width: '100%',
-  },
-  professionItem: {
-    width: '30%',
-    aspectRatio: 1,
-    borderWidth: 1,
-    borderColor: '#E5E5E5',
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
+    fontSize: 14,
+    marginTop: -12,
     marginBottom: 16,
   },
-  professionSelected: {
-    borderColor: '#00A86B',
-    backgroundColor: '#E8F7F1',
-  },
-  professionIcon: {
-    width: 32,
-    height: 32,
-    marginBottom: 8,
-  },
-  professionLabel: {
-    fontSize: 12,
-    textAlign: 'center',
-  },
-  uploadContainer: {
+  selectInput: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-    marginTop: 8,
-  },
-  uploadButton: {
-    width: '48%',
-    height: 120,
-    borderWidth: 1,
-    borderColor: '#E5E5E5',
-    borderRadius: 12,
     alignItems: 'center',
-    justifyContent: 'center',
-    borderStyle: 'dashed',
+    justifyContent: 'space-between',
+    paddingRight: 12,
   },
-  uploadButtonError: {
-    borderColor: '#FF3B30',
+  inputText: {
+    fontSize: 16,
+    color: '#222',
+    flex: 1,
   },
-  uploadText: {
-    marginTop: 8,
-    fontSize: 14,
-    color: '#666',
+  placeholderText: {
+    color: '#999',
   },
   footer: {
     padding: 16,
     borderTopWidth: 1,
     borderTopColor: '#E5E5E5',
+    backgroundColor: '#FFF',
   },
   nextButton: {
     backgroundColor: '#00A86B',
-    height: 48,
-    borderRadius: 24,
+    borderRadius: 8,
+    paddingVertical: 16,
+    paddingHorizontal: 20,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -769,15 +852,92 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginRight: 8,
   },
+  uploadContainer: {
+    marginBottom: 16,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 16,
+  },
+  uploadContainerColumn: {
+    flexDirection: 'column',
+    gap: 12,
+  },
+  uploadButtonFull: {
+    minWidth: '100%',
+  },
+  uploadButton: {
+    flex: 1,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0, 168, 107, 0.1)',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(0, 168, 107, 0.3)',
+    paddingVertical: 16,
+    paddingHorizontal: 12,
+    height: 90,
+    minWidth: 170,
+  },
+  uploadButtonError: {
+    borderColor: '#FF3B30',
+  },
+  uploadText: {
+    fontSize: 14,
+    lineHeight: 18,
+    color: '#00A86B',
+    marginTop: 8,
+    textAlign: 'center',
+  },
+  buttonContentWrapper: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+  },
+  checkIcon: {
+    marginLeft: 4,
+  },
+  professionGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    marginBottom: 24,
+  },
+  professionItem: {
+    width: '30%',
+    aspectRatio: 1,
+    backgroundColor: '#F5F5F5',
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+    padding: 8,
+  },
+  professionSelected: {
+    backgroundColor: 'rgba(0, 168, 107, 0.1)',
+    borderWidth: 2,
+    borderColor: '#00A86B',
+  },
+  professionIcon: {
+    width: 32,
+    height: 32,
+    marginBottom: 8,
+  },
+  professionLabel: {
+    fontSize: 12,
+    textAlign: 'center',
+    color: '#222',
+  },
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'flex-end',
   },
   modalContent: {
-    backgroundColor: '#FFFFFF',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    backgroundColor: '#FFF',
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
     maxHeight: height * 0.7,
   },
   modalHeader: {
@@ -786,79 +946,107 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#EEEEEE',
+    borderBottomColor: '#E5E5E5',
   },
   modalTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#222222',
+    color: '#222',
   },
   modalCloseButton: {
-    fontSize: 24,
-    color: '#666666',
-    padding: 4,
+    fontSize: 22,
+    color: '#888',
   },
   ageOption: {
-    padding: 16,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#EEEEEE',
+    borderBottomColor: '#E5E5E5',
   },
   selectedAgeOption: {
-    backgroundColor: '#F7FFFC',
+    backgroundColor: 'rgba(0, 168, 107, 0.1)',
   },
   ageOptionText: {
     fontSize: 16,
-    color: '#222222',
+    color: '#222',
   },
   selectedAgeOptionText: {
     color: '#00A86B',
-    fontWeight: '500',
-  },
-  inputText: {
-    fontSize: 16,
-    color: '#222222',
-    textAlignVertical: 'center',
-  },
-  placeholderText: {
-    color: '#999999',
-    textAlignVertical: 'center',
+    fontWeight: '600',
   },
   provinceOption: {
-    padding: 16,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#EEEEEE',
+    borderBottomColor: '#E5E5E5',
   },
   selectedProvinceOption: {
-    backgroundColor: '#F7FFFC',
+    backgroundColor: 'rgba(0, 168, 107, 0.1)',
   },
   provinceOptionText: {
     fontSize: 16,
-    color: '#222222',
+    color: '#222',
   },
   selectedProvinceOptionText: {
     color: '#00A86B',
-    fontWeight: '500',
+    fontWeight: '600',
   },
   cityOption: {
-    padding: 16,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#EEEEEE',
+    borderBottomColor: '#E5E5E5',
   },
   selectedCityOption: {
-    backgroundColor: '#F7FFFC',
+    backgroundColor: 'rgba(0, 168, 107, 0.1)',
   },
   cityOptionText: {
     fontSize: 16,
-    color: '#222222',
+    color: '#222',
   },
   selectedCityOptionText: {
     color: '#00A86B',
+    fontWeight: '600',
+  },
+  uploadButtonWithImage: {
+    padding: 0,
+    overflow: 'hidden',
+  },
+  previewImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  uploadOverlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    padding: 8,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  uploadOverlayText: {
+    color: '#FFF',
+    fontSize: 14,
     fontWeight: '500',
   },
-  selectInput: {
-    flexDirection: 'row',
+  textContainer: {
+    flexDirection: 'column',
+    justifyContent: 'center',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 12,
+    flex: 1,
+    marginLeft: 6,
+  },
+  showPasswordButton: {
+    padding: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  showPasswordButtonText: {
+    color: '#00A86B',
+    fontSize: 14,
   },
 }); 

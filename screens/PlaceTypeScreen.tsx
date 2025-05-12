@@ -7,18 +7,132 @@ import {
   TouchableOpacity,
   ScrollView,
   StatusBar,
+  Dimensions,
+  Platform,
+  Image,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/AppNavigator';
 import { Ionicons } from '@expo/vector-icons';
 
-type ServiceType = 'architectural' | 'contractor' | 'painting' | 'structural' | 'labor' | 'carpentry' | 'drilling' | 'electrical';
+const { width, height } = Dimensions.get('window');
+const isSmallScreen = width < 360;
+const statusBarHeight = Platform.OS === 'android' ? StatusBar.currentHeight || 0 : 0;
+
+type ServiceType = 
+  | 'electrician' 
+  | 'interior_designer' 
+  | 'mason' 
+  | 'contractor' 
+  | 'solar_work' 
+  | 'carpenter' 
+  | 'painter' 
+  | 'wall_3d' 
+  | 'plumber' 
+  | 'ceiling_work' 
+  | 'aluminum_steel' 
+  | 'glass_work' 
+  | 'welder' 
+  | 'architect';
+
+interface ServiceOption {
+  type: ServiceType;
+  title: string;
+  description: string;
+  icon: any;
+}
+
+const serviceOptions: ServiceOption[] = [
+  {
+    type: 'electrician',
+    title: 'Electrician',
+    description: 'Professional electrical services for installations, repairs, and maintenance.',
+    icon: require('../assets/icons/Electrician.png'),
+  },
+  {
+    type: 'interior_designer',
+    title: 'Interior Designer',
+    description: 'Creative interior design solutions to transform your living spaces.',
+    icon: require('../assets/icons/Blueprint.png'),
+  },
+  {
+    type: 'mason',
+    title: 'Mason',
+    description: 'Expert masonry work for construction and renovation projects.',
+    icon: require('../assets/icons/Wall.png'),
+  },
+  {
+    type: 'contractor',
+    title: 'Contractor',
+    description: 'Full-service project management for construction and renovation.',
+    icon: require('../assets/icons/Builder.png'),
+  },
+  {
+    type: 'solar_work',
+    title: 'Solar Work',
+    description: 'Professional solar panel installation and maintenance services.',
+    icon: require('../assets/icons/Solarpower.png'),
+  },
+  {
+    type: 'carpenter',
+    title: 'Carpenter',
+    description: 'Skilled carpentry work for custom furniture and installations.',
+    icon: require('../assets/icons/Cuttingwood.png'),
+  },
+  {
+    type: 'painter',
+    title: 'Painter',
+    description: 'Quality painting services for interior and exterior projects.',
+    icon: require('../assets/icons/Paint.png'),
+  },
+  {
+    type: 'wall_3d',
+    title: '3D Wall',
+    description: 'Creative 3D wall designs and installations for modern spaces.',
+    icon: require('../assets/icons/3d.png'),
+  },
+  {
+    type: 'plumber',
+    title: 'Plumber',
+    description: 'Professional plumbing services for repairs and installations.',
+    icon: require('../assets/icons/plumber.png'),
+  },
+  {
+    type: 'ceiling_work',
+    title: 'Ceiling Work',
+    description: 'Expert ceiling installation, repair, and design services.',
+    icon: require('../assets/icons/ceiling.png'),
+  },
+  {
+    type: 'aluminum_steel',
+    title: 'Aluminum & Steel Work',
+    description: 'Specialized metal work for construction and fabrication.',
+    icon: require('../assets/icons/laser-cutting.png'),
+  },
+  {
+    type: 'glass_work',
+    title: 'Glass Work',
+    description: 'Professional glass installation and custom glass solutions.',
+    icon: require('../assets/icons/window.png'),
+  },
+  {
+    type: 'welder',
+    title: 'Welder & Blacksmith',
+    description: 'Expert welding and blacksmithing services for metal work.',
+    icon: require('../assets/icons/Welder.png'),
+  },
+  {
+    type: 'architect',
+    title: 'Architect',
+    description: 'Professional architectural design and planning services.',
+    icon: require('../assets/icons/architect.png'),
+  },
+];
 
 export default function PlaceTypeScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [selectedTypes, setSelectedTypes] = useState<ServiceType[]>([]);
-
 
   const handleBack = () => {
     navigation.goBack();
@@ -39,133 +153,52 @@ export default function PlaceTypeScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        <Text style={styles.title}>At Maskanh, we connect you with skilled and verified professionals to turn your construction ideas into reality. Check out the services we offer:
-        </Text>
-
-        {/* Service Options */}
-        <TouchableOpacity 
-          style={[styles.optionCard, selectedTypes.includes('architectural') && styles.selectedCard]}
-          onPress={() => toggleServiceType('architectural')}
+      <SafeAreaView style={styles.container}>
+        <ScrollView 
+          style={styles.content} 
+          contentContainerStyle={styles.contentContainer}
+          showsVerticalScrollIndicator={false}
         >
-          <View style={styles.optionContent}>
-            <View>
-              <Text style={styles.optionTitle}>Architectural Design</Text>
-              <Text style={styles.optionDescription}>Creative and practical designs tailored to meet your unique space needs.</Text>
-            </View>
-            <Ionicons name="color-palette-outline" size={24} color="#666666" />
+          <View style={styles.titleContainer}>
+            <Text style={styles.title}>
+              At Maskanh, we connect you with skilled and verified professionals to turn your construction ideas into reality. Check out the services we offer:
+            </Text>
           </View>
-        </TouchableOpacity>
 
-        <TouchableOpacity 
-          style={[styles.optionCard, selectedTypes.includes('contractor') && styles.selectedCard]}
-          onPress={() => toggleServiceType('contractor')}
-        >
-          <View style={styles.optionContent}>
-            <View>
-              <Text style={styles.optionTitle}>Contractor Services</Text>
-              <Text style={styles.optionDescription}>Full-service project management to ensure your construction runs smoothly, on time, and within budget.</Text>
-            </View>
-            <Ionicons name="construct-outline" size={24} color="#666666" />
-          </View>
-        </TouchableOpacity>
+          {serviceOptions.map((service) => (
+            <TouchableOpacity 
+              key={service.type}
+              style={[styles.optionCard, selectedTypes.includes(service.type) && styles.selectedCard]}
+              onPress={() => toggleServiceType(service.type)}
+            >
+              <View style={styles.optionContent}>
+                <View style={styles.optionTextContainer}>
+                  <Text style={styles.optionTitle}>{service.title}</Text>
+                  <Text style={styles.optionDescription}>{service.description}</Text>
+                </View>
+                <Image source={service.icon} style={styles.serviceIcon} />
+              </View>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
 
-        <TouchableOpacity 
-          style={[styles.optionCard, selectedTypes.includes('painting') && styles.selectedCard]}
-          onPress={() => toggleServiceType('painting')}
-        >
-          <View style={styles.optionContent}>
-            <View>
-              <Text style={styles.optionTitle}>Painting Expertise</Text>
-              <Text style={styles.optionDescription}>Quality painting services for a flawless finish that lasts, for both interior and exterior projects.</Text>
-            </View>
-            <Ionicons name="brush-outline" size={24} color="#666666" />
-          </View>
-        </TouchableOpacity>
+        <View style={styles.navigationButtons}>
+          <TouchableOpacity style={styles.backButton} onPress={handleBack}>
+            <Text style={styles.backButtonText}>Back</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity 
-          style={[styles.optionCard, selectedTypes.includes('structural') && styles.selectedCard]}
-          onPress={() => toggleServiceType('structural')}
-        >
-          <View style={styles.optionContent}>
-            <View>
-              <Text style={styles.optionTitle}>Structural Work</Text>
-              <Text style={styles.optionDescription}>Reliable structural solutions, ensuring a solid foundation and durable construction.</Text>
-            </View>
-            <Ionicons name="cube-outline" size={24} color="#666666" />
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity 
-          style={[styles.optionCard, selectedTypes.includes('labor') && styles.selectedCard]}
-          onPress={() => toggleServiceType('labor')}
-        >
-          <View style={styles.optionContent}>
-            <View>
-              <Text style={styles.optionTitle}>Labor Services</Text>
-              <Text style={styles.optionDescription}>Skilled labor for all types of construction work, ensuring efficiency and precision.</Text>
-            </View>
-            <Ionicons name="people-outline" size={24} color="#666666" />
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity 
-          style={[styles.optionCard, selectedTypes.includes('carpentry') && styles.selectedCard]}
-          onPress={() => toggleServiceType('carpentry')}
-        >
-          <View style={styles.optionContent}>
-            <View>
-              <Text style={styles.optionTitle}>Carpentry</Text>
-              <Text style={styles.optionDescription}>Custom woodwork, from furniture design to detailed fittings and installations.</Text>
-            </View>
-            <Ionicons name="hammer-outline" size={24} color="#666666" />
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity 
-          style={[styles.optionCard, selectedTypes.includes('drilling') && styles.selectedCard]}
-          onPress={() => toggleServiceType('drilling')}
-        >
-          <View style={styles.optionContent}>
-            <View>
-              <Text style={styles.optionTitle}>Drilling Operations</Text>
-              <Text style={styles.optionDescription}>Safe, precise drilling for all your construction and installation needs.</Text>
-            </View>
-            <Ionicons name="hardware-chip-outline" size={24} color="#666666" />
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity 
-          style={[styles.optionCard, selectedTypes.includes('electrical') && styles.selectedCard]}
-          onPress={() => toggleServiceType('electrical')}
-        >
-          <View style={styles.optionContent}>
-            <View>
-              <Text style={styles.optionTitle}>Electrical Services</Text>
-              <Text style={styles.optionDescription}>Certified electrical work for installations, repairs, and maintenance that you can rely on.</Text>
-            </View>
-            <Ionicons name="flash-outline" size={24} color="#666666" />
-          </View>
-        </TouchableOpacity>
-      </ScrollView>
-
-      {/* Navigation Buttons */}
-      <View style={styles.navigationButtons}>
-        <TouchableOpacity style={styles.backButton} onPress={handleBack}>
-          <Text style={styles.backButtonText}>Back</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity 
-          style={[styles.nextButton, selectedTypes.length === 0 && styles.nextButtonDisabled]}
-          onPress={handleNext}
-          disabled={selectedTypes.length === 0}
-        >
-          <Text style={styles.nextButtonText}>Next</Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+          <TouchableOpacity 
+            style={[styles.nextButton, selectedTypes.length === 0 && styles.nextButtonDisabled]}
+            onPress={handleNext}
+            disabled={selectedTypes.length === 0}
+          >
+            <Text style={styles.nextButtonText}>Next</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    </>
   );
 }
 
@@ -174,32 +207,29 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF',
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 25,
-    borderBottomWidth: 1,
-    borderBottomColor: '#EEEEEE',
-  },
-
-
   content: {
     flex: 1,
-    padding: 24,
+  },
+  contentContainer: {
+    padding: 20,
+    paddingTop: Platform.OS === 'android' ? statusBarHeight + 25 : 25,
+  },
+  titleContainer: {
+    marginBottom: 10,
   },
   title: {
-    fontSize: 20,
+    fontSize: isSmallScreen ? 17 : 19,
     fontWeight: '600',
     color: '#222222',
-    marginBottom: 8,
-    lineHeight: 30,
+    marginBottom: 20,
+    marginTop: 20,
+    lineHeight: 26,
   },
   optionCard: {
     borderWidth: 1,
     borderColor: '#E5E5E5',
     borderRadius: 12,
-    padding: 20,
+    padding: 16,
     marginBottom: 16,
     backgroundColor: '#FFFFFF',
   },
@@ -212,24 +242,32 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+  optionTextContainer: {
+    flex: 1,
+    marginRight: 12,
+  },
   optionTitle: {
-    fontSize: 18,
+    fontSize: isSmallScreen ? 16 : 18,
     fontWeight: '600',
     color: '#222222',
-    marginBottom: 8,
+    marginBottom: 4,
   },
   optionDescription: {
-    fontSize: 16,
+    fontSize: isSmallScreen ? 14 : 15,
     color: '#666666',
-    lineHeight: 24,
-    maxWidth: '90%',
+    lineHeight: 22,
+  },
+  serviceIcon: {
+    width: 40,
+    height: 40,
+    resizeMode: 'contain',
   },
   navigationButtons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingVertical: 24,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
     borderTopWidth: 1,
     borderTopColor: '#EEEEEE',
     backgroundColor: '#FFFFFF',
@@ -245,8 +283,8 @@ const styles = StyleSheet.create({
   },
   nextButton: {
     backgroundColor: '#00A86B',
-    paddingVertical: 16,
-    paddingHorizontal: 30,
+    paddingVertical: 14,
+    paddingHorizontal: 28,
     borderRadius: 12,
   },
   nextButtonDisabled: {

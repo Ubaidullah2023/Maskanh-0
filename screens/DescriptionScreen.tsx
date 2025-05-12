@@ -6,6 +6,9 @@ import {
   SafeAreaView,
   TouchableOpacity,
   StatusBar,
+  TextInput,
+  ScrollView,
+  Dimensions,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -15,53 +18,38 @@ import { Ionicons } from '@expo/vector-icons';
 
 type DescriptionScreenRouteProp = RouteProp<RootStackParamList, 'Description'>;
 
-type Highlight = {
-  id: string;
-  label: string;
-  icon: string;
-};
+const { height } = Dimensions.get('window');
+const MAX_CHARACTERS = 600;
 
-const highlights: Highlight[] = [
-  { id: 'Expertly Crafted', label: 'Expertly Crafted', icon: 'construct' },
-  { id: 'Top-Quality Construction', label: 'Top-Quality Construction', icon: 'hammer' },
-  { id: 'Fully Equipped', label: 'Fully Equipped', icon: 'build' },
-  { id: 'Premium Finishes', label: 'Premium Finishes', icon: 'brush' },
-  { id: 'Man Power Equit', label: 'Man Power Equit', icon: 'build' },
-  { id: 'Dependable Service', label: 'Dependable Service', icon: 'shield-checkmark' },
+const SAMPLE_DESCRIPTIONS = [
+  "Our premium construction services combine expert craftsmanship with high-quality materials. With over 10 years of experience, we deliver exceptional results on time and within budget. Whether it's a new build, renovation, or repair, our professional team ensures meticulous attention to detail.",
+  "Transform your property with our reliable masonry services. We specialize in brick, stone, and concrete work, creating beautiful and durable structures. Our team uses only the finest materials and proven techniques for results that stand the test of time.",
+  "Professional home renovation services with an eye for detail. We bring your vision to life with expert craftsmanship, quality materials, and transparent pricing. Our team handles everything from concept to completion, ensuring a stress-free process."
 ];
 
 export default function DescriptionScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<DescriptionScreenRouteProp>();
-  const [selectedHighlights, setSelectedHighlights] = useState<string[]>([]);
+  const [description, setDescription] = useState('');
 
-  const handleSaveAndExit = () => {
-    navigation.navigate('MainTabs', { screen: 'Home' });
+  const handleDescriptionChange = (text: string) => {
+    if (text.length <= MAX_CHARACTERS) {
+      setDescription(text);
+    }
   };
 
-  const handleQuestions = () => {
-    // TODO: Navigate to help/questions screen
-  };
-
-  const handleHighlightToggle = (id: string) => {
-    setSelectedHighlights(prev => {
-      if (prev.includes(id)) {
-        return prev.filter(item => item !== id);
-      }
-      if (prev.length < 2) {
-        return [...prev, id];
-      }
-      return prev;
-    });
+  const getRandomPlaceholder = () => {
+    const randomIndex = Math.floor(Math.random() * SAMPLE_DESCRIPTIONS.length);
+    return SAMPLE_DESCRIPTIONS[randomIndex];
   };
 
   const handleNext = () => {
-    if (selectedHighlights.length > 0) {
-      navigation.navigate('CreateDescription', {
+    navigation.navigate('ProfileComplete', {
         ...route.params,
-        highlights: selectedHighlights,
+      description,
+      highlights: ['Expertly Crafted', 'Top-Quality Construction'],
+      guestType: 'any_guest',
       });
-    }
   };
 
   const handleBack = () => {
@@ -72,38 +60,50 @@ export default function DescriptionScreen() {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
 
+      <ScrollView style={styles.scrollView}>
       <View style={styles.content}>
-        <Text style={styles.title}>Let's showcase your service</Text>
+          <Text style={styles.title}>Describe your service</Text>
         <Text style={styles.subtitle}>
-        Choosing up to 2 key highlights that best represent your offering:
+            A compelling description helps attract potential clients. Highlight your expertise, quality of work, and what makes your service unique.
         </Text>
 
-        <View style={styles.highlightsGrid}>
-          {highlights.map(highlight => (
-            <TouchableOpacity
-              key={highlight.id}
-              style={[
-                styles.highlightButton,
-                selectedHighlights.includes(highlight.id) && styles.highlightButtonSelected
-              ]}
-              onPress={() => handleHighlightToggle(highlight.id)}
-              disabled={selectedHighlights.length >= 2 && !selectedHighlights.includes(highlight.id)}
-            >
-              <Ionicons 
-                name={highlight.icon as any} 
-                size={24} 
-                color={selectedHighlights.includes(highlight.id) ? '#FFFFFF' : '#222222'} 
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              value={description}
+              onChangeText={handleDescriptionChange}
+              placeholder={getRandomPlaceholder()}
+              placeholderTextColor="#999999"
+              multiline
+              maxLength={MAX_CHARACTERS}
+              textAlignVertical="top"
               />
-              <Text style={[
-                styles.highlightText,
-                selectedHighlights.includes(highlight.id) && styles.highlightTextSelected
-              ]}>
-                {highlight.label}
+            <Text style={styles.characterCount}>
+              {MAX_CHARACTERS - description.length} characters remaining
               </Text>
-            </TouchableOpacity>
-          ))}
+          </View>
+
+          <View style={styles.tipsContainer}>
+            <Text style={styles.tipsTitle}>Tips for a great description:</Text>
+            <View style={styles.tipItem}>
+              <Ionicons name="checkmark-circle" size={18} color="#00A86B" />
+              <Text style={styles.tipText}>Highlight your experience and expertise</Text>
+            </View>
+            <View style={styles.tipItem}>
+              <Ionicons name="checkmark-circle" size={18} color="#00A86B" />
+              <Text style={styles.tipText}>Mention the quality of materials you use</Text>
+            </View>
+            <View style={styles.tipItem}>
+              <Ionicons name="checkmark-circle" size={18} color="#00A86B" />
+              <Text style={styles.tipText}>Describe your process or approach</Text>
+            </View>
+            <View style={styles.tipItem}>
+              <Ionicons name="checkmark-circle" size={18} color="#00A86B" />
+              <Text style={styles.tipText}>Explain what makes your service stand out</Text>
+            </View>
+          </View>
         </View>
-      </View>
+      </ScrollView>
 
       {/* Navigation Buttons */}
       <View style={styles.navigationButtons}>
@@ -111,9 +111,9 @@ export default function DescriptionScreen() {
           <Text style={styles.backButtonText}>Back</Text>
         </TouchableOpacity>
         <TouchableOpacity 
-          style={[styles.nextButton, selectedHighlights.length === 0 && styles.nextButtonDisabled]}
+          style={[styles.nextButton, !description.trim() && styles.nextButtonDisabled]}
           onPress={handleNext}
-          disabled={selectedHighlights.length === 0}
+          disabled={!description.trim()}
         >
           <Text style={styles.nextButtonText}>Next</Text>
         </TouchableOpacity>
@@ -127,66 +127,67 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF',
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#EEEEEE',
-  },
-  headerButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: '#EEEEEE',
-  },
-  headerButtonText: {
-    fontSize: 16,
-    color: '#222222',
+  scrollView: {
+    flex: 1,
   },
   content: {
     flex: 1,
     padding: 24,
+    paddingTop: height * 0.05,
   },
   title: {
-    fontSize: 32,
+    fontSize: 28,
     fontWeight: '600',
     color: '#222222',
     marginBottom: 16,
   },
   subtitle: {
-    fontSize: 18,
+    fontSize: 16,
     color: '#666666',
-    marginBottom: 32,
+    marginBottom: 24,
+    lineHeight: 24,
   },
-  highlightsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
+  inputContainer: {
+    marginBottom: 24,
   },
-  highlightButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 100,
+  input: {
     borderWidth: 1,
     borderColor: '#DDDDDD',
-    backgroundColor: '#FFFFFF',
-  },
-  highlightButtonSelected: {
-    backgroundColor: '#222222',
-    borderColor: '#222222',
-  },
-  highlightText: {
+    borderRadius: 12,
+    padding: 16,
     fontSize: 16,
     color: '#222222',
-    marginLeft: 8,
+    minHeight: 200,
+    maxHeight: 300,
   },
-  highlightTextSelected: {
-    color: '#FFFFFF',
+  characterCount: {
+    marginTop: 8,
+    fontSize: 14,
+    color: '#666666',
+    textAlign: 'right',
+  },
+  tipsContainer: {
+    backgroundColor: '#F9F9F9',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 24,
+  },
+  tipsTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#222222',
+    marginBottom: 12,
+  },
+  tipItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  tipText: {
+    fontSize: 14,
+    color: '#444444',
+    marginLeft: 8,
+    flex: 1,
   },
   navigationButtons: {
     flexDirection: 'row',
@@ -204,6 +205,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#222222',
     textDecorationLine: 'underline',
+    fontWeight: '500',
   },
   nextButton: {
     backgroundColor: '#00A86B',

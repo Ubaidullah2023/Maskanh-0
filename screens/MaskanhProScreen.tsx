@@ -1,9 +1,11 @@
 import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Platform } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Platform, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/AppNavigator';
 import { Ionicons } from '@expo/vector-icons';
+
+const { height } = Dimensions.get('window');
 
 type MaskanhProScreenProps = {
   navigation: NativeStackNavigationProp<RootStackParamList>;
@@ -27,55 +29,58 @@ export default function MaskanhProScreen({ navigation }: MaskanhProScreenProps) 
       
       <ScrollView 
         style={styles.content}
+        contentContainerStyle={styles.contentContainer}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.title}>It's easy to get started on Maskanh</Text>
+        <View style={styles.mainContent}>
+          <Text style={styles.title}>It's easy to get started on Maskanh</Text>
 
-        {/* Step 1 */}
-        <View style={styles.stepContainer}>
-          <View style={styles.stepNumberContainer}>
-            <Text style={styles.stepNumber}>1</Text>
+          {/* Step 1 */}
+          <View style={styles.stepContainer}>
+            <View style={styles.stepNumberContainer}>
+              <Text style={styles.stepNumber}>1</Text>
+            </View>
+            <View style={styles.stepContent}>
+              <Text style={styles.stepTitle}>Tell us about your service</Text>
+              <Text style={styles.stepDescription}>
+                Share some basic info, like your service type and location.
+              </Text>
+            </View>
+            <View style={styles.iconContainer}>
+              <Ionicons name="information-circle-outline" size={40} color="#00A86B" />
+            </View>
           </View>
-          <View style={styles.stepContent}>
-            <Text style={styles.stepTitle}>Tell us about your service</Text>
-            <Text style={styles.stepDescription}>
-              Share some basic info, like your service type and location.
-            </Text>
-          </View>
-          <View style={styles.iconContainer}>
-            <Ionicons name="information-circle-outline" size={40} color="#00A86B" />
-          </View>
-        </View>
 
-        {/* Step 2 */}
-        <View style={styles.stepContainer}>
-          <View style={styles.stepNumberContainer}>
-            <Text style={styles.stepNumber}>2</Text>
+          {/* Step 2 */}
+          <View style={styles.stepContainer}>
+            <View style={styles.stepNumberContainer}>
+              <Text style={styles.stepNumber}>2</Text>
+            </View>
+            <View style={styles.stepContent}>
+              <Text style={styles.stepTitle}>Make it stand out</Text>
+              <Text style={styles.stepDescription}>
+                Add 5 or more photos plus a title and description—we'll help you out.
+              </Text>
+            </View>
+            <View style={styles.iconContainer}>
+              <Ionicons name="images-outline" size={40} color="#00A86B" />
+            </View>
           </View>
-          <View style={styles.stepContent}>
-            <Text style={styles.stepTitle}>Make it stand out</Text>
-            <Text style={styles.stepDescription}>
-              Add 5 or more photos plus a title and description—we'll help you out.
-            </Text>
-          </View>
-          <View style={styles.iconContainer}>
-            <Ionicons name="images-outline" size={40} color="#00A86B" />
-          </View>
-        </View>
 
-        {/* Step 3 */}
-        <View style={styles.stepContainer}>
-          <View style={styles.stepNumberContainer}>
-            <Text style={styles.stepNumber}>3</Text>
-          </View>
-          <View style={styles.stepContent}>
-            <Text style={styles.stepTitle}>Finish up and publish</Text>
-            <Text style={styles.stepDescription}>
-              Choose a starting price, verify your details, then publish your service.
-            </Text>
-          </View>
-          <View style={styles.iconContainer}>
-            <Ionicons name="checkmark-circle-outline" size={40} color="#00A86B" />
+          {/* Step 3 */}
+          <View style={styles.stepContainer}>
+            <View style={styles.stepNumberContainer}>
+              <Text style={styles.stepNumber}>3</Text>
+            </View>
+            <View style={styles.stepContent}>
+              <Text style={styles.stepTitle}>Finish up and publish</Text>
+              <Text style={styles.stepDescription}>
+                Choose a starting price, verify your details, then publish your service.
+              </Text>
+            </View>
+            <View style={styles.iconContainer}>
+              <Ionicons name="checkmark-circle-outline" size={40} color="#00A86B" />
+            </View>
           </View>
         </View>
 
@@ -107,6 +112,13 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+  },
+  contentContainer: {
+    flexGrow: 1,
+    justifyContent: 'space-between',
+    paddingBottom: 40,
+  },
+  mainContent: {
     paddingHorizontal: 24,
   },
   title: {
@@ -114,12 +126,13 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#000000',
     marginTop: 15,
-    marginBottom: 18,
+    marginBottom: 30,
     lineHeight: 38,
+    textAlign: 'center',
   },
   stepContainer: {
     flexDirection: 'row',
-    marginBottom: 8,
+    marginBottom: 24,
     alignItems: 'center',
   },
   stepNumberContainer: {
@@ -165,9 +178,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     borderRadius: 12,
     alignItems: 'center',
-    marginTop: 20,
-    marginBottom: 40,
-    marginHorizontal: 20,
+    marginTop: height * 0.05,
+    marginBottom: 20,
+    marginHorizontal: 24,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,

@@ -9,11 +9,21 @@ import {
   StatusBar,
   ScrollView,
   ActivityIndicator,
+  Alert,
+  Dimensions,
+  Platform,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RouteProp } from '@react-navigation/native';
 import type { RootStackParamList } from '../navigation/AppNavigator';
 import { Ionicons } from '@expo/vector-icons';
+import * as LocationService from '../utils/LocationService';
+import { LocationAddress } from '../utils/LocationService';
+
+// Define the correct type for the route
+type AddressSearchScreenRouteProp = RouteProp<RootStackParamList, 'AddressSearch'>;
+const { height } = Dimensions.get('window');
 
 // Mock data for location suggestions
 const LOCATION_SUGGESTIONS = {
@@ -42,39 +52,56 @@ const LOCATION_SUGGESTIONS = {
 
 export default function AddressSearchScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const route = useRoute<AddressSearchScreenRouteProp>();
   const [searchText, setSearchText] = useState('');
-  const [suggestions, setSuggestions] = useState<Array<{ title: string; subtitle: string }>>([]);
+  const [suggestions, setSuggestions] = useState<LocationAddress[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [locationPermissionGranted, setLocationPermissionGranted] = useState(false);
 
+  // Get the placeType from route.params with type safety
+  const placeType = route.params?.placeType || 'entire';
+
+  // Check location permission when component mounts
   useEffect(() => {
-    handleSearch(searchText);
-  }, [searchText]);
-
-  const handleSearch = (text: string) => {
-    setIsLoading(true);
-    const searchLower = text.toLowerCase();
+    const checkLocationPermission = async () => {
+      const hasPermission = await LocationService.requestLocationPermission();
+      setLocationPermissionGranted(hasPermission);
+      if (hasPermission) {
+        // Automatically try to get current location
+        handleUseCurrentLocation();
+      }
+    };
     
-    // Simulate API delay
-    setTimeout(() => {
-      if (searchLower in LOCATION_SUGGESTIONS) {
-        setSuggestions(LOCATION_SUGGESTIONS[searchLower as keyof typeof LOCATION_SUGGESTIONS]);
-      } else {
+    checkLocationPermission();
+  }, []);
+
+  // When search text changes, search for locations
+  useEffect(() => {
+    const searchTimeout = setTimeout(async () => {
+      if (searchText.length >= 3) {
+        setIsLoading(true);
+        try {
+          const results = await LocationService.searchAddresses(searchText);
+          setSuggestions(results);
+        } catch (error) {
+          console.error('Error searching for locations:', error);
+          Alert.alert('Error', 'Could not retrieve location suggestions. Please try again.');
+        } finally {
+          setIsLoading(false);
+        }
+      } else if (searchText.length === 0) {
         setSuggestions([]);
       }
-      setIsLoading(false);
-    }, 300);
-  };
+    }, 500); // Debounce search by 500ms
 
-  const handleSelectAddress = (address: { title: string; subtitle: string }) => {
-    // Parse the address components
-    const [street, ...locationParts] = address.title.split(',').map(part => part.trim());
-    const [city, province] = address.subtitle.split(',').map(part => part.trim());
-    
-    navigation.navigate('ConfirmAddress', {
-      placeType: 'entire', // This should be passed from the previous screen
-      street,
-      city: city || locationParts[0] || '',
-      province: province?.replace('Pakistan', '').trim() || '',
+    return () => clearTimeout(searchTimeout);
+  }, [searchText]);
+
+  const handleSelectAddress = (address: LocationAddress) => {
+    // Navigate back to LocationScreen with the selected address
+    navigation.navigate('Location', {
+      placeType: placeType,
+      selectedAddress: address,
     });
   };
 
@@ -87,17 +114,65 @@ export default function AddressSearchScreen() {
     setSuggestions([]);
   };
 
-  const handleUseCurrentLocation = () => {
-    // TODO: Implement getting current location
-    navigation.goBack();
+  const handleUseCurrentLocation = async () => {
+    setIsLoading(true);
+    try {
+      // First check if we have permission
+      const hasPermission = await LocationService.requestLocationPermission();
+      
+      if (!hasPermission) {
+        setLocationPermissionGranted(false);
+        Alert.alert(
+          'Location Permission Required',
+          'To use your current location, please grant location permission in your device settings.',
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { 
+              text: 'Open Settings', 
+              onPress: () => {
+                // This would open settings on a real device
+                Alert.alert('Open Settings', 'This would open location settings on a real device');
+              } 
+            }
+          ]
+        );
+        setIsLoading(false);
+        return;
+      }
+      
+      setLocationPermissionGranted(true);
+      const currentLocation = await LocationService.getCurrentLocation();
+      
+      if (currentLocation) {
+        const addressDetails = await LocationService.getAddressFromCoordinates(currentLocation);
+        
+        if (addressDetails) {
+          // Navigate back to LocationScreen with current location data
+          navigation.navigate('Location', {
+            placeType: placeType,
+            selectedCoordinates: currentLocation,
+            selectedAddress: addressDetails,
+          });
+        } else {
+          Alert.alert('Error', 'Could not retrieve address details for your location.');
+        }
+      } else {
+        Alert.alert('Error', 'Could not retrieve your current location. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error getting current location:', error);
+      Alert.alert('Error', 'Unable to access your current location. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleUseEnteredAddress = () => {
-    if (searchText.trim()) {
-      navigation.navigate('ConfirmAddress', {
-        placeType: 'entire',
-        street: searchText,
-      });
+    if (searchText.trim() && suggestions.length > 0) {
+      // Use the first suggestion if available
+      handleSelectAddress(suggestions[0]);
+    } else {
+      Alert.alert('No Results', 'Please select a valid address from the suggestions.');
     }
   };
 
@@ -110,14 +185,15 @@ export default function AddressSearchScreen() {
           <Ionicons name="arrow-back" size={24} color="#222222" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Enter your address</Text>
+        <View style={{ width: 40 }} />
       </View>
 
       <View style={styles.content}>
         <View style={styles.searchContainer}>
-          <Ionicons name="location-outline" size={24} color="#666666" />
+          <Ionicons name="search" size={24} color="#666666" />
           <TextInput
             style={styles.searchInput}
-            placeholder="Search"
+            placeholder="Search for location"
             value={searchText}
             onChangeText={setSearchText}
             autoFocus={true}
@@ -131,22 +207,36 @@ export default function AddressSearchScreen() {
         </View>
 
         {isLoading ? (
-          <ActivityIndicator style={styles.loader} color="#00A86B" />
+          <View style={styles.loaderContainer}>
+            <ActivityIndicator size="large" color="#00A86B" />
+            <Text style={styles.loaderText}>Searching locations...</Text>
+          </View>
         ) : (
-          <ScrollView style={styles.suggestionsContainer}>
-            {suggestions.map((suggestion, index) => (
+          <ScrollView style={styles.suggestionsContainer} keyboardShouldPersistTaps="handled">
+            {suggestions.length > 0 ? (
+              suggestions.map((suggestion, index) => (
               <TouchableOpacity
                 key={index}
                 style={styles.suggestionItem}
                 onPress={() => handleSelectAddress(suggestion)}
               >
-                <Ionicons name="business-outline" size={24} color="#666666" style={styles.suggestionIcon} />
+                  <Ionicons name="location-outline" size={24} color="#666666" style={styles.suggestionIcon} />
                 <View style={styles.suggestionText}>
-                  <Text style={styles.suggestionTitle}>{suggestion.title}</Text>
-                  <Text style={styles.suggestionSubtitle}>{suggestion.subtitle}</Text>
+                    <Text style={styles.suggestionTitle}>{suggestion.street || 'Unknown Location'}</Text>
+                    <Text style={styles.suggestionSubtitle}>
+                      {[suggestion.city, suggestion.province, suggestion.country].filter(Boolean).join(', ')}
+                    </Text>
                 </View>
+                  <Ionicons name="chevron-forward" size={20} color="#CCCCCC" />
               </TouchableOpacity>
-            ))}
+              ))
+            ) : searchText.length >= 3 ? (
+              <View style={styles.noResultsContainer}>
+                <Ionicons name="search-outline" size={48} color="#CCCCCC" />
+                <Text style={styles.noResultsText}>No locations found</Text>
+                <Text style={styles.noResultsSubText}>Try a different search term</Text>
+              </View>
+            ) : null}
           </ScrollView>
         )}
 
@@ -154,17 +244,19 @@ export default function AddressSearchScreen() {
           <TouchableOpacity 
             style={styles.currentLocationButton}
             onPress={handleUseCurrentLocation}
+            disabled={isLoading}
           >
             <Ionicons name="navigate" size={24} color="#666666" />
             <Text style={styles.currentLocationText}>Use my current location</Text>
           </TouchableOpacity>
 
-          {searchText.length > 0 && (
+          {suggestions.length > 0 && (
             <TouchableOpacity 
               style={styles.useEnteredButton}
               onPress={handleUseEnteredAddress}
+              disabled={isLoading}
             >
-              <Text style={styles.useEnteredText}>Use the address entered</Text>
+              <Text style={styles.useEnteredText}>Use selected location</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -181,10 +273,12 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingVertical: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#EEEEEE',
+    marginTop: Platform.OS === 'ios' ? 0 : StatusBar.currentHeight,
   },
   backButton: {
     padding: 8,
@@ -193,7 +287,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     color: '#222222',
-    marginLeft: 8,
   },
   content: {
     flex: 1,
@@ -202,12 +295,11 @@ const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#E5E5E5',
-    borderRadius: 24,
+    backgroundColor: '#F5F5F5',
+    borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 12,
-    backgroundColor: '#FFFFFF',
+    height: 56,
     marginBottom: 16,
   },
   searchInput: {
@@ -217,10 +309,18 @@ const styles = StyleSheet.create({
     color: '#222222',
   },
   clearButton: {
-    padding: 4,
+    padding: 8,
   },
-  loader: {
-    marginTop: 20,
+  loaderContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 40,
+  },
+  loaderText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: '#666666',
   },
   suggestionsContainer: {
     flex: 1,
@@ -233,7 +333,7 @@ const styles = StyleSheet.create({
     borderBottomColor: '#EEEEEE',
   },
   suggestionIcon: {
-    marginRight: 16,
+    marginRight: 12,
   },
   suggestionText: {
     flex: 1,
@@ -248,28 +348,53 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666666',
   },
+  noResultsContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 40,
+    paddingHorizontal: 20,
+  },
+  noResultsText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#222222',
+    marginTop: 16,
+  },
+  noResultsSubText: {
+    fontSize: 16,
+    color: '#666666',
+    marginTop: 8,
+    textAlign: 'center',
+  },
   bottomButtons: {
     marginTop: 'auto',
+    paddingVertical: 16,
   },
   currentLocationButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
+    padding: 16,
+    backgroundColor: '#F5F5F5',
+    borderRadius: 12,
+    marginBottom: 16,
   },
   currentLocationText: {
+    marginLeft: 16,
     fontSize: 16,
-    color: '#666666',
-    marginLeft: 12,
-    textDecorationLine: 'underline',
+    color: '#222222',
+    fontWeight: '500',
   },
   useEnteredButton: {
-    paddingVertical: 12,
-    marginTop: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 16,
+    backgroundColor: '#00A86B',
+    borderRadius: 12,
+    height: 56,
   },
   useEnteredText: {
     fontSize: 16,
-    color: '#222222',
-    textDecorationLine: 'underline',
-    textAlign: 'center',
+    color: '#FFFFFF',
+    fontWeight: '600',
   },
 }); 

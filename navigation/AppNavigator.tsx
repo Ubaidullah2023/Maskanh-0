@@ -3,8 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LoginScreen from '../screens/LoginScreen';
 import SelectionScreen from '../screens/SelectionScreen';
 import SignupScreen from '../screens/SignupScreen';
-import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
-import CheckoutScreen from '../screens/CheckoutScreen';
+import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';;
 import NotificationScreen from '../screens/NotificationScreen';
 import LoginSecurityScreen from '../screens/LoginSecurityScreen';
 import FilterInboxScreen from '../screens/FilterInboxScreen';
@@ -20,7 +19,6 @@ import TermsPrivacyScreen from '../screens/TermsPrivacyScreen';
 import HelpCenterScreen from '../screens/HelpCenterScreen';
 import LanguageScreen from '../screens/LanguageScreen';
 import MyAdsScreen from '../screens/MyAdsScreen';
-import CertifiedCarsScreen from '../screens/CertifiedCarsScreen';
 import PostAdScreen from '../screens/PostAdScreen';
 import TopUpScreen from '../screens/TopUpScreen';
 import FindServiceScreen from '../screens/FindServiceScreen';
@@ -49,22 +47,14 @@ import PlaceTypeScreen from '../screens/PlaceTypeScreen';
 import LocationScreen from '../screens/LocationScreen';
 import AddressSearchScreen from '../screens/AddressSearchScreen';
 import ConfirmAddressScreen from '../screens/ConfirmAddressScreen';
-import BasicInfoScreen from '../screens/BasicInfoScreen';
-import AmenitiesScreen from '../screens/AmenitiesScreen';
 import AddPhotosScreen from '../screens/AddPhotosScreen';
 import TitleScreen from '../screens/TitleScreen';
 import DescriptionScreen from '../screens/DescriptionScreen';
-import CreateDescriptionScreen from '../screens/CreateDescriptionScreen';
-import BookingSettingsScreen from '../screens/BookingSettingsScreen';
-import PriceSettingScreen from '../screens/PriceSettingScreen';
-import DiscountsScreen from '../screens/DiscountsScreen';
-import SafetyDetailsScreen from '../screens/SafetyDetailsScreen';
 import ListingScreen from '../screens/ListingScreen';
 import TodayScreen from '../screens/TodayScreen';
-import CalendarScreen from '../screens/CalendarScreen';
-import AnalyticsScreen from '../screens/AnalyticsScreen';
 import ArticlesScreen from '../screens/ArticlesScreen';
 import NotificationsScreen from '../screens/NotificationsScreen';
+import ProfileCompleteScreen from '../screens/ProfileCompleteScreen';
 
 export type RootStackParamList = {
   Login: undefined;
@@ -88,23 +78,10 @@ export type RootStackParamList = {
       highlights: string[];
       description: string;
       guestType: 'any_guest' | 'experienced_guest';
-      basePrice: number;
-      newListingDiscount?: number;
-      weeklyDiscount?: number;
-      monthlyDiscount?: number;
-      safetyDetails?: {
-        hasSecurityCamera: boolean;
-        cameraDescription?: string;
-        hasNoiseMonitor: boolean;
-        hasWeapons: boolean;
-      };
+      basePrice: number;    
     };
   };
   PlaceType: undefined;
-  Checkout: {
-    title: string;
-    price: number;
-  };
   Notification: undefined;
   LoginSecurity: undefined;
   FilterInbox: undefined;
@@ -120,7 +97,6 @@ export type RootStackParamList = {
   HelpCenter: undefined;
   Language: undefined;
   MyAds: undefined;
-  CertifiedCars: undefined;
   PostAd: undefined;
   TopUp: undefined;
   FindService: undefined;
@@ -144,8 +120,12 @@ export type RootStackParamList = {
     placeType: 'entire' | 'room' | 'shared';
     serviceTypes?: string[];
     address?: string;
+    selectedAddress?: any;
+    selectedCoordinates?: { latitude: number; longitude: number };
   };
-  AddressSearch: undefined;
+  AddressSearch: {
+    placeType?: 'entire' | 'room' | 'shared';
+  };
   ProviderVerification: {
     placeType: 'entire' | 'room' | 'shared';
     address?: string;
@@ -208,12 +188,6 @@ export type RootStackParamList = {
     city?: string;
     province?: string;
   };
-  BasicInfo: {
-    placeType: 'entire' | 'room' | 'shared';
-  };
-  Amenities: {
-    placeType: 'entire' | 'room' | 'shared';
-  };
   AddPhotos: {
     placeType: 'entire' | 'room' | 'shared';
     guestCount: number;
@@ -221,6 +195,11 @@ export type RootStackParamList = {
     bedCount: number;
     hasLock: boolean;
     amenities: string[];
+    address?: string;
+    coordinates?: {
+      latitude: number;
+      longitude: number;
+    };
   };
   Title: {
     placeType: 'entire' | 'room' | 'shared';
@@ -247,79 +226,6 @@ export type RootStackParamList = {
     }>;
     title: string;
   };
-  CreateDescription: {
-    placeType: 'entire' | 'room' | 'shared';
-    guestCount: number;
-    bedroomCount: number;
-    bedCount: number;
-    hasLock: boolean;
-    amenities: string[];
-    photos: Array<{
-      uri: string;
-      type: 'image';
-    }>;
-    title: string;
-    highlights: string[];
-  };
-  BookingSettings: {
-    placeType: 'entire' | 'room' | 'shared';
-    guestCount: number;
-    bedroomCount: number;
-    bedCount: number;
-    hasLock: boolean;
-    amenities: string[];
-    photos: Array<{
-      uri: string;
-      type: 'image';
-    }>;
-    title: string;
-    highlights: string[];
-    description: string;
-  };
-  PriceSetting: {
-    placeType: 'entire' | 'room' | 'shared';
-    guestCount: number;
-    bedroomCount: number;
-    bedCount: number;
-    hasLock: boolean;
-    amenities: string[];
-    photos: { uri: string; type: 'image' }[];
-    title: string;
-    highlights: string[];
-    description: string;
-    guestType: 'any_guest' | 'experienced_guest';
-  };
-  Discounts: {
-    placeType: 'entire' | 'room' | 'shared';
-    guestCount: number;
-    bedroomCount: number;
-    bedCount: number;
-    hasLock: boolean;
-    amenities: string[];
-    photos: { uri: string; type: 'image' }[];
-    title: string;
-    highlights: string[];
-    description: string;
-    guestType: 'any_guest' | 'experienced_guest';
-    basePrice: number;
-  };
-  SafetyDetails: {
-    placeType: 'entire' | 'room' | 'shared';
-    guestCount: number;
-    bedroomCount: number;
-    bedCount: number;
-    hasLock: boolean;
-    amenities: string[];
-    photos: { uri: string; type: 'image' }[];
-    title: string;
-    highlights: string[];
-    description: string;
-    guestType: 'any_guest' | 'experienced_guest';
-    basePrice: number;
-    newListingDiscount?: number;
-    weeklyDiscount?: number;
-    monthlyDiscount?: number;
-  };
   Listing: {
     placeType: 'entire' | 'room' | 'shared';
     guestCount: number;
@@ -333,22 +239,28 @@ export type RootStackParamList = {
     description: string;
     guestType: 'any_guest' | 'experienced_guest';
     basePrice: number;
-    newListingDiscount?: number;
-    weeklyDiscount?: number;
-    monthlyDiscount?: number;
-    safetyDetails?: {
-      hasSecurityCamera: boolean;
-      cameraDescription?: string;
-      hasNoiseMonitor: boolean;
-      hasWeapons: boolean;
-    };
   };
   Today: undefined;
-  Calendar: undefined;
   Menu: undefined;
   Analytics: undefined;
   Articles: undefined;
   Notifications: undefined;
+  ProfileComplete: {
+    placeType: 'entire' | 'room' | 'shared';
+    guestCount: number;
+    bedroomCount: number;
+    bedCount: number;
+    hasLock: boolean;
+    amenities: string[];
+    photos: Array<{
+      uri: string;
+      type: 'image';
+    }>;
+    title: string;
+    highlights: string[];
+    description: string;
+    guestType: 'any_guest' | 'experienced_guest';
+  };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -356,7 +268,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export default function AppNavigator() {
   return (
     <Stack.Navigator
-      initialRouteName="Today"
+      initialRouteName="Selection"
       screenOptions={{
         headerShown: false,
       }}
@@ -368,7 +280,6 @@ export default function AppNavigator() {
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="Security" component={SecurityScreen} />
       <Stack.Screen name="UpdatePassword" component={UpdatePasswordScreen} />
-      <Stack.Screen name="Checkout" component={CheckoutScreen} />
       <Stack.Screen name="Notification" component={NotificationScreen} />
       <Stack.Screen name="LoginSecurity" component={LoginSecurityScreen} />
       <Stack.Screen name="FilterInbox" component={FilterInboxScreen} />
@@ -384,7 +295,6 @@ export default function AppNavigator() {
       <Stack.Screen name="HelpCenter" component={HelpCenterScreen} />
       <Stack.Screen name="Language" component={LanguageScreen} />
       <Stack.Screen name="MyAds" component={MyAdsScreen} />
-      <Stack.Screen name="CertifiedCars" component={CertifiedCarsScreen} />
       <Stack.Screen name="PostAd" component={PostAdScreen} />
       <Stack.Screen name="TopUp" component={TopUpScreen} />
       <Stack.Screen name="FindService" component={FindServiceScreen} />
@@ -392,15 +302,7 @@ export default function AppNavigator() {
       <Stack.Screen name="AdPreview" component={AdPreviewScreen} />
       <Stack.Screen name="AllServices" component={AllServicesScreen} />
       <Stack.Screen name="ProviderVerification" component={ProviderVerificationScreen} />
-      <Stack.Screen 
-        name="MaskanhPro" 
-        component={MaskanhProScreen}
-        options={{
-          headerShown: false,
-          presentation: 'modal',
-          animation: 'slide_from_right'
-        }}
-      />
+      <Stack.Screen name="MaskanhPro" component={MaskanhProScreen} />
       <Stack.Screen name="Messages" component={MessagesScreen} />
       <Stack.Screen name="Search" component={SearchScreen} />
       <Stack.Screen name="Profile" component={ProfileScreen} />
@@ -408,64 +310,24 @@ export default function AppNavigator() {
       <Stack.Screen name="ServiceProviderStep1" component={ServiceProviderStep1Screen} />
       <Stack.Screen name="ServiceProviderStep2" component={ServiceProviderStep2Screen} />
       <Stack.Screen name="ServiceProviderStep3" component={ServiceProviderStep3Screen} />
-      <Stack.Screen 
-        name="PropertyType" 
-        component={PropertyTypeScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="ServiceMap"
-        component={ServiceMapScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Analytics"
-        component={AnalyticsScreen}
-        options={{ headerShown: false }}
-      />
+      <Stack.Screen name="PropertyType" component={PropertyTypeScreen} />
+      <Stack.Screen name="ServiceMap" component={ServiceMapScreen} />
       <Stack.Screen name="Registration" component={RegistrationScreen} />
-      <Stack.Screen 
-        name="ServiceDetails" 
-        component={ServiceDetailsScreen}
-        options={{
-          headerShown: false,
-          animation: 'slide_from_right',
-        }}
-      />
+      <Stack.Screen name="ServiceDetails" component={ServiceDetailsScreen} />
       <Stack.Screen name="NotificationSettings" component={NotificationSettingsScreen} />
-      <Stack.Screen 
-        name="Feedback" 
-        component={FeedbackScreen}
-        options={{
-          headerShown: false,
-          animation: 'slide_from_right',
-        }}
-      />
+      <Stack.Screen name="Feedback" component={FeedbackScreen} />
       <Stack.Screen name="PlaceType" component={PlaceTypeScreen} />
       <Stack.Screen name="Location" component={LocationScreen} />
       <Stack.Screen name="AddressSearch" component={AddressSearchScreen} />
       <Stack.Screen name="ConfirmAddress" component={ConfirmAddressScreen} />
-      <Stack.Screen name="BasicInfo" component={BasicInfoScreen} />
-      <Stack.Screen name="Amenities" component={AmenitiesScreen} />
       <Stack.Screen name="AddPhotos" component={AddPhotosScreen} />
       <Stack.Screen name="Title" component={TitleScreen} />
       <Stack.Screen name="Description" component={DescriptionScreen} />
-      <Stack.Screen name="CreateDescription" component={CreateDescriptionScreen} />
-      <Stack.Screen name="BookingSettings" component={BookingSettingsScreen} />
-      <Stack.Screen name="PriceSetting" component={PriceSettingScreen} />
-      <Stack.Screen name="Discounts" component={DiscountsScreen} />
-      <Stack.Screen name="SafetyDetails" component={SafetyDetailsScreen} /> 
       <Stack.Screen name="Listing" component={ListingScreen} />
-      <Stack.Screen
-        name="Articles"
-        component={ArticlesScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Notifications"
-        component={NotificationsScreen}
-        options={{ headerShown: false }}
-      />
+      <Stack.Screen name="Today" component={TodayScreen} />
+      <Stack.Screen name="Articles" component={ArticlesScreen} />
+      <Stack.Screen name="Notifications" component={NotificationsScreen} />
+      <Stack.Screen name="ProfileComplete" component={ProfileCompleteScreen} />
     </Stack.Navigator>
   );
 } 

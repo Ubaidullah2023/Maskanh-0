@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   TextInput,
   StatusBar,
+  Dimensions,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -16,6 +17,7 @@ import type { RootStackParamList } from '../navigation/AppNavigator';
 type TitleScreenRouteProp = RouteProp<RootStackParamList, 'Title'>;
 
 const MAX_CHARACTERS = 32;
+const { height } = Dimensions.get('window');
 
 export default function TitleScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -54,9 +56,9 @@ export default function TitleScreen() {
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
 
       <View style={styles.content}>
-        <Text style={styles.title}>Now, let,s with Service Offered</Text>
+        <Text style={styles.title}>Now, let's create your service title</Text>
         <Text style={styles.subtitle}>
-        Now let give your service a title.
+          Create a catchy title for your service to attract potential clients.
         </Text>
 
         <View style={styles.inputContainer}>
@@ -120,9 +122,10 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     padding: 24,
+    paddingTop: height * 0.08,
   },
   title: {
-    fontSize: 32,
+    fontSize: 28,
     fontWeight: '600',
     color: '#222222',
     marginBottom: 16,
@@ -140,10 +143,12 @@ const styles = StyleSheet.create({
     borderColor: '#DDDDDD',
     borderRadius: 12,
     padding: 16,
+    paddingTop: 16,
+    paddingBottom: 16,
     fontSize: 16,
     color: '#222222',
-    minHeight: 60,
-    maxHeight: 60,
+    minHeight: 80,
+    maxHeight: 100,
     textAlignVertical: 'top',
   },
   characterCount: {

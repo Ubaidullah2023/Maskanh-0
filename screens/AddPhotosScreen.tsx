@@ -10,6 +10,7 @@ import {
   Image,
   ScrollView,
   Alert,
+  ToastAndroid,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -29,6 +30,14 @@ export default function AddPhotosScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const route = useRoute<AddPhotosScreenRouteProp>();
   const [photos, setPhotos] = useState<PhotoType[]>([]);
+
+  const showToast = (message: string) => {
+    if (Platform.OS === 'android') {
+      ToastAndroid.show(message, ToastAndroid.SHORT);
+    } else {
+      Alert.alert('', message, [{ text: 'OK' }], { cancelable: true });
+    }
+  };
 
   const requestPermission = async () => {
     if (Platform.OS !== 'web') {
@@ -61,6 +70,11 @@ export default function AddPhotosScreen() {
   };
 
   const handleAddPhotos = async () => {
+    if (photos.length >= 5) {
+      showToast('You can only add up to 5 photos');
+      return;
+    }
+
     const hasPermission = await requestPermission();
     if (!hasPermission) return;
 
@@ -73,15 +87,34 @@ export default function AddPhotosScreen() {
     });
 
     if (!result.canceled) {
-      const newPhotos = result.assets.map(asset => ({
-        uri: asset.uri,
-        type: 'image' as const,
-      }));
-      setPhotos(prev => [...prev, ...newPhotos]);
+      const availableSlots = 5 - photos.length;
+      
+      if (result.assets.length > availableSlots) {
+        showToast(`You can only add ${availableSlots} more photo${availableSlots === 1 ? '' : 's'}`);
+        
+        // Only take the first available slots
+        const newPhotos = result.assets.slice(0, availableSlots).map(asset => ({
+          uri: asset.uri,
+          type: 'image' as const,
+        }));
+        
+        setPhotos(prev => [...prev, ...newPhotos]);
+      } else {
+        const newPhotos = result.assets.map(asset => ({
+          uri: asset.uri,
+          type: 'image' as const,
+        }));
+        setPhotos(prev => [...prev, ...newPhotos]);
+      }
     }
   };
 
   const handleTakePhotos = async () => {
+    if (photos.length >= 5) {
+      showToast('You can only add up to 5 photos');
+      return;
+    }
+
     const hasPermission = await requestCameraPermission();
     if (!hasPermission) return;
 
@@ -141,7 +174,7 @@ export default function AddPhotosScreen() {
       <ScrollView style={styles.content}>
         <Text style={styles.title}>Add some photos of your services</Text>
         <Text style={styles.subtitle}>
-        To get started with your services listing, please upload 5 high-quality photos of your space. You can always add more or make changes later.
+        To get started with your services listing, please upload 5 high-quality photos of your space. You can always add more or make changes later.
         </Text>
 
         {/* Photo Grid */}
@@ -216,6 +249,7 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   title: {
+    marginTop: 25,
     fontSize: 32,
     fontWeight: '600',
     color: '#222222',
