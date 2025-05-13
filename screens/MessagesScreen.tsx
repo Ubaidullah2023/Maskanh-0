@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/AppNavigator';
@@ -12,8 +12,10 @@ type MessageItemProps = {
   unreadCount?: number;
 };
 
-const MessageItem = ({ name, message, time, unreadCount }: MessageItemProps) => (
-  <TouchableOpacity style={styles.messageItem}>
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+
+const MessageItem = ({ name, message, time, unreadCount, onPress }: MessageItemProps & { onPress: () => void }) => (
+  <TouchableOpacity style={styles.messageItem} onPress={onPress}>
     <View style={styles.avatarContainer}>
       <Text style={styles.avatarText}>{name[0]}</Text>
     </View>
@@ -84,6 +86,7 @@ export default function MessagesScreen() {
             message={message.message}
             time={message.time}
             unreadCount={message.unreadCount}
+            onPress={() => navigation.navigate('Chat', { name: message.name })}
           />
         ))}
       </ScrollView>
@@ -97,46 +100,49 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8F9FA',
   },
   header: {
-    paddingHorizontal: 30,
-    paddingVertical: 26,
+    paddingHorizontal: SCREEN_WIDTH * 0.06,
+    paddingVertical: SCREEN_HEIGHT * 0.03,
     backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
     borderBottomColor: '#EEEEEE',
+    width: '100%',
   },
   headerTitle: {
-    fontSize: 28,
+    fontSize: SCREEN_WIDTH < 360 ? 22 : 28,
     fontWeight: '700',
     color: '#000000',
   },
   content: {
     flex: 1,
+    width: '100%',
   },
   messageItem: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
-    paddingVertical: 16,
-    paddingHorizontal: 20,
+    paddingVertical: SCREEN_HEIGHT * 0.018,
+    paddingHorizontal: SCREEN_WIDTH * 0.05,
     borderBottomWidth: 1,
     borderBottomColor: '#EEEEEE',
+    width: '100%',
   },
   avatarContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: SCREEN_WIDTH * 0.13,
+    height: SCREEN_WIDTH * 0.13,
+    borderRadius: (SCREEN_WIDTH * 0.13) / 2,
     backgroundColor: '#E8F5E9',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 16,
+    marginRight: SCREEN_WIDTH * 0.04,
   },
   avatarText: {
-    fontSize: 20,
+    fontSize: SCREEN_WIDTH < 360 ? 16 : 20,
     fontWeight: '600',
     color: '#34A853',
   },
   messageContent: {
     flex: 1,
-    marginRight: 12,
+    marginRight: SCREEN_WIDTH * 0.03,
   },
   messageHeader: {
     flexDirection: 'row',
@@ -145,29 +151,29 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   messageName: {
-    fontSize: 16,
+    fontSize: SCREEN_WIDTH < 360 ? 13 : 16,
     fontWeight: '600',
     color: '#222222',
   },
   messageTime: {
-    fontSize: 14,
+    fontSize: SCREEN_WIDTH < 360 ? 11 : 14,
     color: '#999999',
   },
   messageText: {
-    fontSize: 14,
+    fontSize: SCREEN_WIDTH < 360 ? 11 : 14,
     color: '#666666',
     lineHeight: 20,
   },
   unreadBadge: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
+    width: SCREEN_WIDTH * 0.07,
+    height: SCREEN_WIDTH * 0.07,
+    borderRadius: (SCREEN_WIDTH * 0.07) / 2,
     backgroundColor: '#34A853',
     justifyContent: 'center',
     alignItems: 'center',
   },
   unreadCount: {
-    fontSize: 12,
+    fontSize: SCREEN_WIDTH < 360 ? 10 : 12,
     fontWeight: '600',
     color: '#FFFFFF',
   },

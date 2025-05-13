@@ -9,11 +9,13 @@ import {
   Platform,
   StatusBar,
   Image,
+  Dimensions,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/AppNavigator';
 import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type Notification = {
   id: string;
@@ -59,8 +61,12 @@ const notifications: Notification[] = [
   },
 ];
 
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+const PRIMARY_COLOR = '#00A86B';
+
 export default function NotificationsScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const insets = useSafeAreaInsets();
 
   const handleBack = () => {
     navigation.goBack();
@@ -124,14 +130,16 @@ export default function NotificationsScreen() {
       />
       
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + SCREEN_HEIGHT * 0.01, paddingBottom: SCREEN_HEIGHT * 0.01 }]}>
         <TouchableOpacity 
           style={styles.backButton}
           onPress={handleBack}
         >
           <Ionicons name="arrow-back" size={24} color="#222222" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Notifications</Text>
+        <View style={styles.headerTitleContainer}>
+          <Text style={styles.headerTitle} numberOfLines={1} ellipsizeMode="tail">Notifications</Text>
+        </View>
         <TouchableOpacity style={styles.headerRight}>
           <Ionicons name="checkmark-done-outline" size={24} color="#222222" />
         </TouchableOpacity>
@@ -158,17 +166,28 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 16,
+    justifyContent: 'flex-start',
+    paddingHorizontal: SCREEN_WIDTH * 0.05,
+    paddingVertical: SCREEN_HEIGHT * 0.018,
     borderBottomWidth: 1,
     borderBottomColor: '#EEEEEE',
+    backgroundColor: '#FFFFFF',
+    width: '100%',
+  },
+  headerTitleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    minWidth: 0,
   },
   headerTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#222222',
+    fontSize: SCREEN_WIDTH < 360 ? 18 : 22,
+    fontWeight: 'bold',
+    color: '#222',
+    textAlign: 'left',
+    fontFamily: Platform.OS === 'ios' ? 'Helvetica Neue' : 'Roboto',
+    flexShrink: 1,
   },
   headerRight: {
     width: 40,

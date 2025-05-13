@@ -23,7 +23,20 @@ export default function ServiceProviderStep1Screen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const handleNext = () => {
-    navigation.navigate('PlaceType');
+    navigation.navigate('Listing', {
+      placeType: 'entire',
+      guestCount: 1,
+      bedroomCount: 1,
+      bedCount: 1,
+      hasLock: true,
+      amenities: [],
+      photos: [],
+      title: '',
+      highlights: [],
+      description: '',
+      guestType: 'any_guest',
+      basePrice: 0
+    });
   };
 
   const handleBack = () => {

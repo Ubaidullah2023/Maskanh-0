@@ -56,6 +56,17 @@ import ArticlesScreen from '../screens/ArticlesScreen';
 import NotificationsScreen from '../screens/NotificationsScreen';
 import ProfileCompleteScreen from '../screens/ProfileCompleteScreen';
 import AnalyticsScreen from '../screens/AnalyticsScreen';
+import ChatScreen from '../screens/ChatScreen';
+import ServiceProfileScreen from '../screens/ServiceProfileScreen';
+import ServiceEditProfileScreen from '../screens/ServiceEditProfileScreen';
+import ServicePersonalInfoScreen from '../screens/ServicePersonalInfoScreen';
+import ServiceSecurityScreen from '../screens/ServiceSecurityScreen';
+import ServiceNotificationSettingsScreen from '../screens/ServiceNotificationSettingsScreen';
+import ServiceLanguageScreen from '../screens/ServiceLanguageScreen';
+import ServiceHelpCenterScreen from '../screens/ServiceHelpCenterScreen';
+import ServiceTermsPrivacyScreen from '../screens/ServiceTermsPrivacyScreen';
+import ServiceFeedbackScreen from '../screens/ServiceFeedbackScreen';
+import ServiceLoginScreen from '../screens/ServiceLoginScreen';
 
 export type RootStackParamList = {
   Login: undefined;
@@ -262,6 +273,17 @@ export type RootStackParamList = {
     description: string;
     guestType: 'any_guest' | 'experienced_guest';
   };
+  Chat: { name: string };
+  ServiceProfile: undefined;
+  ServiceEditProfile: undefined;
+  ServicePersonalInfo: undefined;
+  ServiceSecurity: undefined;
+  ServiceNotificationSettings: undefined;
+  ServiceLanguage: undefined;
+  ServiceHelpCenter: undefined;
+  ServiceTermsPrivacy: undefined;
+  ServiceFeedback: undefined;
+  ServiceLogin: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -330,6 +352,17 @@ export default function AppNavigator() {
       <Stack.Screen name="Notifications" component={NotificationsScreen} />
       <Stack.Screen name="ProfileComplete" component={ProfileCompleteScreen} />
       <Stack.Screen name="Analytics" component={AnalyticsScreen} />
+      <Stack.Screen name="Chat" component={ChatScreen} />
+      <Stack.Screen name="ServiceProfile" component={ServiceProfileScreen} />
+      <Stack.Screen name="ServiceEditProfile" component={ServiceEditProfileScreen} />
+      <Stack.Screen name="ServicePersonalInfo" component={ServicePersonalInfoScreen} />
+      <Stack.Screen name="ServiceSecurity" component={ServiceSecurityScreen} />
+      <Stack.Screen name="ServiceNotificationSettings" component={ServiceNotificationSettingsScreen} />
+      <Stack.Screen name="ServiceLanguage" component={ServiceLanguageScreen} />
+      <Stack.Screen name="ServiceHelpCenter" component={ServiceHelpCenterScreen} />
+      <Stack.Screen name="ServiceTermsPrivacy" component={ServiceTermsPrivacyScreen} />
+      <Stack.Screen name="ServiceFeedback" component={ServiceFeedbackScreen} />
+      <Stack.Screen name="ServiceLogin" component={ServiceLoginScreen} />
     </Stack.Navigator>
   );
 } 

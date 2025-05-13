@@ -5,66 +5,57 @@ import {
   StyleSheet,
   SafeAreaView,
   ScrollView,
+  Dimensions,
+  TouchableOpacity,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/AppNavigator';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+const PRIMARY_COLOR = '#00A86B';
+
 export default function AnalyticsScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
+  // Dummy data
+  const stats = [
+    { label: 'Total Profile Views', value: '1,234', isPercent: false },
+    { label: 'Total Inquiries', value: '56', isPercent: false },
+    { label: 'Impressions', value: '2,345', isPercent: false },
+    { label: 'Profile Completion', value: '92%', isPercent: true },
+    { label: 'Last Activity', value: '2 hours ago', isPercent: false },
+    { label: 'Service Posted', value: '2024-05-01', isPercent: false },
+  ];
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Analytics</Text>
+        <View style={styles.headerTitleRow}>
+          <Text style={styles.headerTitle}>Dashboard</Text>
+          <View style={styles.greenDot} />
+        </View>
       </View>
-
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        <View style={styles.statsContainer}>
-          <View style={styles.statCard}>
-            <Text style={styles.statValue}>1,234</Text>
-            <Text style={styles.statLabel}>Total Views</Text>
-          </View>
-          
-          <View style={styles.statCard}>
-            <Text style={styles.statValue}>56</Text>
-            <Text style={styles.statLabel}>Inquiries</Text>
-          </View>
-          
-          <View style={styles.statCard}>
-            <Text style={styles.statValue}>89%</Text>
-            <Text style={styles.statLabel}>Engagement Rate</Text>
-          </View>
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Performance Overview</Text>
-          <View style={styles.chartPlaceholder}>
-            <Text style={styles.placeholderText}>Chart will be displayed here</Text>
-          </View>
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Recent Activity</Text>
-          <View style={styles.activityList}>
-            <View style={styles.activityItem}>
-              <Ionicons name="eye-outline" size={24} color="#666666" />
-              <View style={styles.activityContent}>
-                <Text style={styles.activityText}>New view on your listing</Text>
-                <Text style={styles.activityTime}>2 hours ago</Text>
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        <View style={styles.statsOuterContainer}>
+          <View style={styles.statsContainer}>
+            {stats.map((stat, idx) => (
+              <View style={styles.statCard} key={idx}>
+                <Text style={styles.statValue}>
+                  <Text style={styles.statValueGreen}>{stat.value}</Text>
+                </Text>
+                <Text style={styles.statLabel}>{stat.label}</Text>
               </View>
-            </View>
-            <View style={styles.activityItem}>
-              <Ionicons name="chatbubble-outline" size={24} color="#666666" />
-              <View style={styles.activityContent}>
-                <Text style={styles.activityText}>New message received</Text>
-                <Text style={styles.activityTime}>5 hours ago</Text>
-              </View>
-            </View>
+            ))}
           </View>
         </View>
       </ScrollView>
+      <View style={styles.tabBar}>
+        <TouchableOpacity style={styles.tabItem} onPress={() => navigation.goBack()}>
+          <Ionicons name="chevron-back-outline" size={32} color="#00A86B" />
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 }
@@ -75,83 +66,115 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
   },
   header: {
-    paddingHorizontal: 20,
-    paddingVertical: 35,
+    paddingHorizontal: SCREEN_WIDTH * 0.05,
+    paddingTop: SCREEN_HEIGHT * 0.04,
+    paddingBottom: SCREEN_HEIGHT * 0.02,
     borderBottomWidth: 1,
     borderBottomColor: '#EEEEEE',
     backgroundColor: '#FFFFFF',
+    width: '100%',
+    alignItems: 'center',
   },
   headerTitle: {
-    fontSize: 24,
-    fontWeight: '600',
+    fontSize: SCREEN_WIDTH < 360 ? 20 : 24,
+    fontWeight: '700',
     color: '#222222',
+    textAlign: 'left',
   },
-  content: {
-    flex: 1,
+  headerTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    width: '100%',
+  },
+  greenDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: PRIMARY_COLOR,
+    marginLeft: 8,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: SCREEN_HEIGHT * 0.04,
+    minHeight: SCREEN_HEIGHT * 0.85,
+  },
+  statsOuterContainer: {
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   statsContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 20,
-    gap: 10,
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 16,
+    width: '95%',
+    maxWidth: 500,
   },
   statCard: {
-    flex: 1,
+    width: SCREEN_WIDTH < 400 ? '90%' : '45%',
+    minWidth: 150,
+    maxWidth: 220,
     backgroundColor: '#F8F8F8',
-    padding: 16,
-    borderRadius: 12,
+    paddingVertical: SCREEN_HEIGHT * 0.035,
+    paddingHorizontal: SCREEN_WIDTH * 0.04,
+    borderRadius: 16,
     alignItems: 'center',
+    margin: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 8,
+    elevation: 4,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
   },
   statValue: {
-    fontSize: 24,
+    fontSize: SCREEN_WIDTH < 360 ? 20 : 28,
     fontWeight: '700',
     color: '#222222',
-    marginBottom: 4,
+    marginBottom: 6,
+    textAlign: 'center',
+  },
+  statValueGreen: {
+    color: PRIMARY_COLOR,
+    fontWeight: '700',
+    fontSize: SCREEN_WIDTH < 360 ? 20 : 28,
   },
   statLabel: {
-    fontSize: 14,
+    fontSize: SCREEN_WIDTH < 360 ? 13 : 16,
     color: '#666666',
+    textAlign: 'center',
+    fontWeight: '500',
   },
   section: {
-    padding: 20,
+    paddingHorizontal: SCREEN_WIDTH * 0.05,
+    paddingVertical: SCREEN_HEIGHT * 0.02,
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: SCREEN_WIDTH < 360 ? 15 : 18,
     fontWeight: '600',
     color: '#222222',
     marginBottom: 16,
   },
-  chartPlaceholder: {
-    height: 200,
-    backgroundColor: '#F5F5F5',
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  placeholderText: {
-    color: '#666666',
-  },
-  activityList: {
-    gap: 16,
-  },
-  activityItem: {
+  tabBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F8F8F8',
-    padding: 16,
-    borderRadius: 12,
-    gap: 12,
+    justifyContent: 'flex-start',
+    paddingVertical: SCREEN_HEIGHT * 0.012,
+    borderTopWidth: 1,
+    borderTopColor: '#EEEEEE',
+    backgroundColor: '#FFFFFF',
+    width: '100%',
+    paddingLeft: SCREEN_WIDTH * 0.03,
   },
-  activityContent: {
-    flex: 1,
-  },
-  activityText: {
-    fontSize: 16,
-    color: '#222222',
-    marginBottom: 4,
-  },
-  activityTime: {
-    fontSize: 14,
-    color: '#666666',
+  tabItem: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 8,
   },
 }); 
