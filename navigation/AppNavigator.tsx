@@ -67,6 +67,8 @@ import ServiceHelpCenterScreen from '../screens/ServiceHelpCenterScreen';
 import ServiceTermsPrivacyScreen from '../screens/ServiceTermsPrivacyScreen';
 import ServiceFeedbackScreen from '../screens/ServiceFeedbackScreen';
 import ServiceLoginScreen from '../screens/ServiceLoginScreen';
+import ServiceTabNavigator from './ServiceTabNavigator';
+import MaskanhProUpgradeScreen from '../screens/MaskanhProUpgradeScreen';
 
 export type RootStackParamList = {
   Login: undefined;
@@ -284,6 +286,8 @@ export type RootStackParamList = {
   ServiceTermsPrivacy: undefined;
   ServiceFeedback: undefined;
   ServiceLogin: undefined;
+  ServiceTabs: undefined;
+  MaskanhProUpgrade: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -291,7 +295,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export default function AppNavigator() {
   return (
     <Stack.Navigator
-      initialRouteName="Selection"
+      initialRouteName="ServiceTabs"
       screenOptions={{
         headerShown: false,
       }}
@@ -363,6 +367,8 @@ export default function AppNavigator() {
       <Stack.Screen name="ServiceTermsPrivacy" component={ServiceTermsPrivacyScreen} />
       <Stack.Screen name="ServiceFeedback" component={ServiceFeedbackScreen} />
       <Stack.Screen name="ServiceLogin" component={ServiceLoginScreen} />
+      <Stack.Screen name="ServiceTabs" component={ServiceTabNavigator} />
+      <Stack.Screen name="MaskanhProUpgrade" component={MaskanhProUpgradeScreen} />
     </Stack.Navigator>
   );
 } 

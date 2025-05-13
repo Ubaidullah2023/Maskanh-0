@@ -16,6 +16,7 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/AppNavigator';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import ServiceNavigation from '../components/ServiceNavigation';
 
 type Notification = {
   id: string;
@@ -155,6 +156,8 @@ export default function NotificationsScreen() {
           ))}
         </View>
       </ScrollView>
+
+      <ServiceNavigation />
     </SafeAreaView>
   );
 }
@@ -167,34 +170,27 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-start',
+    justifyContent: 'space-between',
     paddingHorizontal: SCREEN_WIDTH * 0.05,
-    paddingVertical: SCREEN_HEIGHT * 0.018,
+    paddingTop: SCREEN_HEIGHT * 0.04,
+    paddingBottom: SCREEN_HEIGHT * 0.02,
     borderBottomWidth: 1,
     borderBottomColor: '#EEEEEE',
     backgroundColor: '#FFFFFF',
     width: '100%',
   },
   headerTitleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
     flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
     minWidth: 0,
   },
   headerTitle: {
-    fontSize: SCREEN_WIDTH < 360 ? 18 : 22,
+    fontSize: SCREEN_WIDTH < 360 ? 18 : SCREEN_WIDTH < 400 ? 20 : 24,
     fontWeight: 'bold',
     color: '#222',
-    textAlign: 'left',
-    fontFamily: Platform.OS === 'ios' ? 'Helvetica Neue' : 'Roboto',
+    textAlign: 'center',
     flexShrink: 1,
-  },
-  headerRight: {
-    width: 40,
-    alignItems: 'flex-end',
-  },
-  backButton: {
-    padding: 8,
   },
   content: {
     flex: 1,
@@ -247,5 +243,48 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666666',
     lineHeight: 20,
+  },
+  tabBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 10,
+    borderTopWidth: 1,
+    borderTopColor: '#EEEEEE',
+  },
+  tabItem: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  tabText: {
+    fontSize: 12,
+    color: '#666666',
+  },
+  messageBadge: {
+    position: 'absolute',
+    top: -5,
+    right: -5,
+    backgroundColor: PRIMARY_COLOR,
+    borderRadius: 12,
+    width: 20,
+    height: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  messageBadgeText: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+  },
+  backButton: {
+    position: 'absolute',
+    left: 10,
+    top: 10,
+  },
+  headerRight: {
+    position: 'absolute',
+    right: 10,
+    top: 10,
   },
 }); 

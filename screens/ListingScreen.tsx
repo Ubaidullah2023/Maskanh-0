@@ -1,170 +1,76 @@
-import React, { useEffect, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   SafeAreaView,
   TouchableOpacity,
-  ScrollView,
+  FlatList,
   Image,
   Dimensions,
   Platform,
   StatusBar,
+  ScrollView,
 } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { RouteProp } from '@react-navigation/native';
-import type { RootStackParamList } from '../navigation/AppNavigator';
+import { useNavigation } from '@react-navigation/native';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { supabase } from '../lib/supabase';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import ServiceNavigation from '../components/ServiceNavigation';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const PRIMARY_COLOR = '#00A86B';
 const STATUS_COLOR = '#F5A623';
 
-type ListingScreenRouteProp = RouteProp<RootStackParamList, 'Listing'>;
-
-interface ServiceListing {
-  id: string;
-  title: string;
-  description: string;
-  location: string;
-  photos: string[];
-  serviceType: string;
-  highlights: string[];
-  coordinates: {
-    latitude: number;
-    longitude: number;
-  };
-  createdAt: string;
-  status: 'active' | 'pending' | 'completed';
-}
-
-function getHeaderDynamicPadding(insets: any) {
-  return {
-    paddingTop: insets.top + SCREEN_HEIGHT * 0.01,
-    paddingBottom: SCREEN_HEIGHT * 0.01,
-  };
-}
-
-function getHeaderStyle(insets: any) {
-  return {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: '4%',
-    paddingTop: insets.top + SCREEN_HEIGHT * 0.01,
-    paddingBottom: SCREEN_HEIGHT * 0.01,
-    minHeight: 56,
-    maxHeight: 80,
-    borderBottomWidth: 1,
-    borderBottomColor: '#EEEEEE',
-    backgroundColor: '#FFFFFF',
-    width: '100%',
-  };
-}
+const CONSTRUCTION_IMAGES = [
+  require('../assets/services/Heavy-Machinery.png'),
+  require('../assets/services/Drill.png'),
+  require('../assets/services/carpenter.png'),
+  require('../assets/services/electrician.png'),
+  require('../assets/services/Plumber.png'),
+];
 
 export default function ListingScreen() {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const route = useRoute<ListingScreenRouteProp>();
+  const navigation = useNavigation();
   const insets = useSafeAreaInsets();
-  const [listings, setListings] = useState<ServiceListing[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [carouselIndex, setCarouselIndex] = useState(0);
+  const flatListRef = useRef(null);
+  const [listings, setListings] = useState([{
+    id: '1',
+    title: 'Downtown Construction Project',
+    description: 'A modern high-rise under construction in the city center. Includes commercial and residential spaces.',
+    location: 'Downtown, Metropolis',
+    photos: CONSTRUCTION_IMAGES,
+    serviceType: 'General Contractor',
+    highlights: ['Cranes', 'Concrete', 'Steelwork'],
+    createdAt: new Date().toISOString(),
+    status: 'active',
+  }]);
 
-  // Dummy data for demonstration
-  const dummyListings: ServiceListing[] = [
-    {
-      id: '1',
-      title: 'Modern Apartment in City Center',
-      description: 'A beautiful and modern apartment located in the heart of the city. Close to all amenities and public transport.',
-      location: 'Downtown, Metropolis',
-      photos: ['https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80'],
-      serviceType: 'Electrician',
-      highlights: ['WiFi', 'Parking', '24/7 Service'],
-      coordinates: { latitude: 0, longitude: 0 },
-      createdAt: new Date().toISOString(),
-      status: 'active',
-    },
-    {
-      id: '2',
-      title: 'Cozy Suburban Home',
-      description: 'A cozy home perfect for families. Quiet neighborhood and spacious backyard.',
-      location: 'Suburbia, Metropolis',
-      photos: ['https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=800&q=80'],
-      serviceType: 'Plumber',
-      highlights: ['Garden', 'Pet Friendly'],
-      coordinates: { latitude: 0, longitude: 0 },
-      createdAt: new Date().toISOString(),
-      status: 'pending',
-    },
-    {
-      id: '3',
-      title: 'Luxury Villa with Pool',
-      description: 'Experience luxury living in this villa with a private pool and stunning views.',
-      location: 'Hillside, Metropolis',
-      photos: ['https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=800&q=80'],
-      serviceType: 'Cleaner',
-      highlights: ['Pool', 'Mountain View', 'Breakfast Included'],
-      coordinates: { latitude: 0, longitude: 0 },
-      createdAt: new Date().toISOString(),
-      status: 'completed',
-    },
-  ];
-
+  // Auto-slide logic
   useEffect(() => {
-    fetchListings();
+    const timer = setInterval(() => {
+      setCarouselIndex((prev) => {
+        const next = (prev + 1) % CONSTRUCTION_IMAGES.length;
+        flatListRef.current?.scrollToIndex({ index: next, animated: true });
+        return next;
+      });
+    }, 3000);
+    return () => clearInterval(timer);
   }, []);
 
-  const fetchListings = async () => {
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.user) {
-        setListings([]);
-        setLoading(false);
-        return;
-      }
-      const { data, error } = await supabase
-        .from('service_providers')
-        .select('*')
-        .eq('user_id', session.user.id);
-      if (error) throw error;
-      if (data && data.length > 0) {
-        setListings(data.map(item => ({
-          id: item.id,
-          title: item.title,
-          description: item.description,
-          location: `${item.city}, ${item.province}`,
-          photos: item.photos,
-          serviceType: item.profession,
-          highlights: item.highlights,
-          coordinates: item.coordinates,
-          createdAt: item.created_at,
-          status: 'active'
-        })));
-      } else {
-        setListings([]);
-      }
-    } catch (error) {
-      setListings([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Centered header title
+  useEffect(() => {
+    navigation.setOptions &&
+      navigation.setOptions({
+        headerTitle: () => (
+          <Text style={styles.headerTitle}>Your Services</Text>
+        ),
+        headerTitleAlign: 'center',
+        headerLeft: () => null,
+      });
+  }, [navigation]);
 
-  const handleSearch = () => {
-    // TODO: Implement search functionality
-  };
-
-  const handleNotifications = () => {
-    navigation.navigate('Notifications');
-  };
-
-  const handleAdd = () => {
-    navigation.navigate('ServiceProviderStep1');
-  };
-
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
       year: 'numeric',
@@ -173,7 +79,7 @@ export default function ListingScreen() {
     });
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status) => {
     switch (status) {
       case 'active':
         return PRIMARY_COLOR;
@@ -186,126 +92,104 @@ export default function ListingScreen() {
     }
   };
 
+  // --- HEADER & BOTTOM BAR LOGIC (unchanged) ---
+  const handleAdd = () => {
+    navigation.navigate('MaskanhProUpgrade', { listingCount: listings.length });
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      <View style={[styles.header, getHeaderDynamicPadding(insets)]}>
-        <Text style={styles.headerTitle}>Your Services</Text>
-        <View style={styles.headerButtons}>
+      {/* Header */}
+      <View style={[styles.header, { paddingTop: insets.top + SCREEN_HEIGHT * 0.01, paddingBottom: SCREEN_HEIGHT * 0.01 }]}>
+        <View style={{ flex: 1 }} />
+        <View style={{ flex: 2, alignItems: 'center', justifyContent: 'center' }}>
+          <Text style={styles.headerTitle}>Your Services</Text>
+            </View>
+        <View style={{ flex: 1, alignItems: 'flex-end' }}>
           <TouchableOpacity style={styles.headerButton} onPress={handleAdd}>
-            <Ionicons name="add" size={24} color="#222222" />
+            <Ionicons name="add" size={28} color={PRIMARY_COLOR} />
           </TouchableOpacity>
         </View>
       </View>
 
+      {/* Only one listing card */}
       <ScrollView style={[styles.content, { paddingBottom: insets.bottom }]} showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }}>
-        {(listings.length === 0 && !loading ? dummyListings : listings).map((listing) => (
-          <View key={listing.id} style={styles.listingCard}>
-            <View style={styles.listingHeader}>
-              <View style={styles.statusContainer}>
-                <View style={[styles.statusDot, { backgroundColor: getStatusColor(listing.status) }]} />
-                <Text style={[styles.statusText, { color: getStatusColor(listing.status) }]}>
-                  {listing.status.charAt(0).toUpperCase() + listing.status.slice(1)}
-                </Text>
-              </View>
-              <Text style={styles.serviceType}>{listing.serviceType}</Text>
-            </View>
-
-            {listing.photos && listing.photos.length > 0 && (
-              <Image
-                source={{ uri: listing.photos[0] }}
-                style={styles.listingImage}
-                resizeMode="cover"
-              />
-            )}
-
-            <View style={styles.listingDetails}>
-              <Text style={styles.listingTitle}>{listing.title}</Text>
-              <Text style={styles.listingLocation}>{listing.location}</Text>
-              <Text style={styles.listingDescription} numberOfLines={2}>
-                {listing.description}
-              </Text>
-              <Text style={styles.listingDate}>
-                Listed on {formatDate(listing.createdAt)}
+        <View style={styles.listingCard}>
+          <View style={styles.listingHeader}>
+          <View style={styles.statusContainer}>
+              <View style={[styles.statusDot, { backgroundColor: getStatusColor(listings[0].status) }]} />
+              <Text style={[styles.statusText, { color: getStatusColor(listings[0].status) }]}>
+                {listings[0].status.charAt(0).toUpperCase() + listings[0].status.slice(1)}
               </Text>
             </View>
+            <Text style={styles.serviceType}>{listings[0].serviceType}</Text>
+          </View>
 
-            <View style={styles.highlightsContainer}>
-              {listing.highlights.map((highlight, index) => (
-                <View key={index} style={styles.highlightTag}>
-                  <Text style={styles.highlightText}>{highlight}</Text>
-                </View>
+          {/* Image Carousel */}
+          <View style={styles.carouselContainer}>
+            <FlatList
+              ref={flatListRef}
+              data={CONSTRUCTION_IMAGES}
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              keyExtractor={(_, idx) => idx.toString()}
+              renderItem={({ item }) => (
+                <View style={styles.imageWrapper}>
+                  <Image source={item} style={styles.listingImage} />
+          </View>
+              )}
+              onMomentumScrollEnd={e => {
+                const index = Math.round(e.nativeEvent.contentOffset.x / (SCREEN_WIDTH * 0.92));
+                setCarouselIndex(index);
+              }}
+              style={{ flexGrow: 0 }}
+            />
+            <View style={styles.carouselDots}>
+              {CONSTRUCTION_IMAGES.map((_, idx) => (
+                <View
+                  key={idx}
+                  style={[
+                    styles.dot,
+                    carouselIndex === idx && styles.activeDot,
+                  ]}
+                />
               ))}
             </View>
+        </View>
+
+        <View style={styles.listingDetails}>
+            <Text style={styles.listingTitle}>{listings[0].title}</Text>
+            <Text style={styles.listingLocation}>{listings[0].location}</Text>
+            <Text style={styles.listingDescription} numberOfLines={2}>
+              {listings[0].description}
+            </Text>
+            <Text style={styles.listingDate}>
+              Listed on {formatDate(listings[0].createdAt)}
+            </Text>
+        </View>
+
+          <View style={styles.highlightsContainer}>
+            {listings[0].highlights.map((highlight, index) => (
+              <View key={index} style={styles.highlightTag}>
+                <Text style={styles.highlightText}>{highlight}</Text>
+              </View>
+            ))}
           </View>
-        ))}
+        </View>
       </ScrollView>
 
-      <View style={styles.tabBar}>
-        <TouchableOpacity 
-          style={styles.tabItem} 
-          onPress={() => navigation.navigate('Analytics')}
-        >
-          <Ionicons name="stats-chart" size={24} color="#666666" />
-          <Text style={styles.tabText}>Dashboard</Text>
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={styles.tabItem}
-          onPress={() => navigation.navigate('Messages')}
-        >
-          <View style={styles.messageBadge}>
-            <Text style={styles.messageBadgeText}>1</Text>
-          </View>
-          <Ionicons name="chatbubble-outline" size={24} color="#666666" />
-          <Text style={styles.tabText}>Messages</Text>
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={styles.tabItem}
-          onPress={() => navigation.navigate('Listing', {
-            placeType: 'entire',
-            guestCount: 1,
-            bedroomCount: 1,
-            bedCount: 1,
-            hasLock: true,
-            amenities: [],
-            photos: [],
-            title: '',
-            highlights: [],
-            description: '',
-            guestType: 'any_guest',
-            basePrice: 0
-          })}
-        >
-          <Ionicons name="home" size={24} color={PRIMARY_COLOR} />
-          <Text style={[styles.tabText, { color: PRIMARY_COLOR }]}>Listings</Text>
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={styles.tabItem}
-          onPress={() => navigation.navigate('Notifications')}
-        >
-          <Ionicons name="notifications" size={24} color="#666666" />
-          <Text style={styles.tabText}>Notifications</Text>
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={styles.tabItem}
-          onPress={() => navigation.navigate('ServiceProfile')}
-        >
-          <Ionicons name="person" size={24} color="#666666" />
-          <Text style={styles.tabText}>Profile</Text>
-        </TouchableOpacity>
-      </View>
+      <ServiceNavigation />
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
+  container: { flex: 1, backgroundColor: '#FFFFFF' },
   header: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    justifyContent: 'center',
     paddingHorizontal: '4%',
     minHeight: 56,
     maxHeight: 80,
@@ -315,19 +199,10 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   headerTitle: {
-    flex: 1,
     fontSize: SCREEN_WIDTH < 360 ? 20 : 24,
-    fontWeight: '600',
+    fontWeight: '700',
     color: '#222222',
-    textAlign: 'left',
-    flexShrink: 1,
-    marginRight: 8,
-  },
-  headerButtons: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    flexShrink: 0,
+    textAlign: 'center',
   },
   headerButton: {
     width: Math.max(SCREEN_WIDTH * 0.1, 36),
@@ -340,25 +215,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginLeft: 6,
     flexShrink: 0,
-  },
-  notificationBadge: {
-    position: 'absolute',
-    top: -2,
-    right: -2,
-    backgroundColor: PRIMARY_COLOR,
-    borderRadius: 10,
-    minWidth: 18,
-    height: 18,
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 1,
-    borderWidth: 1.5,
-    borderColor: '#FFFFFF',
-  },
-  notificationBadgeText: {
-    color: '#FFFFFF',
-    fontSize: 10,
-    fontWeight: '600',
   },
   content: {
     flex: 1,
@@ -404,14 +260,43 @@ const styles = StyleSheet.create({
     color: '#666666',
     fontWeight: '500',
   },
+  carouselContainer: {
+    width: '100%',
+    aspectRatio: 1.6,
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+    overflow: 'hidden',
+    backgroundColor: '#eee',
+  },
+  imageWrapper: {
+    width: SCREEN_WIDTH * 0.92,
+    height: undefined,
+    aspectRatio: 1.6,
+  },
   listingImage: {
     width: '100%',
-    maxWidth: 500,
-    height: SCREEN_HEIGHT * 0.22,
-    minHeight: 120,
-    maxHeight: 260,
-    alignSelf: 'center',
-    borderRadius: 0,
+    height: '100%',
+  },
+  carouselDots: {
+    position: 'absolute',
+    bottom: 10,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#ccc',
+    marginHorizontal: 4,
+  },
+  activeDot: {
+    backgroundColor: PRIMARY_COLOR,
+    width: 12,
+    height: 12,
   },
   listingDetails: {
     paddingHorizontal: '4%',
@@ -497,17 +382,5 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 10,
     fontWeight: '600',
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 40,
-  },
-  emptyText: {
-    fontSize: 16,
-    color: '#888',
-    marginTop: 16,
-    textAlign: 'center',
   },
 }); 
