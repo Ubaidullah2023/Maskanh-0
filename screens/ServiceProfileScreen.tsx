@@ -16,6 +16,7 @@ export type ServiceStackParamList = {
   ServiceTermsPrivacy: undefined;
   ServiceFeedback: undefined;
   ServiceLogin: undefined;
+  ServiceSettings: undefined;
 };
 
 export default function ServiceProfileScreen() {
@@ -181,7 +182,7 @@ export default function ServiceProfileScreen() {
         </Text>
         <TouchableOpacity 
           style={getSettingsButtonStyle()}
-          onPress={() => navigation.navigate('ServiceNotificationSettings')}
+          onPress={() => navigation.navigate('ServiceSettings')}
         >
           <Ionicons name="settings-outline" size={18} color="#00A86B" />
         </TouchableOpacity>

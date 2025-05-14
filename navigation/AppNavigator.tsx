@@ -69,6 +69,7 @@ import ServiceFeedbackScreen from '../screens/ServiceFeedbackScreen';
 import ServiceLoginScreen from '../screens/ServiceLoginScreen';
 import ServiceTabNavigator from './ServiceTabNavigator';
 import MaskanhProUpgradeScreen from '../screens/MaskanhProUpgradeScreen';
+import ServiceSettingsScreen from '../screens/ServiceSettingsScreen';
 
 export type RootStackParamList = {
   Login: undefined;
@@ -286,6 +287,7 @@ export type RootStackParamList = {
   ServiceTermsPrivacy: undefined;
   ServiceFeedback: undefined;
   ServiceLogin: undefined;
+  ServiceSettings: undefined;
   ServiceTabs: undefined;
   MaskanhProUpgrade: undefined;
 };
@@ -367,6 +369,7 @@ export default function AppNavigator() {
       <Stack.Screen name="ServiceTermsPrivacy" component={ServiceTermsPrivacyScreen} />
       <Stack.Screen name="ServiceFeedback" component={ServiceFeedbackScreen} />
       <Stack.Screen name="ServiceLogin" component={ServiceLoginScreen} />
+      <Stack.Screen name="ServiceSettings" component={ServiceSettingsScreen} />
       <Stack.Screen name="ServiceTabs" component={ServiceTabNavigator} />
       <Stack.Screen name="MaskanhProUpgrade" component={MaskanhProUpgradeScreen} />
     </Stack.Navigator>
