@@ -27,9 +27,7 @@ export default function MaskanhProUpgradeScreen() {
   };
 
   const handleNotNow = () => {
-    if (listingCount < 2) {
-      navigation.navigate('ServiceProviderStep1');
-    }
+    navigation.navigate('Listing');
   };
 
   return (

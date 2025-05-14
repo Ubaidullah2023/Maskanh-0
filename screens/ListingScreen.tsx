@@ -15,7 +15,6 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import ServiceNavigation from '../components/ServiceNavigation';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const PRIMARY_COLOR = '#00A86B';
@@ -178,8 +177,6 @@ export default function ListingScreen() {
           </View>
         </View>
       </ScrollView>
-
-      <ServiceNavigation />
     </SafeAreaView>
   );
 }

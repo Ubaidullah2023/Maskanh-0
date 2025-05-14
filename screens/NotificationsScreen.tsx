@@ -16,7 +16,6 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/AppNavigator';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import ServiceNavigation from '../components/ServiceNavigation';
 
 type Notification = {
   id: string;
@@ -157,7 +156,7 @@ export default function NotificationsScreen() {
         </View>
       </ScrollView>
 
-      <ServiceNavigation />
+      {/* <ServiceNavigation /> */}
     </SafeAreaView>
   );
 }

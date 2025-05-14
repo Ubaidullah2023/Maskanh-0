@@ -84,88 +84,79 @@ export default function ServiceSecurityScreen() {
         </View>
       </View>
 
-      <View style={styles.content}>
-        <View style={styles.securityContainer}>
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Change Password</Text>
-            <View style={styles.inputContainer}>
-              <Ionicons name="lock-closed-outline" size={20} color="#6C757D" style={styles.inputIcon} />
-              <TextInput
-                style={styles.input}
-                placeholder="Current Password"
-                secureTextEntry
-                value={currentPassword}
-                onChangeText={setCurrentPassword}
-                placeholderTextColor="#6C757D"
-              />
-            </View>
-            <View style={styles.inputContainer}>
-              <Ionicons name="key-outline" size={20} color="#6C757D" style={styles.inputIcon} />
-              <TextInput
-                style={styles.input}
-                placeholder="New Password"
-                secureTextEntry
-                value={newPassword}
-                onChangeText={setNewPassword}
-                placeholderTextColor="#6C757D"
-              />
-            </View>
-            <View style={styles.inputContainer}>
-              <Ionicons name="key-outline" size={20} color="#6C757D" style={styles.inputIcon} />
-              <TextInput
-                style={styles.input}
-                placeholder="Confirm New Password"
-                secureTextEntry
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
-                placeholderTextColor="#6C757D"
-              />
-            </View>
-            <TouchableOpacity 
-              style={styles.saveButton}
-              onPress={handleSaveChanges}
-            >
-              <Text style={styles.saveButtonText}>Save Changes</Text>
-            </TouchableOpacity>
+      <ScrollView style={styles.content} contentContainerStyle={styles.securityContainer} showsVerticalScrollIndicator={false}>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Change Password</Text>
+          <View style={styles.inputContainer}>
+            <Ionicons name="lock-closed-outline" size={20} color="#6C757D" style={styles.inputIcon} />
+            <TextInput
+              style={styles.input}
+              placeholder="Current Password"
+              secureTextEntry
+              value={currentPassword}
+              onChangeText={setCurrentPassword}
+              placeholderTextColor="#6C757D"
+            />
           </View>
-
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Security Features</Text>
-            {renderSecurityOption(
-              'finger-print-outline',
-              'Biometric Authentication',
-              'Use your fingerprint or face ID to log in',
-              biometricEnabled,
-              setBiometricEnabled
-            )}
-            {renderSecurityOption(
-              'shield-checkmark-outline',
-              'Two-Factor Authentication',
-              'Add an extra layer of security to your account',
-              twoFactorEnabled,
-              setTwoFactorEnabled
-            )}
+          <View style={styles.inputContainer}>
+            <Ionicons name="key-outline" size={20} color="#6C757D" style={styles.inputIcon} />
+            <TextInput
+              style={styles.input}
+              placeholder="New Password"
+              secureTextEntry
+              value={newPassword}
+              onChangeText={setNewPassword}
+              placeholderTextColor="#6C757D"
+            />
           </View>
+          <View style={styles.inputContainer}>
+            <Ionicons name="key-outline" size={20} color="#6C757D" style={styles.inputIcon} />
+            <TextInput
+              style={styles.input}
+              placeholder="Confirm New Password"
+              secureTextEntry
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+              placeholderTextColor="#6C757D"
+            />
+          </View>
+          <TouchableOpacity 
+            style={styles.saveButton}
+            onPress={handleSaveChanges}
+          >
+            <Text style={styles.saveButtonText}>Save Changes</Text>
+          </TouchableOpacity>
+        </View>
 
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Security Tips</Text>
-            <View style={styles.tipsContainer}>
-              <View style={styles.tipItem}>
-                <Ionicons name="checkmark-circle-outline" size={20} color="#00A86B" />
-                <Text style={styles.tipText}>Use a strong, unique password</Text>
-              </View>
-              <View style={styles.tipItem}>
-                <Ionicons name="checkmark-circle-outline" size={20} color="#00A86B" />
-                <Text style={styles.tipText}>Enable two-factor authentication</Text>
-              </View>
-              <View style={styles.tipItem}>
-                <Ionicons name="checkmark-circle-outline" size={20} color="#00A86B" />
-                <Text style={styles.tipText}>Keep your app updated</Text>
-              </View>
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Security Features</Text>
+          {renderSecurityOption(
+            'shield-checkmark-outline',
+            'Two-Factor Authentication',
+            'Add an extra layer of security to your account',
+            twoFactorEnabled,
+            setTwoFactorEnabled
+          )}
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Security Tips</Text>
+          <View style={styles.tipsContainer}>
+            <View style={styles.tipItem}>
+              <Ionicons name="checkmark-circle-outline" size={20} color="#00A86B" />
+              <Text style={styles.tipText}>Use a strong, unique password</Text>
+            </View>
+            <View style={styles.tipItem}>
+              <Ionicons name="checkmark-circle-outline" size={20} color="#00A86B" />
+              <Text style={styles.tipText}>Enable two-factor authentication</Text>
+            </View>
+            <View style={styles.tipItem}>
+              <Ionicons name="checkmark-circle-outline" size={20} color="#00A86B" />
+              <Text style={styles.tipText}>Keep your app updated</Text>
             </View>
           </View>
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }

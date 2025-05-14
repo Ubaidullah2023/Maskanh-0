@@ -13,7 +13,6 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/AppNavigator';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import ServiceNavigation from '../components/ServiceNavigation';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const PRIMARY_COLOR = '#00A86B';
@@ -59,7 +58,7 @@ export default function AnalyticsScreen() {
           ))}
         </View>
       </ScrollView>
-      <ServiceNavigation />
+      {/* <ServiceNavigation /> */}
     </SafeAreaView>
   );
 }
