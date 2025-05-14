@@ -289,7 +289,9 @@ export type RootStackParamList = {
   ServiceFeedback: undefined;
   ServiceLogin: undefined;
   ServiceSettings: undefined;
-  ServiceTabs: undefined;
+  ServiceTabs: {
+    screen?: string;
+  };
   MaskanhProUpgrade: undefined;
 };
 
@@ -298,7 +300,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export default function AppNavigator() {
   return (
     <Stack.Navigator
-      initialRouteName="ServiceTabs"
+      initialRouteName="Selection"
       screenOptions={{
         headerShown: false,
       }}

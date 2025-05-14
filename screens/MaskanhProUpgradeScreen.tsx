@@ -32,7 +32,9 @@ export default function MaskanhProUpgradeScreen() {
   };
 
   const handleNotNow = () => {
-    navigation.navigate('Selection');
+    navigation.navigate('ServiceTabs', {
+      screen: 'Listing'
+    });
   };
 
   return (
