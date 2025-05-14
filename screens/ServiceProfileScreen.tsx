@@ -24,11 +24,17 @@ export default function ServiceProfileScreen() {
   const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
   
   const [isEditing, setIsEditing] = useState(false);
+  const [isEditingDetails, setIsEditingDetails] = useState(false);
   const [profileData, setProfileData] = useState({
     name: 'John Doe',
     email: 'serviceuser@gmail.com',
     contactNumber: '+1 234 567 8900',
     profileImage: require('../assets/images/construction.png'),
+    role: 'Electrician',
+    age: '35',
+    city: 'Karachi',
+    cnic: '42101-1234567-8',
+    experience: '8 years',
   });
 
   const [editedData, setEditedData] = useState({...profileData});
@@ -127,6 +133,21 @@ export default function ServiceProfileScreen() {
     );
   };
 
+  const handleEditDetails = () => {
+    setIsEditingDetails(true);
+    setEditedData({...profileData});
+  };
+
+  const handleSaveDetails = () => {
+    setProfileData({...editedData});
+    setIsEditingDetails(false);
+  };
+
+  const handleCancelDetails = () => {
+    setIsEditingDetails(false);
+    setEditedData({...profileData});
+  };
+
   const renderSectionHeader = (title: string) => (
     <Text style={styles.sectionHeader}>{title}</Text>
   );
@@ -162,11 +183,7 @@ export default function ServiceProfileScreen() {
           style={getSettingsButtonStyle()}
           onPress={() => navigation.navigate('ServiceNotificationSettings')}
         >
-          <Ionicons 
-            name="settings-outline" 
-            size={18} 
-            color="#00A86B" 
-          />
+          <Ionicons name="settings-outline" size={18} color="#00A86B" />
         </TouchableOpacity>
       </View>
       <ScrollView style={styles.content}>
@@ -175,7 +192,7 @@ export default function ServiceProfileScreen() {
             style={styles.editIconContainer}
             onPress={handleEditProfile}
           >
-            <Ionicons name="pencil" size={20} color="#00A86B" />
+            <Ionicons name="pencil" size={18} color="#00A86B" />
           </TouchableOpacity>
           
           <View style={styles.profileImageWrapper}>
@@ -244,83 +261,115 @@ export default function ServiceProfileScreen() {
           )}
         </View>
 
-        <View style={styles.settingsContainer}>
-          {renderSectionHeader('Account Settings')}
-          <View style={styles.section}>
-            <TouchableOpacity 
-              style={styles.menuItem}
-              onPress={handlePersonalInfo}
-            >
-              <Ionicons name="person-outline" size={24} color="#00A86B" />
-              <Text style={styles.menuText}>Personal Information</Text>
-              <Ionicons name="chevron-forward" size={24} color="#666666" />
-            </TouchableOpacity>
-            <TouchableOpacity 
-              style={styles.menuItem}
-              onPress={handleSecurity}
-            >
-              <Ionicons name="lock-closed-outline" size={24} color="#00A86B" />
-              <Text style={styles.menuText}>Security</Text>
-              <Ionicons name="chevron-forward" size={24} color="#666666" />
-            </TouchableOpacity>
-            <TouchableOpacity 
-              style={styles.menuItem}
-              onPress={handleNotifications}
-            >
-              <Ionicons name="notifications-outline" size={24} color="#00A86B" />
-              <Text style={styles.menuText}>Notifications</Text>
-              <Ionicons name="chevron-forward" size={24} color="#666666" />
-            </TouchableOpacity>
-          </View>
-
-          {renderSectionHeader('Preferences')}
-          <View style={styles.section}>
-            <TouchableOpacity 
-              style={styles.menuItem}
-              onPress={handleLanguage}
-            >
-              <Ionicons name="language-outline" size={24} color="#00A86B" />
-              <Text style={styles.menuText}>Language</Text>
-              <Ionicons name="chevron-forward" size={24} color="#666666" />
-            </TouchableOpacity>
-          </View>
-
-          {renderSectionHeader('Support')}
-          <View style={styles.section}>
-            <TouchableOpacity 
-              style={styles.menuItem}
-              onPress={handleHelpCenter}
-            >
-              <Ionicons name="help-circle-outline" size={24} color="#00A86B" />
-              <Text style={styles.menuText}>Help Center</Text>
-              <Ionicons name="chevron-forward" size={24} color="#666666" />
-            </TouchableOpacity>
-            <TouchableOpacity 
-              style={styles.menuItem}
-              onPress={handleTermsPrivacy}
-            >
-              <Ionicons name="document-text-outline" size={24} color="#00A86B" />
-              <Text style={styles.menuText}>Terms & Privacy Policy</Text>
-              <Ionicons name="chevron-forward" size={24} color="#666666" />
-            </TouchableOpacity>
-            <TouchableOpacity 
-              style={styles.menuItem}
-              onPress={handleAbout}
-            >
-              <Ionicons name="information-circle-outline" size={24} color="#00A86B" />
-              <Text style={styles.menuText}>About</Text>
-              <Ionicons name="chevron-forward" size={24} color="#666666" />
-            </TouchableOpacity>
-          </View>
-
+        <View style={[styles.detailsCard, { marginTop: 16 }]}>
           <TouchableOpacity 
-            style={styles.logoutButton}
-            onPress={handleLogout}
+            style={styles.editIconContainer}
+            onPress={handleEditDetails}
           >
-            <Ionicons name="log-out-outline" size={24} color="#FF3B30" />
-            <Text style={styles.logoutText}>Logout</Text>
+            <Ionicons name="pencil" size={18} color="#00A86B" />
           </TouchableOpacity>
+
+          {isEditingDetails ? (
+            <>
+              <TextInput
+                style={styles.input}
+                value={editedData.role}
+                onChangeText={(text) => setEditedData({...editedData, role: text})}
+                placeholder="Role"
+                placeholderTextColor="#999999"
+              />
+              <TextInput
+                style={styles.input}
+                value={editedData.age}
+                onChangeText={(text) => setEditedData({...editedData, age: text})}
+                placeholder="Age"
+                placeholderTextColor="#999999"
+                keyboardType="numeric"
+              />
+              <TextInput
+                style={styles.input}
+                value={editedData.city}
+                onChangeText={(text) => setEditedData({...editedData, city: text})}
+                placeholder="City"
+                placeholderTextColor="#999999"
+              />
+              <TextInput
+                style={styles.input}
+                value={editedData.cnic}
+                onChangeText={(text) => setEditedData({...editedData, cnic: text})}
+                placeholder="CNIC"
+                placeholderTextColor="#999999"
+              />
+              <TextInput
+                style={styles.input}
+                value={editedData.experience}
+                onChangeText={(text) => setEditedData({...editedData, experience: text})}
+                placeholder="Experience"
+                placeholderTextColor="#999999"
+              />
+              <View style={styles.editButtonsContainer}>
+                <TouchableOpacity 
+                  style={[styles.editButton, styles.saveButton]}
+                  onPress={handleSaveDetails}
+                >
+                  <Text style={styles.editButtonText}>Save</Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                  style={[styles.editButton, styles.cancelButton]}
+                  onPress={handleCancelDetails}
+                >
+                  <Text style={[styles.editButtonText, styles.cancelButtonText]}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
+            </>
+          ) : (
+            <>
+              <View style={styles.detailRow}>
+                <View style={styles.detailLabelContainer}>
+                  <Ionicons name="briefcase-outline" size={20} color="#00A86B" />
+                  <Text style={styles.detailLabel}>Role</Text>
+                </View>
+                <Text style={styles.detailValue}>{profileData.role}</Text>
+              </View>
+              <View style={styles.detailRow}>
+                <View style={styles.detailLabelContainer}>
+                  <Ionicons name="calendar-outline" size={20} color="#00A86B" />
+                  <Text style={styles.detailLabel}>Age</Text>
+                </View>
+                <Text style={styles.detailValue}>{profileData.age}</Text>
+              </View>
+              <View style={styles.detailRow}>
+                <View style={styles.detailLabelContainer}>
+                  <Ionicons name="location-outline" size={20} color="#00A86B" />
+                  <Text style={styles.detailLabel}>City</Text>
+                </View>
+                <Text style={styles.detailValue}>{profileData.city}</Text>
+              </View>
+              <View style={styles.detailRow}>
+                <View style={styles.detailLabelContainer}>
+                  <Ionicons name="card-outline" size={20} color="#00A86B" />
+                  <Text style={styles.detailLabel}>CNIC</Text>
+                </View>
+                <Text style={styles.detailValue}>{profileData.cnic}</Text>
+              </View>
+              <View style={styles.detailRow}>
+                <View style={styles.detailLabelContainer}>
+                  <Ionicons name="time-outline" size={20} color="#00A86B" />
+                  <Text style={styles.detailLabel}>Experience</Text>
+                </View>
+                <Text style={styles.detailValue}>{profileData.experience}</Text>
+              </View>
+            </>
+          )}
         </View>
+
+        <TouchableOpacity 
+          style={styles.logoutButton}
+          onPress={handleLogout}
+        >
+          <Ionicons name="log-out-outline" size={24} color="#FF3B30" />
+          <Text style={styles.logoutText}>Logout</Text>
+        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
@@ -528,19 +577,62 @@ const styles = StyleSheet.create({
     color: '#222222',
     marginLeft: 16,
   },
+  detailsCard: {
+    backgroundColor: '#F0FFF4',
+    borderRadius: 24,
+    padding: 24,
+    marginHorizontal: 20,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#E2F3E5',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 5,
+  },
+  detailRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E2F3E5',
+  },
+  detailLabelContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  detailLabel: {
+    fontSize: 16,
+    color: '#6C757D',
+    fontWeight: '500',
+    marginLeft: 12,
+  },
+  detailValue: {
+    fontSize: 16,
+    color: '#212529',
+    fontWeight: '600',
+  },
   logoutButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 24,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+    justifyContent: 'center',
     backgroundColor: '#FFF0F0',
-    borderRadius: 12,
+    borderRadius: 16,
+    padding: 16,
+    marginHorizontal: 20,
+    marginVertical: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   logoutText: {
     color: '#FF3B30',
+    fontSize: 18,
     fontWeight: '600',
-    fontSize: 16,
     marginLeft: 12,
   },
 }); 
