@@ -254,6 +254,7 @@ export type RootStackParamList = {
     description: string;
     guestType: 'any_guest' | 'experienced_guest';
     basePrice: number;
+    navigateToSelection?: boolean;
   };
   Today: undefined;
   Menu: undefined;

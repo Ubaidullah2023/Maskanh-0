@@ -2,21 +2,26 @@ import React from 'react';
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Dimensions, ToastAndroid, Platform, Alert, ScrollView } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RouteProp } from '@react-navigation/native';
+import type { RootStackParamList } from '../navigation/AppNavigator';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const PRIMARY_COLOR = '#00A86B';
 
+type MaskanhProUpgradeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'MaskanhProUpgrade'>;
+type MaskanhProUpgradeScreenRouteProp = RouteProp<RootStackParamList, 'MaskanhProUpgrade'>;
+
 const PRO_FEATURES = [
-  { icon: 'analytics-outline', title: 'AI Powered Data Analytics', desc: 'Get insights and trends for your services.' },
-  { icon: 'star-outline', title: 'Priority Listing', desc: 'Appear at the top of search results.' },
-  { icon: 'cash-outline', title: 'Lower Commission', desc: 'Keep more of your earnings.' },
-  { icon: 'shield-checkmark-outline', title: 'Premium Support', desc: '24/7 support for Pro members.' },
+  { icon: 'analytics-outline' as const, title: 'AI Powered Data Analytics', desc: 'Get insights and trends for your services.' },
+  { icon: 'star-outline' as const, title: 'Priority Listing', desc: 'Appear at the top of search results.' },
+  { icon: 'cash-outline' as const, title: 'Lower Commission', desc: 'Keep more of your earnings.' },
+  { icon: 'shield-checkmark-outline' as const, title: 'Premium Support', desc: '24/7 support for Pro members.' },
 ];
 
 export default function MaskanhProUpgradeScreen() {
-  const navigation = useNavigation();
-  const route = useRoute();
-  const listingCount = route?.params?.listingCount ?? 0;
+  const navigation = useNavigation<MaskanhProUpgradeScreenNavigationProp>();
+  const route = useRoute<MaskanhProUpgradeScreenRouteProp>();
 
   const showComingSoon = () => {
     if (Platform.OS === 'android') {
@@ -27,7 +32,7 @@ export default function MaskanhProUpgradeScreen() {
   };
 
   const handleNotNow = () => {
-    navigation.navigate('Listing');
+    navigation.navigate('Selection');
   };
 
   return (
@@ -63,25 +68,13 @@ export default function MaskanhProUpgradeScreen() {
             <Text style={styles.upgradeButtonText}>Upgrade to Maskanh Pro</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[
-              styles.notNowButton,
-              listingCount >= 2 && { backgroundColor: '#eee', borderColor: '#eee' }
-            ]}
+            style={styles.notNowButton}
             onPress={handleNotNow}
-            disabled={listingCount >= 2}
           >
-            <Text style={[
-              styles.notNowText,
-              listingCount >= 2 && { color: '#aaa' }
-            ]}>
-              Not, right now
+            <Text style={styles.notNowText}>
+              Not right now
             </Text>
           </TouchableOpacity>
-          {listingCount >= 2 && (
-            <Text style={styles.limitText}>
-              You have reached the free listing limit. Upgrade to Maskanh Pro to add more.
-            </Text>
-          )}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -180,12 +173,5 @@ const styles = StyleSheet.create({
     color: PRIMARY_COLOR,
     fontSize: SCREEN_WIDTH < 360 ? 14 : 16,
     fontWeight: '700',
-  },
-  limitText: {
-    color: '#FF3B30',
-    fontSize: SCREEN_WIDTH < 360 ? 12 : 14,
-    marginTop: SCREEN_HEIGHT * 0.01,
-    textAlign: 'center',
-    fontWeight: '500',
   },
 }); 

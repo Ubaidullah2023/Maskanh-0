@@ -6,14 +6,14 @@ import {
   SafeAreaView,
   TouchableOpacity,
   ScrollView,
-  Dimensions,
+  Platform,
+  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { ServiceStackParamList } from './ServiceProfileScreen';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function ServiceHelpCenterScreen() {
   const navigation = useNavigation<NavigationProp<ServiceStackParamList>>();
@@ -58,40 +58,98 @@ export default function ServiceHelpCenterScreen() {
     },
   ];
 
+  const handleContactSupport = () => {
+    Alert.alert(
+      "Coming Soon",
+      "This feature will be available in the next update",
+      [{ text: "OK" }]
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      <View style={[styles.header, {
-        paddingTop: insets.top + SCREEN_HEIGHT * 0.01,
-        paddingBottom: SCREEN_HEIGHT * 0.01,
-        paddingHorizontal: '4%',
-        minHeight: 56,
-        maxHeight: 80,
-        width: '100%',
-      }]}>
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-        >
-          <Ionicons name="chevron-back" size={Math.max(24, SCREEN_WIDTH * 0.06)} color="#00A86B" />
-        </TouchableOpacity>
-        <Text style={[styles.headerTitle, { fontSize: SCREEN_WIDTH < 360 ? 20 : 24 }]}>
-          Help Center
-        </Text>
+      <View style={styles.headerContainer}>
+        <View style={[
+          styles.header,
+          {
+            paddingTop: insets.top + 8,
+          }
+        ]}>
+          <TouchableOpacity 
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+            activeOpacity={0.7}
+          >
+            <Ionicons name="arrow-back" size={24} color="#00A86B" />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Help Center</Text>
+          <View style={{ width: 50 }} />
+        </View>
       </View>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {helpTopics.map((topic) => (
-          <TouchableOpacity key={topic.id} style={styles.topicItem}>
-            <View style={styles.topicIcon}>
-              <Ionicons name={topic.icon as any} size={24} color="#00A86B" />
-            </View>
-            <View style={styles.topicContent}>
-              <Text style={[styles.topicTitle, { fontSize: SCREEN_WIDTH < 360 ? 16 : 18 }]}>{topic.title}</Text>
-              <Text style={[styles.topicDescription, { fontSize: SCREEN_WIDTH < 360 ? 12 : 14 }]}>{topic.description}</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={24} color="#666" />
+      <ScrollView 
+        style={styles.content}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <LinearGradient
+              colors={['#E8F5E9', '#F1F8E9']}
+              style={styles.sectionIconContainer}
+            >
+              <Ionicons name="help-circle-outline" size={24} color="#00A86B" />
+            </LinearGradient>
+            <Text style={styles.sectionTitle}>How can we help you?</Text>
+          </View>
+          <Text style={styles.sectionDescription}>
+            Browse through our help topics to find what you need
+          </Text>
+        </View>
+
+        <View style={styles.topicsContainer}>
+          {helpTopics.map((topic) => (
+            <TouchableOpacity 
+              key={topic.id} 
+              style={styles.topicCard}
+              activeOpacity={0.7}
+            >
+              <LinearGradient
+                colors={['#E8F5E9', '#F1F8E9']}
+                style={styles.topicIcon}
+              >
+                <Ionicons name={topic.icon as any} size={24} color="#00A86B" />
+              </LinearGradient>
+              <View style={styles.topicContent}>
+                <Text style={styles.topicTitle}>{topic.title}</Text>
+                <Text style={styles.topicDescription}>{topic.description}</Text>
+              </View>
+              <View style={styles.chevronContainer}>
+                <Ionicons name="chevron-forward" size={20} color="#6C757D" />
+              </View>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        <View style={styles.contactSection}>
+          <View style={styles.contactHeader}>
+            <LinearGradient
+              colors={['#E8F5E9', '#F1F8E9']}
+              style={styles.contactIconContainer}
+            >
+              <Ionicons name="call-outline" size={24} color="#00A86B" />
+            </LinearGradient>
+            <Text style={styles.contactTitle}>Need more help?</Text>
+          </View>
+          <TouchableOpacity 
+            style={styles.contactButton}
+            onPress={handleContactSupport}
+            activeOpacity={0.7}
+          >
+            <Ionicons name="chatbubble-ellipses-outline" size={20} color="#FFFFFF" />
+            <Text style={styles.contactButtonText}>Contact Support</Text>
           </TouchableOpacity>
-        ))}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -100,56 +158,159 @@ export default function ServiceHelpCenterScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#F8F9FA',
+  },
+  headerContainer: {
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E9ECEF',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
+    elevation: 3,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-    backgroundColor: '#fff',
+    justifyContent: 'space-between',
+    paddingHorizontal: '4%',
+    height: Platform.OS === 'ios' ? 90 : 80,
+    paddingVertical: 16,
   },
   backButton: {
-    padding: 8,
-    marginLeft: -8,
+    padding: 12,
+    borderRadius: 25,
+    backgroundColor: '#F0FFF4',
+    width: 50,
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   headerTitle: {
     fontWeight: '700',
-    color: '#222',
-    marginLeft: 16,
+    color: '#212529',
+    textAlign: 'center',
+    fontSize: 20,
     flex: 1,
-    textAlign: 'left',
+    marginLeft: 10,
   },
   content: {
     flex: 1,
   },
-  topicItem: {
+  scrollContent: {
+    padding: 20,
+  },
+  section: {
+    marginBottom: 24,
+  },
+  sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: 8,
+  },
+  sectionIconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  sectionTitle: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#212529',
+    marginLeft: 12,
+  },
+  sectionDescription: {
+    fontSize: 15,
+    color: '#6C757D',
+    marginLeft: 36,
+  },
+  topicsContainer: {
+    gap: 16,
+  },
+  topicCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
     padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+    minHeight: 80,
   },
   topicIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#f0f9f4',
-    alignItems: 'center',
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     justifyContent: 'center',
+    alignItems: 'center',
     marginRight: 16,
   },
   topicContent: {
     flex: 1,
+    justifyContent: 'center',
   },
   topicTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#222',
+    color: '#212529',
     marginBottom: 4,
   },
   topicDescription: {
     fontSize: 14,
-    color: '#666',
+    color: '#6C757D',
+  },
+  chevronContainer: {
+    marginLeft: 8,
+    width: 24,
+    alignItems: 'center',
+  },
+  contactSection: {
+    marginTop: 32,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  contactHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  contactIconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  contactTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#212529',
+    marginLeft: 12,
+  },
+  contactButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#00A86B',
+    borderRadius: 12,
+    padding: 16,
+    gap: 8,
+  },
+  contactButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
   },
 }); 

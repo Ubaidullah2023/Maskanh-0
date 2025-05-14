@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
+import { LinearGradient } from 'expo-linear-gradient';
 
 // Define a separate param list for service provider screens
 export type ServiceStackParamList = {
@@ -26,6 +27,9 @@ export default function ServiceProfileScreen() {
   
   const [isEditing, setIsEditing] = useState(false);
   const [isEditingDetails, setIsEditingDetails] = useState(false);
+  const [isEditingAbout, setIsEditingAbout] = useState(false);
+  const [isEditingServices, setIsEditingServices] = useState(false);
+  const [isEditingContact, setIsEditingContact] = useState(false);
   const [profileData, setProfileData] = useState({
     name: 'John Doe',
     email: 'serviceuser@gmail.com',
@@ -39,6 +43,10 @@ export default function ServiceProfileScreen() {
   });
 
   const [editedData, setEditedData] = useState({...profileData});
+  const [editedAbout, setEditedAbout] = useState('Experienced service provider with a passion for delivering exceptional quality. Specialized in providing top-notch services with attention to detail and customer satisfaction.');
+  const [editedServices, setEditedServices] = useState(['Cleaning', 'Plumbing', 'Electrical', 'Carpentry']);
+  const [newService, setNewService] = useState('');
+  const [editedContact, setEditedContact] = useState({...profileData});
 
   const pickImage = async () => {
     // Request permission
@@ -149,219 +157,351 @@ export default function ServiceProfileScreen() {
     setEditedData({...profileData});
   };
 
-  const renderSectionHeader = (title: string) => (
-    <Text style={styles.sectionHeader}>{title}</Text>
-  );
+  const handleSettings = () => {
+    navigation.navigate('ServiceSettings');
+  };
 
-  const getSettingsButtonStyle = () => ({
-    position: 'absolute' as const,
-    top: insets.top + 8, // Small padding from top
-    right: 16,
-    padding: 6,
-    borderRadius: 16,
-    backgroundColor: '#FFFFFF',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  });
+  const handleSaveAbout = () => {
+    setIsEditingAbout(false);
+  };
+
+  const handleCancelAbout = () => {
+    setEditedAbout('Experienced service provider with a passion for delivering exceptional quality. Specialized in providing top-notch services with attention to detail and customer satisfaction.');
+    setIsEditingAbout(false);
+  };
+
+  const handleSaveServices = () => {
+    setIsEditingServices(false);
+  };
+
+  const handleCancelServices = () => {
+    setEditedServices(['Cleaning', 'Plumbing', 'Electrical', 'Carpentry']);
+    setIsEditingServices(false);
+  };
+
+  const handleSaveContact = () => {
+    setProfileData({...editedContact});
+    setIsEditingContact(false);
+  };
+
+  const handleCancelContact = () => {
+    setEditedContact({...profileData});
+    setIsEditingContact(false);
+  };
+
+  const handleAddService = () => {
+    if (newService.trim()) {
+      setEditedServices([...editedServices, newService.trim()]);
+      setNewService('');
+    }
+  };
+
+  const handleRemoveService = (index: number) => {
+    const updatedServices = [...editedServices];
+    updatedServices.splice(index, 1);
+    setEditedServices(updatedServices);
+  };
+
+  const renderStatItem = (icon: string, value: string, label: string) => (
+    <View style={styles.statItem}>
+      <LinearGradient
+        colors={['#E8F5E9', '#F1F8E9']}
+        style={styles.statIconContainer}
+      >
+        <Ionicons name={icon as any} size={24} color="#00A86B" />
+      </LinearGradient>
+      <Text style={styles.statValue}>{value}</Text>
+      <Text style={styles.statLabel}>{label}</Text>
+    </View>
+  );
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={[styles.header, {
-        paddingTop: insets.top + SCREEN_HEIGHT * 0.01,
-        paddingBottom: SCREEN_HEIGHT * 0.01,
-        paddingHorizontal: '4%',
-        minHeight: 56,
-        maxHeight: 80,
-        width: '100%',
-      }]}> 
-        <Text style={[styles.headerTitle, { fontSize: SCREEN_WIDTH < 360 ? 20 : 24 }]}>
-          Profile
-        </Text>
-        <TouchableOpacity 
-          style={getSettingsButtonStyle()}
-          onPress={() => navigation.navigate('ServiceSettings')}
-        >
-          <Ionicons name="settings-outline" size={18} color="#00A86B" />
-        </TouchableOpacity>
-      </View>
-      <ScrollView style={styles.content}>
-        <View style={[styles.profileCard, { marginTop: SCREEN_HEIGHT * 0.04 }]}>
+      <View style={styles.headerContainer}>
+        <View style={[
+          styles.header,
+          {
+            paddingTop: insets.top + 8,
+          }
+        ]}>
           <TouchableOpacity 
-            style={styles.editIconContainer}
-            onPress={handleEditProfile}
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+            activeOpacity={0.7}
           >
-            <Ionicons name="pencil" size={18} color="#00A86B" />
+            <Ionicons name="arrow-back" size={24} color="#00A86B" />
           </TouchableOpacity>
-          
-          <View style={styles.profileImageWrapper}>
-            <View style={styles.profileImageContainer}>
-              <Image
-                source={isEditing ? editedData.profileImage : profileData.profileImage}
-                style={styles.profileImage}
-              />
-            </View>
-            {isEditing && (
-              <TouchableOpacity 
-                style={styles.changePhotoButton}
-                onPress={pickImage}
-              >
-                <Ionicons name="camera" size={24} color="#FFFFFF" />
-              </TouchableOpacity>
+          <Text style={styles.headerTitle}>Profile</Text>
+          <TouchableOpacity 
+            style={styles.settingsButton}
+            onPress={handleSettings}
+            activeOpacity={0.7}
+          >
+            <Ionicons name="settings-outline" size={24} color="#00A86B" />
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <ScrollView 
+        style={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.profileHeader}>
+          <View style={styles.profileImageContainer}>
+            <Image
+              source={isEditing ? editedData.profileImage : profileData.profileImage}
+              style={styles.profileImage}
+            />
+            <TouchableOpacity 
+              style={styles.editImageButton}
+              onPress={pickImage}
+              activeOpacity={0.7}
+            >
+              <Ionicons name="camera" size={20} color="#FFFFFF" />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.profileInfoContainer}>
+            {isEditing ? (
+              <>
+                <TextInput
+                  style={styles.profileInput}
+                  value={editedData.name}
+                  onChangeText={(text) => setEditedData({...editedData, name: text})}
+                  placeholder="Name"
+                />
+                <TextInput
+                  style={styles.profileInput}
+                  value={editedData.role}
+                  onChangeText={(text) => setEditedData({...editedData, role: text})}
+                  placeholder="Role"
+                />
+                <View style={styles.editButtonsContainer}>
+                  <TouchableOpacity 
+                    style={[styles.editButton, styles.saveButton]}
+                    onPress={handleSaveProfile}
+                  >
+                    <Text style={styles.editButtonText}>Save</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity 
+                    style={[styles.editButton, styles.cancelButton]}
+                    onPress={handleCancelEdit}
+                  >
+                    <Text style={[styles.editButtonText, styles.cancelButtonText]}>Cancel</Text>
+                  </TouchableOpacity>
+                </View>
+              </>
+            ) : (
+              <>
+                <Text style={styles.profileName}>{profileData.name}</Text>
+                <Text style={styles.profileRole}>{profileData.role}</Text>
+              </>
             )}
           </View>
-
-          {isEditing ? (
-            <>
-              <TextInput
-                style={styles.input}
-                value={editedData.name}
-                onChangeText={(text) => setEditedData({...editedData, name: text})}
-                placeholder="Name"
-                placeholderTextColor="#999999"
-              />
-              <TextInput
-                style={styles.input}
-                value={editedData.email}
-                onChangeText={(text) => setEditedData({...editedData, email: text})}
-                placeholder="Email"
-                placeholderTextColor="#999999"
-                keyboardType="email-address"
-              />
-              <TextInput
-                style={styles.input}
-                value={editedData.contactNumber}
-                onChangeText={(text) => setEditedData({...editedData, contactNumber: text})}
-                placeholder="Contact Number"
-                placeholderTextColor="#999999"
-                keyboardType="phone-pad"
-              />
-              <View style={styles.editButtonsContainer}>
-                <TouchableOpacity 
-                  style={[styles.editButton, styles.saveButton]}
-                  onPress={handleSaveProfile}
-                >
-                  <Text style={styles.editButtonText}>Save</Text>
-                </TouchableOpacity>
-                <TouchableOpacity 
-                  style={[styles.editButton, styles.cancelButton]}
-                  onPress={handleCancelEdit}
-                >
-                  <Text style={[styles.editButtonText, styles.cancelButtonText]}>Cancel</Text>
-                </TouchableOpacity>
-              </View>
-            </>
-          ) : (
-            <>
-              <Text style={styles.name}>{profileData.name}</Text>
-              <Text style={styles.email}>{profileData.email}</Text>
-              <Text style={styles.contactNumber}>{profileData.contactNumber}</Text>
-            </>
+          {!isEditing && (
+            <TouchableOpacity 
+              style={styles.editIconButton}
+              onPress={handleEditProfile}
+              activeOpacity={0.7}
+            >
+              <Ionicons name="create-outline" size={20} color="#00A86B" />
+            </TouchableOpacity>
           )}
         </View>
 
-        <View style={[styles.detailsCard, { marginTop: 16 }]}>
-          <TouchableOpacity 
-            style={styles.editIconContainer}
-            onPress={handleEditDetails}
-          >
-            <Ionicons name="pencil" size={18} color="#00A86B" />
-          </TouchableOpacity>
+        <View style={styles.statsContainer}>
+          {renderStatItem('star', '4.8', 'Rating')}
+          {renderStatItem('calendar', '156', 'Bookings')}
+          {renderStatItem('heart', '89%', 'Satisfaction')}
+        </View>
 
-          {isEditingDetails ? (
-            <>
-              <TextInput
-                style={styles.input}
-                value={editedData.role}
-                onChangeText={(text) => setEditedData({...editedData, role: text})}
-                placeholder="Role"
-                placeholderTextColor="#999999"
-              />
-              <TextInput
-                style={styles.input}
-                value={editedData.age}
-                onChangeText={(text) => setEditedData({...editedData, age: text})}
-                placeholder="Age"
-                placeholderTextColor="#999999"
-                keyboardType="numeric"
-              />
-              <TextInput
-                style={styles.input}
-                value={editedData.city}
-                onChangeText={(text) => setEditedData({...editedData, city: text})}
-                placeholder="City"
-                placeholderTextColor="#999999"
-              />
-              <TextInput
-                style={styles.input}
-                value={editedData.cnic}
-                onChangeText={(text) => setEditedData({...editedData, cnic: text})}
-                placeholder="CNIC"
-                placeholderTextColor="#999999"
-              />
-              <TextInput
-                style={styles.input}
-                value={editedData.experience}
-                onChangeText={(text) => setEditedData({...editedData, experience: text})}
-                placeholder="Experience"
-                placeholderTextColor="#999999"
-              />
-              <View style={styles.editButtonsContainer}>
-                <TouchableOpacity 
-                  style={[styles.editButton, styles.saveButton]}
-                  onPress={handleSaveDetails}
+        <View style={styles.sectionContainer}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>About Me</Text>
+            <TouchableOpacity 
+              style={styles.editIconButton}
+              onPress={() => setIsEditingAbout(true)}
+              activeOpacity={0.7}
+            >
+              <Ionicons name="create-outline" size={20} color="#00A86B" />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.aboutCard}>
+            {isEditingAbout ? (
+              <>
+                <TextInput
+                  style={styles.aboutInput}
+                  multiline
+                  value={editedAbout}
+                  onChangeText={setEditedAbout}
+                  textAlignVertical="top"
+                />
+                <View style={styles.editButtonsContainer}>
+                  <TouchableOpacity 
+                    style={[styles.editButton, styles.saveButton]}
+                    onPress={handleSaveAbout}
+                  >
+                    <Text style={styles.editButtonText}>Save</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity 
+                    style={[styles.editButton, styles.cancelButton]}
+                    onPress={handleCancelAbout}
+                  >
+                    <Text style={[styles.editButtonText, styles.cancelButtonText]}>Cancel</Text>
+                  </TouchableOpacity>
+                </View>
+              </>
+            ) : (
+              <Text style={styles.aboutText}>{editedAbout}</Text>
+            )}
+          </View>
+        </View>
+
+        <View style={styles.sectionContainer}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Services</Text>
+            <TouchableOpacity 
+              style={styles.editIconButton}
+              onPress={() => setIsEditingServices(true)}
+              activeOpacity={0.7}
+            >
+              <Ionicons name="create-outline" size={20} color="#00A86B" />
+            </TouchableOpacity>
+          </View>
+          <ScrollView 
+            horizontal 
+            showsHorizontalScrollIndicator={false}
+            style={styles.servicesScroll}
+          >
+            {editedServices.map((service, index) => (
+              <View key={index} style={styles.serviceCard}>
+                <LinearGradient
+                  colors={['#E8F5E9', '#F1F8E9']}
+                  style={styles.serviceIconContainer}
                 >
-                  <Text style={styles.editButtonText}>Save</Text>
-                </TouchableOpacity>
-                <TouchableOpacity 
-                  style={[styles.editButton, styles.cancelButton]}
-                  onPress={handleCancelDetails}
-                >
-                  <Text style={[styles.editButtonText, styles.cancelButtonText]}>Cancel</Text>
-                </TouchableOpacity>
+                  <Ionicons name="construct-outline" size={24} color="#00A86B" />
+                </LinearGradient>
+                <Text style={styles.serviceName}>{service}</Text>
+                {isEditingServices && (
+                  <TouchableOpacity 
+                    style={styles.removeServiceButton}
+                    onPress={() => handleRemoveService(index)}
+                    activeOpacity={0.7}
+                  >
+                    <Ionicons name="close-circle" size={20} color="#FF3B30" />
+                  </TouchableOpacity>
+                )}
               </View>
-            </>
-          ) : (
-            <>
-              <View style={styles.detailRow}>
-                <View style={styles.detailLabelContainer}>
-                  <Ionicons name="briefcase-outline" size={20} color="#00A86B" />
-                  <Text style={styles.detailLabel}>Role</Text>
-                </View>
-                <Text style={styles.detailValue}>{profileData.role}</Text>
-              </View>
-              <View style={styles.detailRow}>
-                <View style={styles.detailLabelContainer}>
-                  <Ionicons name="calendar-outline" size={20} color="#00A86B" />
-                  <Text style={styles.detailLabel}>Age</Text>
-                </View>
-                <Text style={styles.detailValue}>{profileData.age}</Text>
-              </View>
-              <View style={styles.detailRow}>
-                <View style={styles.detailLabelContainer}>
-                  <Ionicons name="location-outline" size={20} color="#00A86B" />
-                  <Text style={styles.detailLabel}>City</Text>
-                </View>
-                <Text style={styles.detailValue}>{profileData.city}</Text>
-              </View>
-              <View style={styles.detailRow}>
-                <View style={styles.detailLabelContainer}>
-                  <Ionicons name="card-outline" size={20} color="#00A86B" />
-                  <Text style={styles.detailLabel}>CNIC</Text>
-                </View>
-                <Text style={styles.detailValue}>{profileData.cnic}</Text>
-              </View>
-              <View style={styles.detailRow}>
-                <View style={styles.detailLabelContainer}>
-                  <Ionicons name="time-outline" size={20} color="#00A86B" />
-                  <Text style={styles.detailLabel}>Experience</Text>
-                </View>
-                <Text style={styles.detailValue}>{profileData.experience}</Text>
-              </View>
-            </>
+            ))}
+          </ScrollView>
+          {isEditingServices && (
+            <View style={styles.addServiceContainer}>
+              <TextInput
+                style={styles.addServiceInput}
+                value={newService}
+                onChangeText={setNewService}
+                placeholder="Add new service"
+                placeholderTextColor="#6C757D"
+              />
+              <TouchableOpacity 
+                style={styles.addServiceButton}
+                onPress={handleAddService}
+                activeOpacity={0.7}
+              >
+                <Ionicons name="add-circle" size={24} color="#00A86B" />
+              </TouchableOpacity>
+            </View>
           )}
+          {isEditingServices && (
+            <View style={styles.editButtonsContainer}>
+              <TouchableOpacity 
+                style={[styles.editButton, styles.saveButton]}
+                onPress={handleSaveServices}
+              >
+                <Text style={styles.editButtonText}>Save</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                style={[styles.editButton, styles.cancelButton]}
+                onPress={handleCancelServices}
+              >
+                <Text style={[styles.editButtonText, styles.cancelButtonText]}>Cancel</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
+
+        <View style={styles.sectionContainer}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Contact Information</Text>
+            <TouchableOpacity 
+              style={styles.editIconButton}
+              onPress={() => setIsEditingContact(true)}
+              activeOpacity={0.7}
+            >
+              <Ionicons name="create-outline" size={20} color="#00A86B" />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.contactCard}>
+            {isEditingContact ? (
+              <>
+                <View style={styles.contactItem}>
+                  <Ionicons name="mail-outline" size={20} color="#00A86B" />
+                  <TextInput
+                    style={styles.contactInput}
+                    value={editedContact.email}
+                    onChangeText={(text) => setEditedContact({...editedContact, email: text})}
+                    placeholder="Email"
+                  />
+                </View>
+                <View style={styles.contactItem}>
+                  <Ionicons name="call-outline" size={20} color="#00A86B" />
+                  <TextInput
+                    style={styles.contactInput}
+                    value={editedContact.contactNumber}
+                    onChangeText={(text) => setEditedContact({...editedContact, contactNumber: text})}
+                    placeholder="Phone Number"
+                  />
+                </View>
+                <View style={styles.contactItem}>
+                  <Ionicons name="location-outline" size={20} color="#00A86B" />
+                  <TextInput
+                    style={styles.contactInput}
+                    value={editedContact.city}
+                    onChangeText={(text) => setEditedContact({...editedContact, city: text})}
+                    placeholder="City"
+                  />
+                </View>
+                <View style={styles.editButtonsContainer}>
+                  <TouchableOpacity 
+                    style={[styles.editButton, styles.saveButton]}
+                    onPress={handleSaveContact}
+                  >
+                    <Text style={styles.editButtonText}>Save</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity 
+                    style={[styles.editButton, styles.cancelButton]}
+                    onPress={handleCancelContact}
+                  >
+                    <Text style={[styles.editButtonText, styles.cancelButtonText]}>Cancel</Text>
+                  </TouchableOpacity>
+                </View>
+              </>
+            ) : (
+              <>
+                <View style={styles.contactItem}>
+                  <Ionicons name="mail-outline" size={20} color="#00A86B" />
+                  <Text style={styles.contactText}>{profileData.email}</Text>
+                </View>
+                <View style={styles.contactItem}>
+                  <Ionicons name="call-outline" size={20} color="#00A86B" />
+                  <Text style={styles.contactText}>{profileData.contactNumber}</Text>
+                </View>
+                <View style={styles.contactItem}>
+                  <Ionicons name="location-outline" size={20} color="#00A86B" />
+                  <Text style={styles.contactText}>{profileData.city}</Text>
+                </View>
+              </>
+            )}
+          </View>
         </View>
 
         <TouchableOpacity 
@@ -381,239 +521,224 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F8F9FA',
   },
-  content: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  headerContainer: {
+    backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
     borderBottomColor: '#E9ECEF',
-    backgroundColor: '#FFFFFF',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 3,
     elevation: 3,
   },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: '4%',
+    height: Platform.OS === 'ios' ? 90 : 80,
+    paddingVertical: 16,
+  },
+  backButton: {
+    padding: 12,
+    borderRadius: 25,
+    backgroundColor: '#F0FFF4',
+    width: 50,
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  settingsButton: {
+    padding: 12,
+    borderRadius: 25,
+    backgroundColor: '#F0FFF4',
+    width: 50,
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   headerTitle: {
     fontWeight: '700',
     color: '#212529',
-    flex: 1,
     textAlign: 'center',
+    fontSize: 20,
+    flex: 1,
+    marginLeft: 10,
   },
-  settingsButton: {
-    position: 'absolute' as const,
-    borderRadius: 20,
+  content: {
+    flex: 1,
+  },
+  profileHeader: {
+    alignItems: 'center',
+    padding: 24,
     backgroundColor: '#FFFFFF',
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  profileImageContainer: {
+    position: 'relative',
+    marginBottom: 16,
+  },
+  profileImage: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    borderWidth: 4,
+    borderColor: '#FFFFFF',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 3,
   },
-  profileCard: {
-    alignItems: 'center',
-    backgroundColor: '#F0FFF4',
-    borderRadius: 24,
-    paddingVertical: 32,
-    paddingHorizontal: 24,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 5,
-    marginHorizontal: 20,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: '#E2F3E5',
-  },
-  profileImageWrapper: {
-    position: 'relative',
-    marginBottom: 24,
-  },
-  profileImageContainer: {
-    width: 160,
-    height: 160,
-    borderRadius: 80,
-    overflow: 'hidden',
-    borderWidth: 4,
-    borderColor: '#00A86B',
-    backgroundColor: '#F8F8F8',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  profileImage: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'cover',
-  },
-  changePhotoButton: {
+  editImageButton: {
     position: 'absolute',
     bottom: 0,
     right: 0,
     backgroundColor: '#00A86B',
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 3,
+    borderColor: '#FFFFFF',
+  },
+  profileInfoContainer: {
+    alignItems: 'center',
+    marginTop: 16,
+  },
+  profileName: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#212529',
+    marginBottom: 4,
+  },
+  profileRole: {
+    fontSize: 16,
+    color: '#6C757D',
+  },
+  statsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    padding: 20,
+    backgroundColor: '#FFFFFF',
+    marginTop: 16,
+    marginHorizontal: 16,
+    borderRadius: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  statItem: {
+    alignItems: 'center',
+  },
+  statIconContainer: {
     width: 48,
     height: 48,
     borderRadius: 24,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 3,
-    borderColor: '#FFFFFF',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 5,
+    marginBottom: 8,
   },
-  editIconContainer: {
-    position: 'absolute',
-    top: 16,
-    right: 16,
-    zIndex: 1,
-    backgroundColor: '#FFFFFF',
-    padding: 10,
-    borderRadius: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  input: {
-    width: '90%',
-    height: 50,
-    borderWidth: 1,
-    borderColor: '#E9ECEF',
-    borderRadius: 16,
-    marginBottom: 16,
-    paddingHorizontal: 20,
-    fontSize: 16,
-    backgroundColor: '#FFFFFF',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  editButtonsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    width: '100%',
-    marginTop: 24,
-  },
-  editButton: {
-    paddingHorizontal: 32,
-    paddingVertical: 14,
-    borderRadius: 25,
-    marginHorizontal: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  saveButton: {
-    backgroundColor: '#00A86B',
-  },
-  cancelButton: {
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#00A86B',
-  },
-  editButtonText: {
-    color: '#FFFFFF',
-    fontWeight: '600',
-    fontSize: 16,
-  },
-  cancelButtonText: {
-    color: '#00A86B',
-  },
-  name: {
-    fontSize: 24,
+  statValue: {
+    fontSize: 18,
     fontWeight: '700',
     color: '#212529',
-    marginBottom: 8,
+    marginBottom: 4,
   },
-  email: {
-    fontSize: 16,
+  statLabel: {
+    fontSize: 14,
     color: '#6C757D',
-    marginBottom: 6,
   },
-  contactNumber: {
-    fontSize: 16,
-    color: '#6C757D',
-    marginBottom: 8,
-  },
-  settingsContainer: {
-    padding: 20,
+  sectionContainer: {
+    marginTop: 24,
+    paddingHorizontal: 16,
   },
   sectionHeader: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#00A86B',
-    marginTop: 24,
-    marginBottom: 8,
-  },
-  section: {
-    backgroundColor: '#F8F8F8',
-    borderRadius: 12,
-    marginBottom: 16,
-    paddingVertical: 8,
-  },
-  menuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#EEEEEE',
-  },
-  menuText: {
-    flex: 1,
-    fontSize: 16,
-    color: '#222222',
-    marginLeft: 16,
-  },
-  detailsCard: {
-    backgroundColor: '#F0FFF4',
-    borderRadius: 24,
-    padding: 24,
-    marginHorizontal: 20,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: '#E2F3E5',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 5,
-  },
-  detailRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E2F3E5',
+    marginBottom: 12,
   },
-  detailLabelContainer: {
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#212529',
+  },
+  aboutCard: {
+    backgroundColor: '#FFFFFF',
+    padding: 20,
+    borderRadius: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  aboutText: {
+    fontSize: 16,
+    color: '#495057',
+    lineHeight: 24,
+  },
+  servicesScroll: {
+    marginHorizontal: -16,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+  },
+  serviceCard: {
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    padding: 12,
+    borderRadius: 16,
+    marginRight: 8,
+    width: 100,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+    position: 'relative',
+  },
+  serviceIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 6,
+  },
+  serviceName: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#212529',
+    textAlign: 'center',
+  },
+  contactCard: {
+    backgroundColor: '#FFFFFF',
+    padding: 20,
+    borderRadius: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  contactItem: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: 12,
   },
-  detailLabel: {
+  contactText: {
     fontSize: 16,
-    color: '#6C757D',
-    fontWeight: '500',
+    color: '#495057',
     marginLeft: 12,
-  },
-  detailValue: {
-    fontSize: 16,
-    color: '#212529',
-    fontWeight: '600',
   },
   logoutButton: {
     flexDirection: 'row',
@@ -635,5 +760,99 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     marginLeft: 12,
+  },
+  editIconButton: {
+    padding: 8,
+    borderRadius: 20,
+    backgroundColor: '#F0FFF4',
+  },
+  aboutInput: {
+    borderWidth: 1,
+    borderColor: '#E9ECEF',
+    borderRadius: 12,
+    padding: 16,
+    fontSize: 16,
+    color: '#495057',
+    minHeight: 100,
+    marginBottom: 16,
+  },
+  contactInput: {
+    flex: 1,
+    fontSize: 16,
+    color: '#495057',
+    marginLeft: 12,
+    padding: 8,
+    borderWidth: 1,
+    borderColor: '#E9ECEF',
+    borderRadius: 8,
+  },
+  editButtonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 12,
+    marginTop: 16,
+  },
+  editButton: {
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 12,
+    minWidth: 100,
+    alignItems: 'center',
+  },
+  saveButton: {
+    backgroundColor: '#00A86B',
+  },
+  cancelButton: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#00A86B',
+  },
+  editButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  cancelButtonText: {
+    color: '#00A86B',
+  },
+  profileInput: {
+    borderWidth: 1,
+    borderColor: '#E9ECEF',
+    borderRadius: 12,
+    padding: 12,
+    fontSize: 16,
+    color: '#495057',
+    width: '100%',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  removeServiceButton: {
+    position: 'absolute',
+    top: -8,
+    right: -8,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 2,
+  },
+  addServiceContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 16,
+    paddingHorizontal: 16,
+  },
+  addServiceInput: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: '#E9ECEF',
+    borderRadius: 12,
+    padding: 12,
+    fontSize: 16,
+    color: '#495057',
+    marginRight: 12,
+  },
+  addServiceButton: {
+    padding: 8,
+    borderRadius: 20,
+    backgroundColor: '#F0FFF4',
   },
 }); 

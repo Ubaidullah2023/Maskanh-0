@@ -105,10 +105,8 @@ export default function ServiceSettingsScreen() {
           >
             <Ionicons name="arrow-back" size={24} color="#00A86B" />
           </TouchableOpacity>
-          <Text style={[styles.headerTitle, { fontSize: SCREEN_WIDTH < 360 ? 20 : 24 }]}>
-            Settings
-          </Text>
-          <View style={{ width: 24 }} />
+          <Text style={styles.headerTitle}>Settings</Text>
+          <View style={{ width: 50 }} />
         </View>
       </View>
 
@@ -194,19 +192,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: '4%',
-    height: 80,
+    height: Platform.OS === 'ios' ? 90 : 80,
     paddingVertical: 16,
   },
   backButton: {
-    padding: 8,
-    borderRadius: 20,
+    padding: 12,
+    borderRadius: 25,
     backgroundColor: '#F0FFF4',
+    width: 50,
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   headerTitle: {
     fontWeight: '700',
     color: '#212529',
     textAlign: 'center',
     fontSize: 20,
+    flex: 1,
+    marginLeft: 10,
   },
   content: {
     flex: 1,
