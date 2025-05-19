@@ -8,7 +8,9 @@ import {
   ScrollView, 
   Alert,
   Platform,
-  StatusBar
+  StatusBar,
+  Image,
+  Dimensions
 } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
@@ -17,6 +19,8 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
 
 type SecurityScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Security'>;
+
+const { width } = Dimensions.get('window');
 
 export default function SecurityScreen() {
   const { isDarkMode } = useTheme();
@@ -50,7 +54,7 @@ export default function SecurityScreen() {
   return (
     <SafeAreaView style={[
       styles.container,
-      { backgroundColor: isDarkMode ? '#1a1a1a' : '#FFFFFF' }
+      { backgroundColor: isDarkMode ? '#1a1a1a' : '#F8F9FA' }
     ]}>
       <StatusBar
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
@@ -59,7 +63,10 @@ export default function SecurityScreen() {
       
       <View style={[
         styles.header,
-        { borderBottomColor: isDarkMode ? '#333333' : '#E5E5E5' }
+        { 
+          backgroundColor: isDarkMode ? '#1a1a1a' : '#FFFFFF',
+          borderBottomColor: isDarkMode ? '#333333' : '#E5E5E5' 
+        }
       ]}>
         <TouchableOpacity 
           style={styles.backButton}
@@ -80,10 +87,35 @@ export default function SecurityScreen() {
       </View>
 
       <ScrollView 
-        style={styles.content}
+        style={[
+          styles.content,
+          { backgroundColor: isDarkMode ? '#1a1a1a' : '#F8F9FA' }
+        ]}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.contentContainer}
       >
+        {/* Security Status Banner */}
+        <View style={[
+          styles.securityBanner,
+          { 
+            backgroundColor: isDarkMode ? '#2a2a2a' : '#E8F5E9',
+          }
+        ]}>
+          <View style={styles.securityBannerIcon}>
+            <Ionicons name="shield-checkmark" size={28} color="#00A86B" />
+          </View>
+          <View style={styles.securityBannerTextContainer}>
+            <Text style={[
+              styles.securityBannerTitle,
+              { color: isDarkMode ? '#FFFFFF' : '#000000' }
+            ]}>Security Status: Good</Text>
+            <Text style={[
+              styles.securityBannerSubtitle,
+              { color: isDarkMode ? '#CCCCCC' : '#666666' }
+            ]}>Your account is secure</Text>
+          </View>
+        </View>
+
         <View style={styles.section}>
           <Text style={[
             styles.sectionTitle,
@@ -95,18 +127,25 @@ export default function SecurityScreen() {
           <TouchableOpacity 
             style={[
               styles.menuItem,
-              { borderBottomColor: isDarkMode ? '#333333' : '#E5E5E5' }
+              { 
+                backgroundColor: isDarkMode ? '#2a2a2a' : '#FFFFFF',
+                borderColor: isDarkMode ? '#333333' : '#E5E5E5' 
+              }
             ]}
             onPress={() => navigation.navigate('UpdatePassword')}
           >
             <View style={styles.menuItemContent}>
               <View style={styles.menuItemLeft}>
-                <Ionicons 
-                  name="key-outline" 
-                  size={24} 
-                  color="#00A86B" 
-                  style={styles.menuIcon}
-                />
+                <View style={[
+                  styles.iconBackground,
+                  { backgroundColor: isDarkMode ? '#333' : '#E8F5E9' }
+                ]}>
+                  <Ionicons 
+                    name="key-outline" 
+                    size={22} 
+                    color="#00A86B" 
+                  />
+                </View>
                 <View>
                   <Text style={[
                     styles.menuLabel,
@@ -122,7 +161,53 @@ export default function SecurityScreen() {
                   </Text>
                 </View>
               </View>
-              <Text style={styles.updateText}>Update</Text>
+              <View style={styles.updateButton}>
+                <Text style={styles.updateText}>Update</Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={[
+              styles.menuItem,
+              { 
+                backgroundColor: isDarkMode ? '#2a2a2a' : '#FFFFFF',
+                borderColor: isDarkMode ? '#333333' : '#E5E5E5',
+                marginTop: 12
+              }
+            ]}
+          >
+            <View style={styles.menuItemContent}>
+              <View style={styles.menuItemLeft}>
+                <View style={[
+                  styles.iconBackground,
+                  { backgroundColor: isDarkMode ? '#333' : '#E8F5E9' }
+                ]}>
+                  <Ionicons 
+                    name="phone-portrait-outline" 
+                    size={22} 
+                    color="#00A86B" 
+                  />
+                </View>
+                <View>
+                  <Text style={[
+                    styles.menuLabel,
+                    { color: isDarkMode ? '#FFFFFF' : '#000000' }
+                  ]}>
+                    Phone Number
+                  </Text>
+                  <Text style={[
+                    styles.menuValue,
+                    { color: isDarkMode ? '#CCCCCC' : '#666666' }
+                  ]}>
+                    +92 ••• ••• 4587
+                  </Text>
+                </View>
+              </View>
+              <View style={styles.verifiedBadge}>
+                <Ionicons name="checkmark-circle" size={16} color="#00A86B" />
+                <Text style={styles.verifiedText}>Verified</Text>
+              </View>
             </View>
           </TouchableOpacity>
         </View>
@@ -135,7 +220,9 @@ export default function SecurityScreen() {
           }
         ]}>
           <View style={styles.iconContainer}>
-            <Ionicons name="shield-checkmark" size={40} color="#00A86B" />
+            <View style={styles.shieldIconBackground}>
+              <Ionicons name="shield-checkmark" size={30} color="#FFFFFF" />
+            </View>
           </View>
           <Text style={[
             styles.cardTitle,
@@ -147,7 +234,7 @@ export default function SecurityScreen() {
             styles.cardDescription,
             { color: isDarkMode ? '#CCCCCC' : '#666666' }
           ]}>
-            We regularly review accounts to make sure they're secure as possible. We'll also let you know if there's more we can do to increase the security of your account.
+            We regularly review accounts to ensure maximum security. Maskanh prioritizes the protection of both property owners and service providers on our platform.
           </Text>
           <View style={styles.linksContainer}>
             <Text style={[
@@ -155,15 +242,18 @@ export default function SecurityScreen() {
               { color: isDarkMode ? '#CCCCCC' : '#666666' }
             ]}>
               Learn about safety tips for{' '}
-              <Text style={styles.link}>guests</Text>
+              <Text style={styles.link}>property owners</Text>
               {' '}and{' '}
-              <Text style={styles.link}>hosts</Text>
+              <Text style={styles.link}>service providers</Text>
               .
             </Text>
           </View>
         </View>
 
-        <View style={styles.section}>
+        <View style={[
+          styles.section,
+          { marginTop: 10 }
+        ]}>
           <Text style={[
             styles.sectionTitle,
             { color: isDarkMode ? '#FFFFFF' : '#000000' }
@@ -174,31 +264,91 @@ export default function SecurityScreen() {
           <TouchableOpacity 
             style={[
               styles.menuItem,
-              { borderBottomColor: isDarkMode ? '#333333' : '#E5E5E5' }
+              { 
+                backgroundColor: isDarkMode ? '#2a2a2a' : '#FFFFFF',
+                borderColor: isDarkMode ? '#333333' : '#E5E5E5' 
+              }
             ]}
             onPress={handleDeactivate}
           >
             <View style={styles.menuItemContent}>
               <View style={styles.menuItemLeft}>
-                <Ionicons 
-                  name="warning-outline" 
-                  size={24} 
-                  color="#FF3B30" 
-                  style={styles.menuIcon}
-                />
+                <View style={styles.warningIconBackground}>
+                  <Ionicons 
+                    name="warning-outline" 
+                    size={22} 
+                    color="#FFFFFF" 
+                  />
+                </View>
                 <Text style={[
                   styles.menuLabel,
-                  styles.deactivateText,
-                  { color: isDarkMode ? '#CCCCCC' : '#666666' }
+                  { color: isDarkMode ? '#FFC7C7' : '#FF3B30' }
                 ]}>
                   Deactivate your account
                 </Text>
               </View>
-              <Text style={styles.deactivateButton}>
-                Deactivate
-              </Text>
+              <TouchableOpacity style={styles.deactivateButton}>
+                <Text style={styles.deactivateButtonText}>
+                  Deactivate
+                </Text>
+              </TouchableOpacity>
             </View>
           </TouchableOpacity>
+        </View>
+
+        <View style={styles.securityTipsContainer}>
+          <Text style={[
+            styles.securityTipsTitle,
+            { color: isDarkMode ? '#FFFFFF' : '#000000' }
+          ]}>
+            Security Tips
+          </Text>
+          
+          <View style={[
+            styles.securityTipCard,
+            { backgroundColor: isDarkMode ? '#2a2a2a' : '#FFFFFF' }
+          ]}>
+            <View style={styles.tipIconContainer}>
+              <Ionicons name="lock-closed" size={20} color="#FFFFFF" />
+            </View>
+            <View style={styles.tipTextContainer}>
+              <Text style={[
+                styles.tipTitle,
+                { color: isDarkMode ? '#FFFFFF' : '#000000' }
+              ]}>
+                Use a strong password
+              </Text>
+              <Text style={[
+                styles.tipDescription,
+                { color: isDarkMode ? '#CCCCCC' : '#666666' }
+              ]}>
+                Create a unique password with at least 12 characters including numbers, symbols and uppercase letters.
+              </Text>
+            </View>
+          </View>
+          
+          <View style={[
+            styles.securityTipCard,
+            { backgroundColor: isDarkMode ? '#2a2a2a' : '#FFFFFF' }
+          ]}>
+            <View style={[styles.tipIconContainer, { backgroundColor: '#5856D6' }]}>
+              <Ionicons name="sync" size={20} color="#FFFFFF" />
+            </View>
+            <View style={styles.tipTextContainer}>
+              <Text style={[
+                styles.tipTitle,
+                { color: isDarkMode ? '#FFFFFF' : '#000000' }
+              ]}>
+                Update regularly
+              </Text>
+              <Text style={[
+                styles.tipDescription,
+                { color: isDarkMode ? '#CCCCCC' : '#666666' }
+              ]}>
+                Change your password every 3 months to maintain high security on your Maskanh account.
+              </Text>
+            </View>
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -214,7 +364,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
     borderBottomWidth: 1,
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 16,
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight! + 10 : 16,
   },
   backButton: {
     padding: 8,
@@ -230,19 +380,57 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentContainer: {
-    paddingBottom: 20,
+    paddingBottom: 30,
+  },
+  securityBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    marginHorizontal: 16,
+    marginTop: 16,
+    marginBottom: 5,
+    borderRadius: 12,
+  },
+  securityBannerIcon: {
+    height: 50,
+    width: 50,
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 168, 107, 0.15)',
+    marginRight: 16,
+  },
+  securityBannerTextContainer: {
+    flex: 1,
+  },
+  securityBannerTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  securityBannerSubtitle: {
+    fontSize: 14,
   },
   section: {
     padding: 16,
   },
   sectionTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '600',
     marginBottom: 16,
   },
   menuItem: {
-    borderBottomWidth: 1,
-    paddingVertical: 16,
+    borderRadius: 12,
+    padding: 16,
+    borderWidth: 1,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 3.84,
+    elevation: 2,
   },
   menuItemContent: {
     flexDirection: 'row',
@@ -253,9 +441,24 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
-  },
-  menuIcon: {
     marginRight: 12,
+  },
+  iconBackground: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  warningIconBackground: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+    backgroundColor: '#FF3B30',
   },
   menuLabel: {
     fontSize: 16,
@@ -266,44 +469,137 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 20,
   },
+  updateButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 16,
+    backgroundColor: '#E8F5E9',
+  },
   updateText: {
     color: '#00A86B',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '600',
+  },
+  verifiedBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    backgroundColor: 'rgba(0, 168, 107, 0.1)',
+  },
+  verifiedText: {
+    marginLeft: 4,
+    color: '#00A86B',
+    fontWeight: '500',
+    fontSize: 14,
   },
   securityCard: {
     margin: 16,
     padding: 20,
-    borderRadius: 12,
+    borderRadius: 16,
     borderWidth: 1,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 3.84,
+    elevation: 2,
   },
   iconContainer: {
     marginBottom: 16,
+    alignItems: 'center',
+  },
+  shieldIconBackground: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#00A86B',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   cardTitle: {
     fontSize: 18,
     fontWeight: '600',
     marginBottom: 12,
+    textAlign: 'center',
   },
   cardDescription: {
     fontSize: 14,
-    lineHeight: 20,
+    lineHeight: 22,
     marginBottom: 16,
+    textAlign: 'center',
   },
   linksContainer: {
     marginTop: 8,
+    alignItems: 'center',
   },
   link: {
     color: '#00A86B',
     textDecorationLine: 'underline',
+    fontWeight: '500',
   },
   deactivateText: {
     fontSize: 16,
     fontWeight: '500',
   },
   deactivateButton: {
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255, 59, 48, 0.1)',
+    minWidth: 100,
+    alignItems: 'center',
+  },
+  deactivateButtonText: {
     color: '#FF3B30',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  securityTipsContainer: {
+    padding: 16,
+    marginBottom: 16,
+  },
+  securityTipsTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 16,
+  },
+  securityTipCard: {
+    flexDirection: 'row',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.05,
+    shadowRadius: 3.84,
+    elevation: 2,
+  },
+  tipIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#00A86B',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  tipTextContainer: {
+    flex: 1,
+  },
+  tipTitle: {
     fontSize: 16,
     fontWeight: '600',
+    marginBottom: 4,
+  },
+  tipDescription: {
+    fontSize: 14,
+    lineHeight: 20,
   },
 }); 

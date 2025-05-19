@@ -160,7 +160,7 @@ export default function LocationScreen() {
       <View style={styles.content}>
         <Text style={styles.title}>Where's your place located?</Text>
         <Text style={styles.subtitle}>
-          Your address is only shared with clients after they've made a reservation.
+          Your address is only shared with clients after they've made a booking.
         </Text>
 
         {/* Address Input */}

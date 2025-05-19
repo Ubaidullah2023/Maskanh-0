@@ -385,7 +385,6 @@ export default function AppNavigator() {
       <Stack.Screen name="Notifications" component={NotificationsScreen} />
       <Stack.Screen name="ProfileComplete" component={ProfileCompleteScreen} />
       <Stack.Screen name="Analytics" component={AnalyticsScreen} />
-      <Stack.Screen name="ChatScreen" component={ChatScreen} />
       <Stack.Screen name="ServiceProfile" component={ServiceProfileScreen} />
       <Stack.Screen name="ServiceEditProfile" component={ServiceEditProfileScreen} />
       <Stack.Screen name="ServicePersonalInfo" component={ServicePersonalInfoScreen} />

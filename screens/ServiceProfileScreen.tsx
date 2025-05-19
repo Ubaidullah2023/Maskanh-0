@@ -540,6 +540,7 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
   },
   backButton: {
+    marginTop: 10,
     padding: 12,
     borderRadius: 25,
     backgroundColor: '#F0FFF4',
@@ -549,6 +550,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   settingsButton: {
+    marginTop: 10,
     padding: 12,
     borderRadius: 25,
     backgroundColor: '#F0FFF4',
@@ -558,6 +560,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   headerTitle: {
+    marginTop: 10,
     fontWeight: '700',
     color: '#212529',
     textAlign: 'center',

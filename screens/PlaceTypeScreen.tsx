@@ -163,7 +163,7 @@ export default function PlaceTypeScreen() {
         >
           <View style={styles.titleContainer}>
             <Text style={styles.title}>
-              At Maskanh, we connect you with skilled and verified professionals to turn your construction ideas into reality. Check out the services we offer:
+              Choose your category of service:
             </Text>
           </View>
 
@@ -225,6 +225,7 @@ const styles = StyleSheet.create({
     marginBottom: height * 0.02,
     lineHeight: width < 360 ? 22 : width < 400 ? 24 : 26,
     textAlign: 'left',
+    marginTop: height * 0.01,
   },
   optionCard: {
     borderWidth: 1,

@@ -13,12 +13,28 @@ import {
   ScrollView,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/AppNavigator';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const PRIMARY_COLOR = '#00A86B';
 const STATUS_COLOR = '#F5A623';
+
+type ListingStatus = 'active' | 'pending' | 'completed';
+
+interface Listing {
+  id: string;
+  title: string;
+  description: string;
+  location: string;
+  photos: any[];
+  serviceType: string;
+  highlights: string[];
+  createdAt: string;
+  status: ListingStatus;
+}
 
 const CONSTRUCTION_IMAGES = [
   require('../assets/services/Heavy-Machinery.png'),
@@ -29,11 +45,11 @@ const CONSTRUCTION_IMAGES = [
 ];
 
 export default function ListingScreen() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const insets = useSafeAreaInsets();
   const [carouselIndex, setCarouselIndex] = useState(0);
-  const flatListRef = useRef(null);
-  const [listings, setListings] = useState([{
+  const flatListRef = useRef<FlatList<any>>(null);
+  const [listings, setListings] = useState<Listing[]>([{
     id: '1',
     title: 'Downtown Construction Project',
     description: 'A modern high-rise under construction in the city center. Includes commercial and residential spaces.',
@@ -69,7 +85,7 @@ export default function ListingScreen() {
       });
   }, [navigation]);
 
-  const formatDate = (dateString) => {
+  const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
       year: 'numeric',
@@ -78,7 +94,7 @@ export default function ListingScreen() {
     });
   };
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (status: ListingStatus): string => {
     switch (status) {
       case 'active':
         return PRIMARY_COLOR;
@@ -93,17 +109,23 @@ export default function ListingScreen() {
 
   // --- HEADER & BOTTOM BAR LOGIC (unchanged) ---
   const handleAdd = () => {
-    navigation.navigate('MaskanhProUpgrade', { listingCount: listings.length });
+    navigation.navigate('MaskanhProUpgrade');
   };
 
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
-      <View style={[styles.header, { paddingTop: insets.top + SCREEN_HEIGHT * 0.01, paddingBottom: SCREEN_HEIGHT * 0.01 }]}>
+      <View style={[
+        styles.header, 
+        { 
+          paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight! + 10 : 10,
+          paddingBottom: SCREEN_HEIGHT * 0.01 
+        }
+      ]}>
         <View style={{ flex: 1 }} />
         <View style={{ flex: 2, alignItems: 'center', justifyContent: 'center' }}>
           <Text style={styles.headerTitle}>Your Services</Text>
-            </View>
+        </View>
         <View style={{ flex: 1, alignItems: 'flex-end' }}>
           <TouchableOpacity style={styles.headerButton} onPress={handleAdd}>
             <Ionicons name="add" size={28} color={PRIMARY_COLOR} />
@@ -111,11 +133,17 @@ export default function ListingScreen() {
         </View>
       </View>
 
-      {/* Only one listing card */}
-      <ScrollView style={[styles.content, { paddingBottom: insets.bottom }]} showsVerticalScrollIndicator={false} contentContainerStyle={{ flexGrow: 1 }}>
+      {/* Scrollable Content */}
+      <ScrollView 
+        style={styles.content} 
+        showsVerticalScrollIndicator={false} 
+        contentContainerStyle={{ 
+          paddingBottom: 100 // Add padding for bottom nav
+        }}
+      >
         <View style={styles.listingCard}>
           <View style={styles.listingHeader}>
-          <View style={styles.statusContainer}>
+            <View style={styles.statusContainer}>
               <View style={[styles.statusDot, { backgroundColor: getStatusColor(listings[0].status) }]} />
               <Text style={[styles.statusText, { color: getStatusColor(listings[0].status) }]}>
                 {listings[0].status.charAt(0).toUpperCase() + listings[0].status.slice(1)}
@@ -135,8 +163,12 @@ export default function ListingScreen() {
               keyExtractor={(_, idx) => idx.toString()}
               renderItem={({ item }) => (
                 <View style={styles.imageWrapper}>
-                  <Image source={item} style={styles.listingImage} />
-          </View>
+                  <Image 
+                    source={item} 
+                    style={styles.listingImage} 
+                    resizeMode="cover"
+                  />
+                </View>
               )}
               onMomentumScrollEnd={e => {
                 const index = Math.round(e.nativeEvent.contentOffset.x / (SCREEN_WIDTH * 0.92));
@@ -155,9 +187,9 @@ export default function ListingScreen() {
                 />
               ))}
             </View>
-        </View>
+          </View>
 
-        <View style={styles.listingDetails}>
+          <View style={styles.listingDetails}>
             <Text style={styles.listingTitle}>{listings[0].title}</Text>
             <Text style={styles.listingLocation}>{listings[0].location}</Text>
             <Text style={styles.listingDescription} numberOfLines={2}>
@@ -166,7 +198,7 @@ export default function ListingScreen() {
             <Text style={styles.listingDate}>
               Listed on {formatDate(listings[0].createdAt)}
             </Text>
-        </View>
+          </View>
 
           <View style={styles.highlightsContainer}>
             {listings[0].highlights.map((highlight, index) => (
@@ -182,18 +214,30 @@ export default function ListingScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFFFFF' },
+  container: { 
+    flex: 1, 
+    backgroundColor: '#FFFFFF',
+    position: 'relative',
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: '4%',
     minHeight: 56,
-    maxHeight: 80,
     borderBottomWidth: 1,
     borderBottomColor: '#EEEEEE',
     backgroundColor: '#FFFFFF',
     width: '100%',
+    zIndex: 10,
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 1.41,
   },
   headerTitle: {
     fontSize: SCREEN_WIDTH < 360 ? 20 : 24,
@@ -216,10 +260,11 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     width: '100%',
+    paddingTop: 15, // Add space between header and content
   },
   listingCard: {
     marginHorizontal: '4%',
-    marginTop: SCREEN_HEIGHT * 0.02,
+    marginBottom: SCREEN_HEIGHT * 0.02,
     borderRadius: 12,
     backgroundColor: '#FFFFFF',
     shadowColor: '#000',
@@ -341,43 +386,5 @@ const styles = StyleSheet.create({
     fontSize: SCREEN_WIDTH < 360 ? 10 : 12,
     color: PRIMARY_COLOR,
     fontWeight: '500',
-  },
-  tabBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    paddingVertical: SCREEN_HEIGHT * 0.015,
-    borderTopWidth: 1,
-    borderTopColor: '#EEEEEE',
-    backgroundColor: '#FFFFFF',
-    width: '100%',
-  },
-  tabItem: {
-    alignItems: 'center',
-    flex: 1,
-  },
-  tabText: {
-    fontSize: SCREEN_WIDTH < 360 ? 10 : 12,
-    color: '#666666',
-    marginTop: 4,
-  },
-  messageBadge: {
-    position: 'absolute',
-    top: -4,
-    right: -4,
-    backgroundColor: PRIMARY_COLOR,
-    borderRadius: 10,
-    minWidth: 18,
-    height: 18,
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 1,
-    borderWidth: 1.5,
-    borderColor: '#FFFFFF',
-  },
-  messageBadgeText: {
-    color: '#FFFFFF',
-    fontSize: 10,
-    fontWeight: '600',
   },
 }); 

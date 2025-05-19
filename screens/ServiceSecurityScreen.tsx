@@ -177,12 +177,12 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   header: {
+    marginBottom: 10,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: '4%',
     height: Platform.OS === 'ios' ? 90 : 80,
-    paddingVertical: 16,
   },
   backButton: {
     padding: 12,
@@ -199,7 +199,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: Platform.OS === 'ios' ? 22 : 20,
     flex: 1,
-    marginLeft: 10,
   },
   content: {
     flex: 1,

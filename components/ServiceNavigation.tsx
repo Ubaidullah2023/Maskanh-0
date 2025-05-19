@@ -1,11 +1,22 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RouteProp } from '@react-navigation/native';
+import { RootStackParamList } from '../navigation/AppNavigator';
 import { Ionicons } from '@expo/vector-icons';
 
 const PRIMARY_COLOR = '#00A86B';
 
-const TABS = [
+type TabName = 'Analytics' | 'Messages' | 'Listing' | 'Notifications' | 'ServiceProfile';
+
+interface TabInfo {
+  name: TabName;
+  label: string;
+  icon: keyof typeof Ionicons.glyphMap;
+}
+
+const TABS: TabInfo[] = [
   { name: 'Analytics', label: 'Dashboard', icon: 'stats-chart' },
   { name: 'Messages', label: 'Messages', icon: 'chatbubble-outline' },
   { name: 'Listing', label: 'Listings', icon: 'home' },
@@ -14,25 +25,14 @@ const TABS = [
 ];
 
 export default function ServiceNavigation() {
-  const navigation = useNavigation();
-  const route = useRoute();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const route = useRoute<RouteProp<RootStackParamList>>();
 
   // For Listing, you may need to pass required params. Adjust as needed.
-  const handleNavigate = (tabName: string) => {
+  const handleNavigate = (tabName: TabName) => {
     if (tabName === 'Listing') {
-      navigation.navigate('Listing', {
-        placeType: 'entire',
-        guestCount: 1,
-        bedroomCount: 1,
-        bedCount: 1,
-        hasLock: true,
-        amenities: [],
-        photos: [],
-        title: '',
-        highlights: [],
-        description: '',
-        guestType: 'any_guest',
-        basePrice: 0
+      navigation.navigate('ServiceTabs', {
+        screen: tabName
       });
     } else {
       navigation.navigate(tabName);

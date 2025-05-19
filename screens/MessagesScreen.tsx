@@ -16,7 +16,6 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/AppNavigator';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useTheme } from '../context/ThemeContext';
-import BottomNavigation from '../components/BottomNavigation';
 
 type MessageItemProps = {
   id: string;
@@ -33,7 +32,7 @@ type MessageItemProps = {
 const { width } = Dimensions.get('window');
 const isTablet = width >= 768;
 
-const MessageItem = ({ name, message, time, unreadCount, onPress }: MessageItemProps) => {
+const MessageItem = ({ name, lastMessage, time, unreadCount, onPress }: MessageItemProps) => {
   const { isDarkMode } = useTheme();
   
   return (
@@ -88,7 +87,7 @@ const MessageItem = ({ name, message, time, unreadCount, onPress }: MessageItemP
           ]} 
           numberOfLines={1}
         >
-          {message}
+          {lastMessage}
         </Text>
       </View>
       {unreadCount ? (
@@ -252,7 +251,7 @@ export default function MessagesScreen() {
             showsVerticalScrollIndicator={false}
             contentContainerStyle={[
               isTablet ? styles.tabletContent : null,
-              { paddingBottom: 90 } // Add padding to account for bottom navigation
+              { paddingBottom: 80 } // Add padding to account for bottom navigation
             ]}
           >
             {filteredMessages.map((message) => (
@@ -260,7 +259,7 @@ export default function MessagesScreen() {
                 key={message.id}
                 id={message.id}
                 name={message.name}
-                message={message.message}
+                lastMessage={message.message}
                 time={message.time}
                 unreadCount={message.unreadCount}
                 serviceId={message.serviceId}
@@ -288,8 +287,6 @@ export default function MessagesScreen() {
           </View>
         )}
       </View>
-
-      <BottomNavigation />
     </SafeAreaView>
   );
 }

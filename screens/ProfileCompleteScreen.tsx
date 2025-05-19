@@ -59,19 +59,8 @@ export default function ProfileCompleteScreen() {
         // const { error } = await ProfileService.saveServiceProvider(dummyUserId, profileData);
         // if (error) throw error;
         
-        navigation.navigate('Listing', {
-          placeType: route.params.placeType,
-          guestCount: route.params.guestCount,
-          bedroomCount: route.params.bedroomCount,
-          bedCount: route.params.bedCount,
-          hasLock: route.params.hasLock,
-          amenities: route.params.amenities,
-          photos: route.params.photos,
-          title: route.params.title,
-          highlights: route.params.highlights,
-          description: route.params.description,
-          guestType: route.params.guestType,
-          basePrice: 0
+        navigation.navigate('ServiceTabs', {
+          screen: 'Listing'
         });
       } else {
         const userId = session.session.user.id;
@@ -97,19 +86,8 @@ export default function ProfileCompleteScreen() {
         // const { error } = await ProfileService.saveServiceProvider(userId, profileData);
         // if (error) throw error;
         
-        navigation.navigate('Listing', {
-          placeType: route.params.placeType,
-          guestCount: route.params.guestCount,
-          bedroomCount: route.params.bedroomCount,
-          bedCount: route.params.bedCount,
-          hasLock: route.params.hasLock,
-          amenities: route.params.amenities,
-          photos: route.params.photos,
-          title: route.params.title,
-          highlights: route.params.highlights,
-          description: route.params.description,
-          guestType: route.params.guestType,
-          basePrice: 0
+        navigation.navigate('ServiceTabs', {
+          screen: 'Listing'
         });
       }
     } catch (error) {
