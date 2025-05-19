@@ -7,20 +7,20 @@ import BottomNavigation from '../components/BottomNavigation';
 
 type RootStackParamList = {
   EditProfile: undefined;
-  PersonalInformation: undefined;
+  PersonalInfo: undefined;
   Security: undefined;
   NotificationSettings: undefined;
   Language: undefined;
   HelpCenter: undefined;
   TermsPrivacy: undefined;
-  About: undefined;
+  Feedback: undefined;
   Login: undefined;
 };
 
 export default function ProfileScreen() {
   const { isDarkMode, toggleTheme } = useTheme();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
-  const userName = "John Doe";
+  const userName = "User";
   const userInitials = userName.split(' ').map(n => n[0]).join('');
 
   const handleEditProfile = () => {
@@ -28,7 +28,7 @@ export default function ProfileScreen() {
   };
 
   const handlePersonalInfo = () => {
-    navigation.navigate('PersonalInformation');
+    navigation.navigate('PersonalInfo');
   };
 
   const handleSecurity = () => {
@@ -52,7 +52,7 @@ export default function ProfileScreen() {
   };
 
   const handleAbout = () => {
-    navigation.navigate('About');
+    navigation.navigate('Feedback');
   };
 
   const handleLogout = () => {
@@ -102,7 +102,7 @@ export default function ProfileScreen() {
             styles.name,
             { color: isDarkMode ? '#FFFFFF' : '#000000' }
           ]}>John Doe</Text>
-          <Text style={styles.email}>john.doe@example.com</Text>
+          <Text style={styles.email}>user@gmail.com</Text>
           <TouchableOpacity 
             style={styles.editProfileButton}
             onPress={handleEditProfile}
@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    padding: 20,
+    padding: 50,
     borderBottomWidth: 1,
     borderBottomColor: '#E5E5E5',
   },
@@ -296,7 +296,7 @@ const styles = StyleSheet.create({
   },
   logoutButton: {
     margin: 16,
-    backgroundColor: '#FF3B30',
+    backgroundColor: '#00A86B',
     padding: 16,
     borderRadius: 8,
     alignItems: 'center',
@@ -305,5 +305,16 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '600',
+  },
+  headerButtonWrapper: {
+    minWidth: 44,
+    alignItems: 'center',
+  },
+  backButton: {
+    padding: 8,
+    marginLeft: -8,
+    minWidth: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 }); 

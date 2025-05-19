@@ -9,83 +9,77 @@ import {
   Platform,
   StatusBar,
   Image,
+  Dimensions,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/AppNavigator';
 
+const { height, width } = Dimensions.get('window');
+const isSmallScreen = width < 360;
+const statusBarHeight = Platform.OS === 'android' ? StatusBar.currentHeight || 0 : 0;
+
 export default function ServiceProviderStep1Screen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
   const handleNext = () => {
-    navigation.navigate('PropertyType');
+    navigation.navigate('PlaceType');
   };
 
   const handleBack = () => {
     navigation.goBack();
   };
 
-  const handleSaveAndExit = () => {
-    navigation.navigate('MainTabs', { screen: 'Home' });
-  };
-
   return (
-    <SafeAreaView style={styles.container}>
+    <>
       <StatusBar
         barStyle="dark-content"
         backgroundColor="#FFFFFF"
       />
-      
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.saveButton}
-          onPress={handleSaveAndExit}
+      <SafeAreaView style={styles.container}>
+        <ScrollView 
+          style={styles.content}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}
         >
-          <Text style={styles.saveButtonText}>Save & exit</Text>
-        </TouchableOpacity>
-      </View>
+          {/* Step Illustration */}
+          <View style={styles.illustrationContainer}>
+            <Image
+              source={require('../assets/images/construction.png')}
+              style={styles.illustration}
+              resizeMode="contain"
+            />
+          </View>
 
-      <ScrollView 
-        style={styles.content}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Step Illustration */}
-        <View style={[styles.illustrationContainer, { backgroundColor: '#F5F5F5' }]}>
-          <Image
-            source={require('../assets/images/construction.png')}
-            style={styles.illustration}
-            resizeMode="contain"
-          />
-        </View>
+          <View style={styles.textContent}>
+            <Text style={styles.stepLabel}>Step 1</Text>
+            <Text style={styles.title}>Tell us what you do</Text>
+            
+            <Text style={styles.description}>
+              In this step, we'll ask you to select the type of service you provide — whether you're an electrician, plumber, cleaner, or any other professional.
+              Then, let us know the area you work in so we can connect you with the right clients nearby.
+            </Text>
+          </View>
 
-        <View style={styles.textContent}>
-          <Text style={styles.stepLabel}>Step 1</Text>
-          <Text style={styles.title}>Tell us what you do</Text>
-          
-          <Text style={styles.description}>
-          In this step, we'll ask you to select the type of service you provide — whether you're an electrician, plumber, cleaner, or any other professional.
-          Then, let us know the area you work in so we can connect you with the right clients nearby.</Text>
-        </View>
+          {/* Navigation Buttons */}
+          <View style={styles.navigationButtons}>
+            <TouchableOpacity 
+              style={styles.backButton}
+              onPress={handleBack}
+            >
+              <Text style={styles.backButtonText}>Back</Text>
+            </TouchableOpacity>
 
-        {/* Navigation Buttons */}
-        <View style={styles.navigationButtons}>
-          <TouchableOpacity 
-            style={styles.backButton}
-            onPress={handleBack}
-          >
-            <Text style={styles.backButtonText}>Back</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity 
-            style={styles.nextButton}
-            onPress={handleNext}
-          >
-            <Text style={styles.nextButtonText}>Next</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+            <TouchableOpacity 
+              style={styles.nextButton}
+              onPress={handleNext}
+            >
+              <Text style={styles.nextButtonText}>Next</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </>
   );
 }
 
@@ -94,70 +88,55 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF',
   },
-  header: {
-    paddingHorizontal: 16,
-    paddingVertical: 50,
-    borderBottomWidth: 0,
-    borderBottomColor: '#000000',
-  },
-  saveButton: {
-    alignSelf: 'flex-end',
-    paddingVertical: 20,
-    paddingHorizontal: 20,
-    borderRadius: 24,
-    borderWidth: 1,
-    borderColor: '#000000',
-    backgroundColor: '#FFFFFF',
-  },
-  saveButtonText: {
-    fontSize: 14,
-    color: '#222222',
-    fontWeight: '500',
-  },
   content: {
-    flex: 10,
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingTop: Math.max(statusBarHeight, 10) + 15,
   },
   illustrationContainer: {
     width: '100%',
-    height: 250,
-    marginTop: 70,
-    marginBottom: 24,
+    height: Math.min(height * 0.25, 180), // Cap the height on larger screens
+    marginBottom: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#ffffff',
+    backgroundColor: '#FFFFFF',
   },
   illustration: {
-    width: '80%',
+    width: width * 0.7, // Make width responsive
     height: '80%',
   },
   textContent: {
-    paddingHorizontal: 24,
+    paddingHorizontal: 20,
+    marginBottom: 24,
   },
   stepLabel: {
-    fontSize: 16,
+    fontSize: isSmallScreen ? 14 : 16,
     color: '#666666',
     marginBottom: 8,
     fontWeight: '500',
   },
   title: {
-    fontSize: 28,
+    fontSize: isSmallScreen ? 24 : 28,
     fontWeight: '600',
     color: '#222222',
     marginBottom: 12,
-    lineHeight: 28,
+    lineHeight: isSmallScreen ? 30 : 34,
   },
   description: {
-    fontSize: 18,
+    fontSize: isSmallScreen ? 15 : 16,
     color: '#666666',
-    lineHeight: 20,
-    marginBottom: 32,
+    lineHeight: isSmallScreen ? 22 : 24,
+    marginBottom: 24,
   },
   navigationButtons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 24,
+    paddingHorizontal: 20,
     paddingVertical: 16,
+    marginTop: 'auto', // Push to bottom of container
     borderTopWidth: 1,
     borderTopColor: '#EEEEEE',
     backgroundColor: '#FFFFFF',
@@ -166,19 +145,19 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   backButtonText: {
-    fontSize: 18,
+    fontSize: 16,
     color: '#222222',
     textDecorationLine: 'underline',
     fontWeight: '500',
   },
   nextButton: {
     backgroundColor: '#00A86B',
-    paddingVertical: 12,
-    paddingHorizontal: 24,
+    paddingVertical: 14,
+    paddingHorizontal: 28,
     borderRadius: 12,
   },
   nextButtonText: {
-    fontSize: 14,
+    fontSize: 16,
     color: '#FFFFFF',
     fontWeight: '600',
   },

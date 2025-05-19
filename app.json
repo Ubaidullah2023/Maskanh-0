@@ -22,7 +22,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/adaptive-logo.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.ubaidullah1.MaskanhApp"

@@ -2,6 +2,8 @@
 
 # dependencies
 node_modules/
+/.pnp
+.pnp.js
 
 # Expo
 .expo/
@@ -16,6 +18,18 @@ expo-env.d.ts
 *.p12
 *.key
 *.mobileprovision
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
 
 # Metro
 .metro-health-check*
@@ -24,6 +38,7 @@ expo-env.d.ts
 npm-debug.*
 yarn-debug.*
 yarn-error.*
+*.log
 
 # macOS
 .DS_Store
@@ -31,6 +46,53 @@ yarn-error.*
 
 # local env files
 .env*.local
+.env
+.env.development
+.env.test
+.env.production
 
 # typescript
 *.tsbuildinfo
+
+# IDE
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Android/IntelliJ
+build/
+.idea
+.gradle
+local.properties
+*.iml
+*.hprof
+.cxx/
+*.keystore
+!debug.keystore
+
+# iOS
+ios/Pods/
+ios/build/
+ios/*.xcworkspace
+ios/*.xcodeproj
+ios/*.pbxuser
+ios/*.mode1v3
+ios/*.mode2v3
+ios/*.perspectivev3
+ios/*.xccheckout
+ios/*.moved-aside
+ios/DerivedData/
+ios/.hmap
+ios/.svn/
+ios/.DS_Store
+ios/.xcuserstate
+ios/.xcuserdatad/
+
+# Temporary files
+*.swp
+*.swo
+*~
+

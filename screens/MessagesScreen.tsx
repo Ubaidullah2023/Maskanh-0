@@ -1,54 +1,245 @@
-import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, FlatList, TouchableOpacity, Image } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
-import { colors, spacing, typography } from '../theme';
+import React, { useState, useMemo } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  SafeAreaView,
+  TouchableOpacity,
+  TextInput,
+  FlatList,
+  Dimensions,
+  Platform,
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../navigation/AppNavigator';
+import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-interface Message {
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+const PRIMARY_COLOR = '#00A86B';
+
+type MessageScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'MainTabs'>;
+
+type Conversation = {
   id: string;
-  sender: string;
+  name: string;
   lastMessage: string;
   time: string;
-  unread: boolean;
-}
+  unread: number;
+  avatar: string;
+  online?: boolean;
+};
 
-// Mock data for messages
-const mockMessages: Message[] = [
+const conversations: Conversation[] = [
   {
     id: '1',
-    sender: 'Muhammad Ali',
-    lastMessage: 'Is the property still available?',
-    time: '2m ago',
-    unread: true,
+    name: 'Ahmed Khan',
+    lastMessage: 'When can you come to fix the plumbing issue in my bathroom?',
+    time: '5 min ago',
+    unread: 2,
+    avatar: '👨',
+    online: true,
   },
   {
     id: '2',
-    sender: 'Ahmad Workshop',
-    lastMessage: 'I would like to schedule a viewing',
-    time: '1h ago',
-    unread: false,
+    name: 'Fatima Ali',
+    lastMessage: 'The AC repair was excellent. Thank you for your service!',
+    time: '1 hour ago',
+    unread: 0,
+    avatar: '👩',
+    online: false,
   },
+  {
+    id: '3',
+    name: 'Usman Malik',
+    lastMessage: 'Can you provide a quote for the renovation project?',
+    time: '2 hours ago',
+    unread: 1,
+    avatar: '👨',
+    online: true,
+  },
+  {
+    id: '4',
+    name: 'Ayesha Riaz',
+    lastMessage: 'The electrical work is completed. Everything is working perfectly.',
+    time: 'Yesterday',
+    unread: 0,
+    avatar: '👩',
+    online: false,
+  },
+  {
+    id: '5',
+    name: 'Hassan Sheikh',
+    lastMessage: 'I need an electrician for my new office setup in Gulberg.',
+    time: 'Yesterday',
+    unread: 3,
+    avatar: '👨',
+    online: true,
+  }
 ];
 
 export default function MessagesScreen() {
-  const renderMessage = ({ item }: { item: Message }) => (
-    <TouchableOpacity style={styles.messageItem}>
+  const navigation = useNavigation<MessageScreenNavigationProp>();
+  const [searchQuery, setSearchQuery] = useState('');
+  const insets = useSafeAreaInsets();
+
+  const filteredConversations = useMemo(() => {
+    return conversations.filter(conversation => 
+      conversation.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      conversation.lastMessage.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [searchQuery]);
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: '#fff',
+    },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingTop: insets.top + SCREEN_HEIGHT * 0.02,
+      paddingBottom: SCREEN_HEIGHT * 0.02,
+      paddingHorizontal: SCREEN_WIDTH * 0.05,
+      borderBottomWidth: 1,
+      borderBottomColor: '#f0f0f0',
+      position: 'relative',
+      backgroundColor: '#fff',
+      marginBottom: SCREEN_HEIGHT * 0.01,
+    },
+    backButton: {
+      position: 'absolute',
+      left: SCREEN_WIDTH * 0.05,
+      padding: SCREEN_WIDTH * 0.02,
+      top: insets.top + SCREEN_HEIGHT * 0.025,
+    },
+    headerTitle: {
+      fontSize: SCREEN_WIDTH < 360 ? 20 : 24,
+      fontWeight: 'bold',
+      color: '#333',
+      textAlign: 'center',
+      marginTop: SCREEN_HEIGHT * 0.01,
+    },
+    searchContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      margin: SCREEN_WIDTH * 0.04,
+      paddingHorizontal: SCREEN_WIDTH * 0.04,
+      backgroundColor: '#f5f5f5',
+      borderRadius: 12,
+      height: SCREEN_HEIGHT * 0.05,
+    },
+    searchIcon: {
+      marginRight: SCREEN_WIDTH * 0.02,
+    },
+    searchInput: {
+      flex: 1,
+      fontSize: SCREEN_WIDTH < 360 ? 14 : 16,
+      color: '#333',
+      padding: 0,
+    },
+    listContainer: {
+      paddingBottom: SCREEN_HEIGHT * 0.02,
+    },
+    conversationItem: {
+      flexDirection: 'row',
+      padding: SCREEN_WIDTH * 0.04,
+      borderBottomWidth: 1,
+      borderBottomColor: '#f0f0f0',
+    },
+    avatarContainer: {
+      position: 'relative',
+      marginRight: SCREEN_WIDTH * 0.04,
+    },
+    avatar: {
+      fontSize: SCREEN_WIDTH * 0.08,
+      backgroundColor: '#f0f0f0',
+      width: SCREEN_WIDTH * 0.12,
+      height: SCREEN_WIDTH * 0.12,
+      borderRadius: SCREEN_WIDTH * 0.06,
+      textAlign: 'center',
+      lineHeight: SCREEN_WIDTH * 0.12,
+    },
+    onlineIndicator: {
+      position: 'absolute',
+      bottom: 0,
+      right: 0,
+      width: SCREEN_WIDTH * 0.03,
+      height: SCREEN_WIDTH * 0.03,
+      borderRadius: SCREEN_WIDTH * 0.015,
+      backgroundColor: PRIMARY_COLOR,
+      borderWidth: 2,
+      borderColor: '#fff',
+    },
+    unreadBadge: {
+      position: 'absolute',
+      top: -4,
+      right: -4,
+      backgroundColor: PRIMARY_COLOR,
+      borderRadius: 10,
+      minWidth: 20,
+      height: 20,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    unreadText: {
+      color: '#fff',
+      fontSize: 12,
+      fontWeight: 'bold',
+    },
+    conversationContent: {
+      flex: 1,
+    },
+    conversationHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: 4,
+    },
+    name: {
+      fontSize: SCREEN_WIDTH < 360 ? 15 : 17,
+      fontWeight: '600',
+      color: '#333',
+    },
+    time: {
+      fontSize: SCREEN_WIDTH < 360 ? 11 : 13,
+      color: '#999',
+    },
+    lastMessage: {
+      fontSize: SCREEN_WIDTH < 360 ? 13 : 15,
+      color: '#666',
+    },
+    unreadMessage: {
+      color: '#333',
+      fontWeight: '500',
+    },
+  });
+
+  const renderConversation = ({ item }: { item: Conversation }) => (
+    <TouchableOpacity 
+      style={styles.conversationItem}
+      onPress={() => navigation.navigate('Chat', { name: item.name })}
+    >
       <View style={styles.avatarContainer}>
-        <View style={styles.avatar}>
-          <Text style={styles.avatarText}>
-            {item.sender.split(' ').map((n: string) => n[0]).join('')}
-          </Text>
-        </View>
-        {item.unread && <View style={styles.unreadDot} />}
+        <Text style={styles.avatar}>{item.avatar}</Text>
+        {item.online && <View style={styles.onlineIndicator} />}
+        {item.unread > 0 && (
+          <View style={styles.unreadBadge}>
+            <Text style={styles.unreadText}>{item.unread}</Text>
+          </View>
+        )}
       </View>
-      <View style={styles.messageContent}>
-        <View style={styles.messageHeader}>
-          <Text style={styles.senderName}>{item.sender}</Text>
-          <Text style={styles.messageTime}>{item.time}</Text>
+      <View style={styles.conversationContent}>
+        <View style={styles.conversationHeader}>
+          <Text style={styles.name}>{item.name}</Text>
+          <Text style={styles.time}>{item.time}</Text>
         </View>
         <Text 
           style={[
             styles.lastMessage,
-            item.unread && styles.unreadMessage
+            item.unread > 0 && styles.unreadMessage,
           ]}
           numberOfLines={1}
         >
@@ -61,109 +252,33 @@ export default function MessagesScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
+        <TouchableOpacity 
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
+          <Ionicons name="chevron-back" size={24} color={PRIMARY_COLOR} />
+        </TouchableOpacity>
         <Text style={styles.headerTitle}>Messages</Text>
       </View>
+
+      <View style={styles.searchContainer}>
+        <Ionicons name="search" size={20} color="#666" style={styles.searchIcon} />
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search messages..."
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholderTextColor="#999"
+        />
+      </View>
+
       <FlatList
-        data={mockMessages}
-        renderItem={renderMessage}
-        keyExtractor={item => item.id}
-        contentContainerStyle={styles.listContent}
-        ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>No messages yet</Text>
-          </View>
-        }
+        data={filteredConversations}
+        renderItem={renderConversation}
+        keyExtractor={(item) => item.id}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.listContainer}
       />
     </SafeAreaView>
   );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  header: {
-    padding: spacing.md,
-    backgroundColor: colors.white,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  headerTitle: {
-    ...typography.h3,
-    color: colors.text.primary,
-  },
-  listContent: {
-    flexGrow: 1,
-  },
-  messageItem: {
-    flexDirection: 'row',
-    padding: spacing.md,
-    backgroundColor: colors.white,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.border,
-  },
-  avatarContainer: {
-    position: 'relative',
-    marginRight: spacing.md,
-  },
-  avatar: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  avatarText: {
-    color: colors.white,
-    ...typography.h3,
-  },
-  unreadDot: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    backgroundColor: colors.primary,
-    borderWidth: 2,
-    borderColor: colors.white,
-  },
-  messageContent: {
-    flex: 1,
-  },
-  messageHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: spacing.xs,
-  },
-  senderName: {
-    ...typography.body,
-    fontWeight: '500' as const,
-    color: colors.text.primary,
-  },
-  messageTime: {
-    ...typography.caption,
-    color: colors.text.light,
-  },
-  lastMessage: {
-    ...typography.body,
-    color: colors.text.secondary,
-  },
-  unreadMessage: {
-    color: colors.text.primary,
-    fontWeight: '500' as const,
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: spacing.xl,
-  },
-  emptyText: {
-    ...typography.body,
-    color: colors.text.light,
-  },
-}); 
+} 

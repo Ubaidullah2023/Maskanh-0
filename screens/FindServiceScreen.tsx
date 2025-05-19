@@ -17,6 +17,7 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/AppNavigator';
 import BottomNavigation from '../components/BottomNavigation';
+import Header from '../components/Header';
 import { useTheme } from '../context/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
 import IcoImage from '../components/IcoImage';
@@ -360,7 +361,7 @@ const ServiceCard = ({ images, title, subtitle, rating, views, postedTime, id }:
 
 const FindServiceScreen = () => {
   const navigation = useNavigation<FindServiceScreenNavigationProp>();
-  const { colors, isDarkMode, toggleTheme } = useTheme();
+  const { isDarkMode } = useTheme();
 
   const handleMapPress = () => {
     navigation.navigate('ServiceMap');
@@ -382,32 +383,7 @@ const FindServiceScreen = () => {
         translucent={true}
       />
       <View style={styles.container}>
-        {/* Header */}
-        <View style={[styles.header, { 
-          borderBottomColor: isDarkMode ? '#333' : '#eee',
-          backgroundColor: isDarkMode ? '#1a1a1a' : '#fff' 
-        }]}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-            <Ionicons name="chevron-back" size={24} color={isDarkMode ? '#fff' : '#000'} />
-          </TouchableOpacity>
-          <Text style={[styles.headerTitle, { color: isDarkMode ? '#fff' : '#000' }]}>Find a Service</Text>
-          <View style={styles.headerRight}>
-            <TouchableOpacity style={styles.iconButton} onPress={toggleTheme}>
-              <Ionicons 
-                name={isDarkMode ? "sunny" : "moon"} 
-                size={24} 
-                color={isDarkMode ? '#fff' : '#000'} 
-              />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.iconButton}>
-              <Ionicons 
-                name="menu" 
-                size={24} 
-                color={isDarkMode ? '#fff' : '#000'} 
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
+        <Header title="Find a Service" />
 
         <ScrollView style={styles.scrollView}>
           {/* Categories */}
@@ -431,7 +407,7 @@ const FindServiceScreen = () => {
               <Text style={[styles.sectionTitle, { color: isDarkMode ? '#fff' : '#000' }]}>
                 Recommended Services
               </Text>
-              <TouchableOpacity onPress={() => console.log('View all recommended services')}>
+              <TouchableOpacity onPress={() => navigation.navigate('AllServices', { type: 'recommended' })}>
                 <Text style={styles.viewAllButton}>View All</Text>
               </TouchableOpacity>
             </View>

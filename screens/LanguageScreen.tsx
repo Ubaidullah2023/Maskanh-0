@@ -1,69 +1,174 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, FlatList } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import React from 'react';
+import { 
+  View, 
+  Text, 
+  StyleSheet, 
+  SafeAreaView, 
+  TouchableOpacity, 
+  Platform,
+  StatusBar,
+  Alert
+} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/AppNavigator';
+import { useTheme } from '../context/ThemeContext';
+import { useLanguage } from '../context/LanguageContext';
+
+type LanguageScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Language'>;
 
 interface Language {
   code: string;
   name: string;
   nativeName: string;
+  flag: string;
 }
 
 export default function LanguageScreen() {
-  const [selectedLanguage, setSelectedLanguage] = useState('en');
+  const navigation = useNavigation<LanguageScreenNavigationProp>();
+  const { isDarkMode } = useTheme();
+  const { language, setLanguage } = useLanguage();
   
   const languages: Language[] = [
-    { code: 'en', name: 'English', nativeName: 'English' },
-    { code: 'ar', name: 'Arabic', nativeName: 'العربية' },
-    { code: 'fr', name: 'French', nativeName: 'Français' },
-    { code: 'es', name: 'Spanish', nativeName: 'Español' },
-    { code: 'de', name: 'German', nativeName: 'Deutsch' },
-    { code: 'it', name: 'Italian', nativeName: 'Italiano' },
-    { code: 'pt', name: 'Portuguese', nativeName: 'Português' },
-    { code: 'ru', name: 'Russian', nativeName: 'Русский' },
-    { code: 'zh', name: 'Chinese', nativeName: '中文' },
-    { code: 'ja', name: 'Japanese', nativeName: '日本語' },
-    { code: 'ko', name: 'Korean', nativeName: '한국어' },
+    { 
+      code: 'en', 
+      name: 'English', 
+      nativeName: 'English',
+      flag: '🇬🇧'
+    },
+    { 
+      code: 'ur', 
+      name: 'Urdu', 
+      nativeName: 'اردو',
+      flag: '🇵🇰'
+    }
   ];
 
-  const renderLanguageItem = ({ item }: { item: Language }) => (
+  const handleLanguageChange = async (languageCode: string) => {
+    try {
+      await setLanguage(languageCode as 'en' | 'ur');
+      Alert.alert(
+        'Language Changed',
+        'Please restart the app to apply the language change.',
+        [
+          {
+            text: 'OK',
+            onPress: () => navigation.goBack()
+          }
+        ]
+      );
+    } catch (error) {
+      Alert.alert('Error', 'Failed to change language. Please try again.');
+    }
+  };
+
+  const renderLanguageItem = (item: Language) => (
     <TouchableOpacity 
       style={[
         styles.languageItem,
-        selectedLanguage === item.code && styles.selectedLanguageItem
+        { 
+          backgroundColor: isDarkMode ? '#2a2a2a' : '#FFFFFF',
+          borderColor: isDarkMode ? '#333333' : '#E5E5E5'
+        },
+        language === item.code && styles.selectedLanguageItem
       ]}
-      onPress={() => setSelectedLanguage(item.code)}
+      onPress={() => handleLanguageChange(item.code)}
     >
       <View style={styles.languageInfo}>
-        <Text style={styles.languageName}>{item.name}</Text>
-        <Text style={styles.nativeName}>{item.nativeName}</Text>
+        <View style={styles.languageHeader}>
+          <Text style={styles.flag}>{item.flag}</Text>
+          <Text style={[
+            styles.languageName,
+            { color: isDarkMode ? '#FFFFFF' : '#000000' }
+          ]}>
+            {item.name}
+          </Text>
+        </View>
+        <Text style={[
+          styles.nativeName,
+          { color: isDarkMode ? '#CCCCCC' : '#666666' }
+        ]}>
+          {item.nativeName}
+        </Text>
       </View>
-      {selectedLanguage === item.code && (
-        <Icon name="check" size={20} color="#00A86B" />
+      {language === item.code && (
+        <View style={styles.checkmarkContainer}>
+          <Ionicons name="checkmark-circle" size={24} color="#00A86B" />
+        </View>
       )}
     </TouchableOpacity>
   );
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Language</Text>
-      </View>
+    <SafeAreaView style={[
+      styles.container,
+      { backgroundColor: isDarkMode ? '#1a1a1a' : '#FFFFFF' }
+    ]}>
+      <StatusBar
+        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+        backgroundColor={isDarkMode ? '#1a1a1a' : '#FFFFFF'}
+      />
       
-      <View style={styles.content}>
-        <Text style={styles.description}>
-          Select your preferred language for the app interface.
-        </Text>
-        
-        <FlatList
-          data={languages}
-          renderItem={renderLanguageItem}
-          keyExtractor={item => item.code}
-          style={styles.languageList}
-        />
-        
-        <TouchableOpacity style={styles.saveButton}>
-          <Text style={styles.saveButtonText}>Save</Text>
+      <View style={[
+        styles.header,
+        { borderBottomColor: isDarkMode ? '#333333' : '#E5E5E5' }
+      ]}>
+        <TouchableOpacity 
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+        >
+          <Ionicons 
+            name="chevron-back" 
+            size={24} 
+            color={isDarkMode ? '#FFFFFF' : '#000000'} 
+          />
         </TouchableOpacity>
+        <Text style={[
+          styles.headerTitle,
+          { color: isDarkMode ? '#FFFFFF' : '#000000' }
+        ]}>
+          Language
+        </Text>
+      </View>
+
+      <View style={styles.content}>
+        <View style={styles.introSection}>
+          <Text style={[
+            styles.introTitle,
+            { color: isDarkMode ? '#FFFFFF' : '#000000' }
+          ]}>
+            Select Language
+          </Text>
+          <Text style={[
+            styles.introText,
+            { color: isDarkMode ? '#CCCCCC' : '#666666' }
+          ]}>
+            Choose your preferred language for the app interface.
+          </Text>
+        </View>
+
+        <View style={styles.languageList}>
+          {languages.map((language) => (
+            <View key={language.code} style={styles.languageItemContainer}>
+              {renderLanguageItem(language)}
+            </View>
+          ))}
+        </View>
+
+        <View style={styles.infoSection}>
+          <Ionicons 
+            name="information-circle-outline" 
+            size={24} 
+            color={isDarkMode ? '#CCCCCC' : '#666666'} 
+          />
+          <Text style={[
+            styles.infoText,
+            { color: isDarkMode ? '#CCCCCC' : '#666666' }
+          ]}>
+            You may need to restart the app for the language change to take effect.
+          </Text>
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -72,68 +177,96 @@ export default function LanguageScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
   },
   header: {
+    flexDirection: 'row',
+    alignItems: 'center',
     padding: 16,
-    backgroundColor: '#fff',
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 16,
+    position: 'relative',
+  },
+  backButton: {
+    position: 'absolute',
+    left: 16,
+    padding: 8,
+    zIndex: 1,
   },
   headerTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: '600',
+    flex: 1,
+    textAlign: 'center',
   },
   content: {
     flex: 1,
-    padding: 16,
+    padding: 20,
   },
-  description: {
+  introSection: {
+    marginBottom: 24,
+  },
+  introTitle: {
+    fontSize: 24,
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  introText: {
     fontSize: 16,
-    color: '#666',
-    marginBottom: 16,
+    lineHeight: 24,
   },
   languageList: {
-    flex: 1,
+    marginBottom: 24,
+  },
+  languageItemContainer: {
+    marginBottom: 12,
   },
   languageItem: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 16,
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    marginBottom: 8,
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#00A86B',
   },
   selectedLanguageItem: {
     borderColor: '#00A86B',
-    backgroundColor: '#f0f8ff',
+    backgroundColor: 'rgba(0, 168, 107, 0.1)',
   },
   languageInfo: {
     flex: 1,
   },
-  languageName: {
-    fontSize: 16,
-    fontWeight: '500',
+  languageHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 4,
   },
+  flag: {
+    fontSize: 24,
+    marginRight: 12,
+  },
+  languageName: {
+    fontSize: 18,
+    fontWeight: '600',
+  },
   nativeName: {
-    fontSize: 14,
-    color: '#666',
-  },
-  saveButton: {
-    backgroundColor: '#00A86B',
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 16,
-  },
-  saveButtonText: {
-    color: '#fff',
     fontSize: 16,
-    fontWeight: 'bold',
+    marginLeft: 36,
+  },
+  checkmarkContainer: {
+    marginLeft: 12,
+  },
+  infoSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 168, 107, 0.1)',
+    padding: 16,
+    borderRadius: 12,
+    marginTop: 'auto',
+  },
+  infoText: {
+    flex: 1,
+    fontSize: 14,
+    lineHeight: 20,
+    marginLeft: 12,
   },
 }); 

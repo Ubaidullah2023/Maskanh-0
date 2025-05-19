@@ -5,6 +5,9 @@ import { RootStackParamList } from '../navigation/AppNavigator';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
+import constructionJPG from '../assets/images/construction.jpg';
+import constructionPNG from '../assets/images/construction.png';
+import contractJPG from '../assets/images/Contract.jpg';
 
 type AllServicesScreenProps = {
   route: RouteProp<RootStackParamList, 'AllServices'>;
@@ -72,6 +75,14 @@ const featuredServices = [
     rating: 4.7,
     image: require('../assets/services/Welder.png'),
   },
+];
+
+const CONSTRUCTION_IMAGES = [
+  constructionJPG,
+  constructionPNG,
+  contractJPG,
+  { uri: 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=800&q=80' }, // crane
+  { uri: 'https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=800&q=80' }, // workers
 ];
 
 const AllServicesScreen: React.FC<AllServicesScreenProps> = ({ route, navigation }) => {
