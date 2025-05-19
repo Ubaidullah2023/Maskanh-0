@@ -17,7 +17,6 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/AppNavigator';
 import BottomNavigation from '../components/BottomNavigation';
-import Header from '../components/Header';
 import { useTheme } from '../context/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
 import IcoImage from '../components/IcoImage';
@@ -41,18 +40,20 @@ interface Service {
 }
 
 const categories: Category[] = [
-  { id: '1', name: 'Architect', icon: require('../assets/icons/Blueprint.png') },
-  { id: '2', name: 'Contractor', icon: require('../assets/icons/Builder.png') },
-  { id: '3', name: 'Structural  Engineer', icon: require('../assets/icons/Civil.png') },
-  { id: '4', name: 'Labor', icon: require('../assets/icons/Construction.png') },
-  { id: '5', name: 'Carpenter', icon: require('../assets/icons/Cuttingwood.png') },
-  { id: '6', name: 'Driller', icon: require('../assets/icons/Drill.png') },
-  { id: '7', name: 'Electrician', icon: require('../assets/icons/Electrician.png') },
-  { id: '8', name: 'Painter', icon: require('../assets/icons/Paint.png') },
-  { id: '9', name: 'Solar     Panel', icon: require('../assets/icons/Solarpower.png') },
-  { id: '10', name: 'Tile     Mason', icon: require('../assets/icons/Tiles.png') },
-  { id: '11', name: 'Mason  Mistri', icon: require('../assets/icons/Wall.png') },
-  { id: '12', name: 'Welder', icon: require('../assets/icons/Welder.png') },
+  { id: '1', name: 'Electrician', icon: require('../assets/icons/Electrician.png') },
+  { id: '2', name: 'Interior Designer', icon: require('../assets/icons/Blueprint.png') },
+  { id: '3', name: 'Mason', icon: require('../assets/icons/Wall.png') },
+  { id: '4', name: 'Contractor', icon: require('../assets/icons/Builder.png') },
+  { id: '5', name: 'Solar Work', icon: require('../assets/icons/Solarpower.png') },
+  { id: '6', name: 'Carpenter', icon: require('../assets/icons/Cuttingwood.png') },
+  { id: '7', name: 'Painter', icon: require('../assets/icons/Paint.png') },
+  { id: '8', name: '3D Wall', icon: require('../assets/icons/3d.png') },
+  { id: '9', name: 'Plumber', icon: require('../assets/icons/plumber.png') },
+  { id: '10', name: 'Ceiling Work', icon: require('../assets/icons/ceiling.png') },
+  { id: '11', name: 'Aluminum & Steel Work', icon: require('../assets/icons/laser-cutting.png') },
+  { id: '12', name: 'Glass Work', icon: require('../assets/icons/window.png') },
+  { id: '13', name: 'Welder & Blacksmith', icon: require('../assets/icons/Welder.png') },
+  { id: '14', name: 'Architect', icon: require('../assets/icons/architect.png') },
 ];
 
 const recommendedServices: Service[] = [
@@ -271,8 +272,14 @@ const ServiceCard = ({ images, title, subtitle, rating, views, postedTime, id }:
   };
 
   const handleContact = () => {
-    // For first-time users, navigate to Registration screen
-    navigation.navigate('Registration');
+    // Navigate to Registration screen for first-time users
+    navigation.navigate('Registration', {
+      // After registration, redirect to chat with this service provider
+      redirectAfterAuth: 'ChatScreen',
+      serviceId: id,
+      serviceTitle: title,
+      serviceSubtitle: subtitle
+    } as any); // Type assertion to avoid type errors
   };
 
   return (
@@ -383,11 +390,13 @@ const FindServiceScreen = () => {
         translucent={true}
       />
       <View style={styles.container}>
-        <Header title="Find a Service" />
-
         <ScrollView style={styles.scrollView}>
           {/* Categories */}
-          <View style={[styles.section, { backgroundColor: isDarkMode ? '#1a1a1a' : '#fff' }]}>
+          <View style={[styles.section, { 
+            backgroundColor: isDarkMode ? '#1a1a1a' : '#fff',
+            borderBottomColor: isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
+            marginBottom: 4
+          }]}>
             <Text style={[styles.sectionTitle, { color: isDarkMode ? '#fff' : '#000' }]}>
               Explore by Category
             </Text>
@@ -402,15 +411,22 @@ const FindServiceScreen = () => {
           </View>
 
           {/* Recommended Services */}
-          <View style={[styles.section, { backgroundColor: isDarkMode ? '#1a1a1a' : '#fff' }]}>
+          <View style={[styles.section, { 
+            backgroundColor: isDarkMode ? '#1a1a1a' : '#fff',
+            paddingTop: 12
+          }]}>
             <View style={styles.sectionHeader}>
-              <Text style={[styles.sectionTitle, { color: isDarkMode ? '#fff' : '#000' }]}>
+              <Text style={[styles.sectionTitle, { color: isDarkMode ? '#fff' : '#000', marginBottom: 0 }]}>
                 Recommended Services
               </Text>
-              <TouchableOpacity onPress={() => navigation.navigate('AllServices', { type: 'recommended' })}>
+              <TouchableOpacity 
+                onPress={() => navigation.navigate('AllServices', { type: 'recommended' })}
+                style={styles.viewAllContainer}
+              >
                 <Text style={styles.viewAllButton}>View All</Text>
               </TouchableOpacity>
             </View>
+            <View style={{marginTop: 16}} />
             <View style={styles.recommendedList}>
               {recommendedServices.map((service) => (
                 <View key={service.id} style={styles.recommendedItem}>
@@ -469,13 +485,14 @@ const FindServiceScreen = () => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight || 20 : 0,
   },
   container: {
     flex: 1,
   },
   scrollView: {
     flex: 1,
+    paddingTop: 20,
   },
   header: {
     flexDirection: 'row',
@@ -506,14 +523,19 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#fff',
     marginBottom: 8,
+    paddingTop: 20,
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(0,0,0,0.05)',
   },
   sectionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 16,
+    fontSize: 18,
+    fontWeight: '700',
+    marginBottom: 13,
   },
   categoriesList: {
     paddingRight: 16,
+    marginBottom: -8,
   },
   categoryItem: {
     alignItems: 'center',
@@ -521,19 +543,22 @@ const styles = StyleSheet.create({
     width: 70,
   },
   categoryIconContainer: {
-    width: 50,
-    height: 50,
+    width: 60,
+    height: 60,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 4,
+    backgroundColor: 'rgba(0, 168, 107, 0.1)',
+    borderRadius: 30,
   },
   categoryIcon: {
-    width: 24,
-    height: 24,
+    width: 28,
+    height: 28,
   },
   categoryLabel: {
     fontSize: 12,
     textAlign: 'center',
+    fontWeight: '500',
   },
   servicesList: {
     paddingRight: 16,
@@ -676,7 +701,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 0,
+  },
+  viewAllContainer: {
+    padding: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 28,
   },
   viewAllButton: {
     color: '#00A86B',

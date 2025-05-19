@@ -56,7 +56,6 @@ import ArticlesScreen from '../screens/ArticlesScreen';
 import NotificationsScreen from '../screens/NotificationsScreen';
 import ProfileCompleteScreen from '../screens/ProfileCompleteScreen';
 import AnalyticsScreen from '../screens/AnalyticsScreen';
-import ChatScreen from '../screens/ChatScreen';
 import ServiceProfileScreen from '../screens/ServiceProfileScreen';
 import ServiceEditProfileScreen from '../screens/ServiceEditProfileScreen';
 import ServicePersonalInfoScreen from '../screens/ServicePersonalInfoScreen';
@@ -70,6 +69,8 @@ import ServiceLoginScreen from '../screens/ServiceLoginScreen';
 import ServiceTabNavigator from './ServiceTabNavigator';
 import MaskanhProUpgradeScreen from '../screens/MaskanhProUpgradeScreen';
 import ServiceSettingsScreen from '../screens/ServiceSettingsScreen';
+import ChatScreen from '../screens/ChatScreen';
+import BlogDetailScreen from '../screens/BlogDetailScreen';
 
 export type RootStackParamList = {
   Login: undefined;
@@ -116,6 +117,18 @@ export type RootStackParamList = {
   TopUp: undefined;
   FindService: undefined;
   Blog: undefined;
+  BlogDetail: {
+    post: {
+      id: string;
+      title: string;
+      excerpt: string;
+      image: any;
+      date: string;
+      readTime: string;
+      category: string;
+      content?: string;
+    }
+  };
   AllServices: {
     type: 'featured' | 'recommended';
   };
@@ -185,7 +198,12 @@ export type RootStackParamList = {
   };
   PropertyType: undefined;
   ServiceMap: undefined;
-  Registration: undefined;
+  Registration: {
+    redirectAfterAuth?: string;
+    serviceId?: string;
+    serviceTitle?: string;
+    serviceSubtitle?: string;
+  };
   ServiceDetails: {
     id: string;
     images: any[];
@@ -293,6 +311,11 @@ export type RootStackParamList = {
     screen?: string;
   };
   MaskanhProUpgrade: undefined;
+  ChatScreen: {
+    serviceId: string;
+    serviceTitle: string;
+    serviceSubtitle: string;
+  };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -331,6 +354,7 @@ export default function AppNavigator() {
       <Stack.Screen name="TopUp" component={TopUpScreen} />
       <Stack.Screen name="FindService" component={FindServiceScreen} />
       <Stack.Screen name="Blog" component={BlogScreen} />
+      <Stack.Screen name="BlogDetail" component={BlogDetailScreen} />
       <Stack.Screen name="AdPreview" component={AdPreviewScreen} />
       <Stack.Screen name="AllServices" component={AllServicesScreen} />
       <Stack.Screen name="ProviderVerification" component={ProviderVerificationScreen} />
@@ -375,6 +399,7 @@ export default function AppNavigator() {
       <Stack.Screen name="ServiceSettings" component={ServiceSettingsScreen} />
       <Stack.Screen name="ServiceTabs" component={ServiceTabNavigator} />
       <Stack.Screen name="MaskanhProUpgrade" component={MaskanhProUpgradeScreen} />
+      <Stack.Screen name="ChatScreen" component={ChatScreen} />
     </Stack.Navigator>
   );
 } 
