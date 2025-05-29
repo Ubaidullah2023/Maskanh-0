@@ -1,19 +1,20 @@
 export default {
-  name: "MaskanhApp",
+  name: "Maskanh",
   slug: "maskanh-app",
   version: "1.0.0",
   orientation: "portrait",
-  icon: "./assets/logo.png",
+  icon: "./assets/icon.png",
   userInterfaceStyle: "light",
   splash: {
-    image: "./assets/logo.png",
+    image: "./assets/splash.png",
     resizeMode: "contain",
     backgroundColor: "#ffffff"
   },
-  assetBundlePatterns: ["**/*"],
+  assetBundlePatterns: [
+    "**/*"
+  ],
   ios: {
-    supportsTablet: true,
-    bundleIdentifier: "com.maskanh.app"
+    supportsTablet: true
   },
   android: {
     adaptiveIcon: {
@@ -22,11 +23,15 @@ export default {
     },
     package: "com.maskanh.app"
   },
-  web: {
-    favicon: "./assets/favicon.png"
-  },
+  plugins: [
+    "expo-location",
+    "expo-image-picker",
+    "expo-file-system",
+    "expo-av"
+  ],
   extra: {
-    supabaseUrl: "https://efyqjrpxkrmmmydtoxwj.supabase.co",
-    supabaseAnonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVmeXFqcnB4a3JtbW15ZHRveHdqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MTk1NTIsImV4cCI6MjA2MjA5NTU1Mn0.gMBi9n0zawvSbAQ2AbqulPVwSm7yYUN6cFJ1bW3os30"
+    eas: {
+      projectId: "670e08fe-7cc8-4854-809a-5eaf22b54632"
+    }
   }
 }; 

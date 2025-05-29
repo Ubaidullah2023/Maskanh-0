@@ -415,7 +415,6 @@ export default function ProviderVerificationScreen() {
   // Add image picker functions
   const pickImage = async (type: 'front' | 'back') => {
     try {
-      // Request permissions first
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       
       if (status !== 'granted') {
@@ -430,48 +429,22 @@ export default function ProviderVerificationScreen() {
         return;
       }
       
-      // Launch image picker with camera option
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
         aspect: [4, 3],
         quality: 0.8,
-        base64: true,
       });
       
       if (!result.canceled && result.assets && result.assets.length > 0) {
         const selectedImage = result.assets[0];
         
-        // Show loading indicator
-        Alert.alert(
-          'Processing Image',
-          'Please wait while we process your image...',
-          [{ text: 'OK' }]
-        );
-        
-        // Compress and resize the image
-        const manipulatedImage = await manipulateAsync(
-          selectedImage.uri,
-          [{ resize: { width: 800 } }],
-          { compress: 0.7, format: SaveFormat.JPEG }
-        );
-        
         if (type === 'front') {
-          setCnicFrontImage(manipulatedImage.uri);
-          updateFormData('cnicFront', manipulatedImage.uri);
-          Alert.alert(
-            'Success',
-            'CNIC Front image uploaded successfully!',
-            [{ text: 'OK' }]
-          );
+          setCnicFrontImage(selectedImage.uri);
+          updateFormData('cnicFront', selectedImage.uri);
         } else {
-          setCnicBackImage(manipulatedImage.uri);
-          updateFormData('cnicBack', manipulatedImage.uri);
-          Alert.alert(
-            'Success',
-            'CNIC Back image uploaded successfully!',
-            [{ text: 'OK' }]
-          );
+          setCnicBackImage(selectedImage.uri);
+          updateFormData('cnicBack', selectedImage.uri);
         }
       }
     } catch (error) {
@@ -505,42 +478,17 @@ export default function ProviderVerificationScreen() {
         allowsEditing: true,
         aspect: [4, 3],
         quality: 0.8,
-        base64: true,
       });
       
       if (!result.canceled && result.assets && result.assets.length > 0) {
         const capturedImage = result.assets[0];
         
-        // Show loading indicator
-        Alert.alert(
-          'Processing Image',
-          'Please wait while we process your image...',
-          [{ text: 'OK' }]
-        );
-        
-        // Compress and resize the image
-        const manipulatedImage = await manipulateAsync(
-          capturedImage.uri,
-          [{ resize: { width: 800 } }],
-          { compress: 0.7, format: SaveFormat.JPEG }
-        );
-        
         if (type === 'front') {
-          setCnicFrontImage(manipulatedImage.uri);
-          updateFormData('cnicFront', manipulatedImage.uri);
-          Alert.alert(
-            'Success',
-            'CNIC Front image captured successfully!',
-            [{ text: 'OK' }]
-          );
+          setCnicFrontImage(capturedImage.uri);
+          updateFormData('cnicFront', capturedImage.uri);
         } else {
-          setCnicBackImage(manipulatedImage.uri);
-          updateFormData('cnicBack', manipulatedImage.uri);
-          Alert.alert(
-            'Success',
-            'CNIC Back image captured successfully!',
-            [{ text: 'OK' }]
-          );
+          setCnicBackImage(capturedImage.uri);
+          updateFormData('cnicBack', capturedImage.uri);
         }
       }
     } catch (error) {

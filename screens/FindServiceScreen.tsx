@@ -21,7 +21,10 @@ import { useTheme } from '../context/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
 import IcoImage from '../components/IcoImage';
 
-type FindServiceScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'FindService' | 'ServiceMap'>;
+type FindServiceScreenNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'FindService' | 'ServiceMap' | 'AllServices' | 'ServiceDetails' | 'Registration'
+>;
 
 interface Category {
   id: string;
@@ -371,7 +374,7 @@ const FindServiceScreen = () => {
   const { isDarkMode } = useTheme();
 
   const handleMapPress = () => {
-    navigation.navigate('ServiceMap');
+    navigation.navigate('ServiceMap' as any);
   };
 
   const renderCategory = ({ item }: { item: Category }) => (

@@ -2,14 +2,14 @@
   "name": "MaskanhApp",
   "displayName": "MaskanhApp",
   "expo": {
-    "name": "MaskanhApp",
-    "slug": "MaskanhApp",
+    "name": "Maskanh",
+    "slug": "maskanh",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/logo.png",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/logo.png",
+      "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -22,13 +22,24 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-logo.png",
+        "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.ubaidullah1.MaskanhApp"
+      "package": "com.maskanh.app"
     },
     "web": {
       "favicon": "./assets/logo.png"
+    },
+    "plugins": [
+      "expo-location",
+      "expo-image-picker",
+      "expo-file-system",
+      "expo-av"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "670e08fe-7cc8-4854-809a-5eaf22b54632"
+      }
     }
   }
 }

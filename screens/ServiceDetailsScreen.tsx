@@ -32,7 +32,12 @@ export default function ServiceDetailsScreen() {
   const { id, images, title, subtitle, rating, views, postedTime } = route.params;
 
   const handleContact = () => {
-    navigation.navigate('Registration');
+    navigation.navigate('Registration', {
+      redirectAfterAuth: 'ChatScreen',
+      serviceId: id,
+      serviceTitle: title,
+      serviceSubtitle: subtitle
+    });
   };
 
   // Default coordinates for Pakistan (you should replace these with actual service provider coordinates)

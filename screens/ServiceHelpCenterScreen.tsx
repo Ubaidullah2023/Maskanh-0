@@ -169,6 +169,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 3,
     elevation: 3,
+    //iski gradle files kdr hai 
+    // andorid wala folder delete kar diya tha wait i can discard those changes from github
   },
   header: {
     marginBottom: 10,
